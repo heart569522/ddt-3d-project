@@ -3,6 +3,7 @@ import { Inter } from "next/font/google";
 import "./globals.css";
 import { ThemeProvider } from "@/components/themes/theme-provider";
 import { anuphan } from "@/lib/fonts";
+import Navigation from "@/components/ui/navigation";
 
 export const metadata: Metadata = {
   title: "Create Next App",
@@ -21,7 +22,7 @@ export default function RootLayout({
           attribute="class"
           defaultTheme="system"
           enableSystem
-          // disableTransitionOnChange
+          disableTransitionOnChange
         >
           {children}
         </ThemeProvider>
