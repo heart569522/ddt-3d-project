@@ -59,7 +59,6 @@
   }
 }
 
-
 @layer base {
   * {
     @apply border-border;
@@ -68,4 +67,23 @@
   body {
     @apply bg-background text-foreground;
   }
+}
+
+.custom-scrollbar::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: #8888886a;
+  border-radius: 10px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: #555;
+  cursor: pointer;
 }

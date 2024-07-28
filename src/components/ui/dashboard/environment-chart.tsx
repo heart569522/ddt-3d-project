@@ -10,19 +10,13 @@ import {
 import {
   ChartConfig,
   ChartContainer,
+  ChartLegend,
+  ChartLegendContent,
   ChartTooltip,
   ChartTooltipContent,
 } from "@/components/shadcn-ui/chart";
-import { TrendingUp } from "lucide-react";
 import React, { useMemo } from "react";
-import {
-  Label,
-  RadialBarChart,
-  PolarRadiusAxis,
-  RadialBar,
-  PieChart,
-  Pie,
-} from "recharts";
+import { Label, PieChart, Pie, LineChart, CartesianGrid, XAxis, Line, YAxis } from "recharts";
 
 const chartData = [
   { browser: "chrome", visitors: 275, fill: "var(--color-chrome)" },
@@ -41,15 +35,17 @@ const chartConfig = {
     color: "hsl(var(--chart-2))",
   },
 } satisfies ChartConfig;
-export default function EnvironmentChart() {
+export function EnvironmentChart() {
   const totalVisitors = useMemo(() => {
     return chartData.reduce((acc, curr) => acc + curr.visitors, 0);
   }, []);
 
   return (
-    <Card className="flex flex-col">
-      <CardHeader className="items-center pb-0">
-        <CardTitle className="text-lg">Environment Data</CardTitle>
+    <Card>
+      <CardHeader className="pb-0">
+        <CardTitle className="text-base md:text-lg text-left">
+          Environment Data
+        </CardTitle>
         {/* <CardDescription>January - June 2024</CardDescription> */}
       </CardHeader>
       <CardContent className="flex-1 pb-0 scale-95">
@@ -196,6 +192,84 @@ export default function EnvironmentChart() {
               />
             </Pie>
           </PieChart>
+        </ChartContainer>
+      </CardContent>
+    </Card>
+  );
+}
+
+const chartPMData = [
+  { month: "January", desktop: 186, mobile: 80 },
+  { month: "February", desktop: 305, mobile: 200 },
+  { month: "March", desktop: 237, mobile: 120 },
+  { month: "April", desktop: 73, mobile: 190 },
+  { month: "May", desktop: 209, mobile: 130 },
+  { month: "June", desktop: 214, mobile: 140 },
+];
+const chartPMConfig = {
+  desktop: {
+    label: "Desktop",
+    color: "hsl(var(--chart-1))",
+  },
+  mobile: {
+    label: "Mobile",
+    color: "hsl(var(--chart-2))",
+  },
+} satisfies ChartConfig;
+
+export function EnvironmentPMChart() {
+  return (
+    <Card>
+      <CardHeader>
+        <CardTitle className="text-base md:text-lg text-left">
+          Environment PM2.5
+        </CardTitle>
+      </CardHeader>
+      <CardContent>
+        <ChartContainer config={chartPMConfig}>
+          <LineChart
+            accessibilityLayer
+            data={chartPMData}
+            margin={{
+              left: 12,
+              right: 12,
+            }}
+          >
+            <CartesianGrid vertical={false} />
+            <XAxis
+              dataKey="month"
+              tickLine={false}
+              axisLine={false}
+              tickMargin={8}
+              tickFormatter={(value) => value.slice(0, 3)}
+            />
+            <ChartTooltip cursor={false} content={<ChartTooltipContent />} />
+            <Line
+              dataKey="desktop"
+              type="monotone"
+              stroke="var(--color-desktop)"
+              strokeWidth={2}
+              dot={{
+                fill: "var(--color-desktop)",
+              }}
+              activeDot={{
+                r: 6,
+              }}
+            />
+            <Line
+              dataKey="mobile"
+              type="monotone"
+              stroke="var(--color-mobile)"
+              strokeWidth={2}
+              dot={{
+                fill: "var(--color-mobile)",
+              }}
+              activeDot={{
+                r: 6,
+              }}
+            />
+            <ChartLegend content={<ChartLegendContent />} />
+          </LineChart>
         </ChartContainer>
       </CardContent>
     </Card>

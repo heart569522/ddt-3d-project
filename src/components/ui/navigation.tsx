@@ -1,7 +1,7 @@
 "use client";
 import Link from "next/link";
 import React, { useState } from "react";
-import { Building2, Menu } from "lucide-react";
+import { Building2, ChartPie, MapPin, MapPinned, Menu } from "lucide-react";
 import {
   Sheet,
   SheetContent,
@@ -14,13 +14,17 @@ import { cn } from "@/lib/utils";
 import { ThemeSwitcher } from "../themes/theme-switcher";
 import { ScrollArea } from "../shadcn-ui/scroll-area";
 
+type Props = {
+  children: React.ReactNode;
+  leftDashbaord?: React.ReactNode;
+  rightDashbaord?: React.ReactNode;
+};
+
 export default function Navigation({
   children,
-  dashboard,
-}: {
-  children: React.ReactNode;
-  dashboard?: React.ReactNode;
-}) {
+  leftDashbaord,
+  rightDashbaord,
+}: Props) {
   const pathname = usePathname();
   const [isNavOpen, setIsNavOpen] = useState(false);
 
@@ -43,9 +47,9 @@ export default function Navigation({
               </Link> */}
             </div>
             <div className="flex-1">
-              <aside className="grid items-start py-2 px-2 text-sm font-medium md:px-4 gap-2">
-                {dashboard}
-              </aside>
+              <div className="grid items-start py-2 px-2 text-sm font-medium md:px-4 gap-2">
+                {leftDashbaord}
+              </div>
             </div>
           </ScrollArea>
         </div>
@@ -59,22 +63,28 @@ export default function Navigation({
                 size="icon"
                 className="shrink-0 md:hidden"
               >
-                <Menu className="h-5 w-5" />
-                <span className="sr-only">Toggle navigation menu</span>
+                <ChartPie className="h-5 w-5" />
+                <span className="sr-only">Toggle navigation dashboard</span>
               </Button>
             </SheetTrigger>
-            <SheetContent side="left" className="flex flex-col">
-              <nav className="grid gap-2 text-base font-medium">
-                <Link
-                  href="/"
-                  className="flex items-center gap-2 font-semibold"
-                >
-                  <Building2 className="h-5 w-5" />
-                  <SheetTitle className="uppercase">DDT</SheetTitle>
-                </Link>
+            <SheetContent
+              side="left"
+              className="flex flex-col overflow-y-scroll custom-scrollbar"
+            >
+              <div className="grid gap-2 text-base font-medium">
+                <div className="flex gap-2 items-center justify-start">
+                  <Button
+                    variant="outline"
+                    size="icon"
+                    className="shrink-0 md:hidden"
+                  >
+                    <MapPinned className="h-5 w-5" />
+                  </Button>
+                </div>
                 <hr className="my-2" />
-                {dashboard}
-              </nav>
+                {leftDashbaord}
+                <div className="md:hidden">{rightDashbaord}</div>
+              </div>
             </SheetContent>
           </Sheet>
           <div className="w-full flex-1">
