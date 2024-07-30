@@ -27,15 +27,15 @@ import {
   ChartTooltipContent,
 } from "@/components/shadcn-ui/chart";
 const chartData = [
-  { month: "January", desktop: 186, mobile: 80, fill: "var(--color-january)" },
+  { month: "january", desktop: 186, mobile: 80, fill: "var(--color-january)" },
   {
-    month: "February",
+    month: "february",
     desktop: 305,
     mobile: 200,
     fill: "var(--color-february)",
   },
-  { month: "March", desktop: 237, mobile: 120, fill: "var(--color-march)" },
-  { month: "April", desktop: 73, mobile: 190, fill: "var(--color-april)" },
+  { month: "march", desktop: 237, mobile: 120, fill: "var(--color-march)" },
+  { month: "april", desktop: 73, mobile: 190, fill: "var(--color-april)" },
 ];
 
 const chartConfig = {
@@ -122,7 +122,7 @@ export function ElectricChart() {
         </h3>
         <ChartContainer
           config={chartConfig}
-          className="mx-auto aspect-square max-h-[250px]"
+          className="mx-auto aspect-square max-h-[300px]"
         >
           <PieChart>
             <ChartTooltip
@@ -130,6 +130,10 @@ export function ElectricChart() {
               content={<ChartTooltipContent hideLabel />}
             />
             <Pie data={chartData} dataKey="desktop" nameKey="month" />
+            <ChartLegend
+              content={<ChartLegendContent nameKey="month" />}
+              className="-translate-y-2 flex-wrap gap-2 [&>*]:basis-1/4 [&>*]:justify-center"
+            />
           </PieChart>
         </ChartContainer>
       </CardContent>

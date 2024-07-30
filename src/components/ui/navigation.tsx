@@ -33,29 +33,33 @@ export default function Navigation({
   };
 
   return (
-    <div className="grid min-h-screen w-full md:grid-cols-[290px_1fr] relative">
-      <div className="hidden bg-muted/40 md:block z-50 shadow-lg">
-        <div className="flex h-full max-h-screen flex-col gap-2 w-[290px] fixed">
-          <ScrollArea>
-            <div className="flex h-14 items-center border-b px-4 md:h-[60px] md:px-6">
-              {/* <Link
-                href="/"
-                className="flex items-center gap-2 font-semibold py-10"
-              >
-                <Building2 className="h-5 w-5" />
-                <span className="text-xl uppercase">DDT</span>
-              </Link> */}
-            </div>
+    <div className="grid w-full relative">
+      <div className="hidden md:block z-50 shadow-lg">
+        <div className="flex h-full max-h-screen flex-col gap-2 left-0 translate-y-[60px] pb-16 w-[300px] fixed">
+          <ScrollArea className="pr-1">
             <div className="flex-1">
-              <div className="grid items-start py-2 px-2 text-sm font-medium md:px-4 gap-2">
+              <div className="grid items-start py-2 px-2 gap-2">
                 {leftDashbaord}
+              </div>
+              <div className="grid xl:hidden items-start pb-2 px-2 gap-2">
+                {rightDashbaord}
+              </div>
+            </div>
+          </ScrollArea>
+        </div>
+        <div className="hidden xl:flex h-full max-h-screen flex-col gap-2 right-0 translate-y-[60px] pb-16 w-[300px] fixed">
+          <ScrollArea className="pr-1">
+            <div className="flex-1">
+              <div className="grid items-start py-2 px-2 gap-2">
+                {rightDashbaord}
               </div>
             </div>
           </ScrollArea>
         </div>
       </div>
+
       <div className="flex flex-col">
-        <header className="flex h-14 items-center gap-2 border-b bg-muted/70 px-4 md:h-[60px] w-full md:w-[calc(100%-290px)] fixed md:px-6 z-50 shadow-sm">
+        <header className="flex h-14 bg-card items-center gap-2 px-4 md:h-[60px] w-full fixed md:px-6 z-50 shadow-sm">
           <Sheet open={isNavOpen} onOpenChange={setIsNavOpen}>
             <SheetTrigger asChild>
               <Button
@@ -87,11 +91,9 @@ export default function Navigation({
               </div>
             </SheetContent>
           </Sheet>
-          <div className="w-full flex-1">
-            <form>
-              <div className="relative"></div>
-            </form>
-          </div>
+          <nav className="w-full flex-1 items-center text-center text-base md:text-lg lg:text-xl font-semibold tracking-wide">
+            Engineering Digital Twin
+          </nav>
           <ThemeSwitcher />
         </header>
         {children}
