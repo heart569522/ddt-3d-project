@@ -5,6 +5,7 @@ import {
   getPmTempHmdData,
 } from "@/actions/data";
 import TurtleStuff from "@/components/models/turttle-stuff";
+import { Button } from "@/components/shadcn-ui/button";
 import CardInfo from "@/components/ui/dashboard/card-info";
 import {
   AverageElectricUsage,
@@ -24,6 +25,9 @@ import {
   IEnvironmentLineChart,
   IPmTempHmd,
 } from "@/types/model";
+import { Droplets, MapPin, Thermometer } from "lucide-react";
+import { IconFaceMask } from "@tabler/icons-react";
+import TooltipHover from "@/components/ui/tooltip-hover";
 
 export default async function Overview() {
   const avgEnvironment = await getAverageEnvironment();
@@ -82,6 +86,30 @@ export default async function Overview() {
           <ElectricChart data={electricUsageData} />
           <AverageElectricUsage data={avgElectricUsage} />
         </div>
+      }
+      toolbar={
+        <>
+          <TooltipHover content={"View Map"} position="right">
+            <Button variant="outline" size="icon">
+              <MapPin className="h-5 w-5" />
+            </Button>
+          </TooltipHover>
+          <TooltipHover content={"Temperature"} position="right">
+            <Button variant="outline" size="icon">
+              <Thermometer className="h-5 w-5" />
+            </Button>
+          </TooltipHover>
+          <TooltipHover content={"Humidity"} position="right">
+            <Button variant="outline" size="icon">
+              <Droplets className="h-5 w-5" />
+            </Button>
+          </TooltipHover>
+          <TooltipHover content={"PM 2.5"} position="right">
+            <Button variant="outline" size="icon">
+              <IconFaceMask className="h-5 w-5" />
+            </Button>
+          </TooltipHover>
+        </>
       }
     >
       <div className="w-full h-dvh bg-cyan-700"></div>

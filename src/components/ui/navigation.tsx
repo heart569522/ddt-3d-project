@@ -1,7 +1,7 @@
 "use client";
 import Link from "next/link";
 import React, { useState } from "react";
-import { Building2, ChartPie, MapPin, MapPinned, Menu } from "lucide-react";
+import { ChartPie, PanelLeftDashed, PanelLeftOpen } from "lucide-react";
 import {
   Sheet,
   SheetContent,
@@ -10,28 +10,41 @@ import {
 } from "@/components/shadcn-ui/sheet";
 import { Button } from "@/components/shadcn-ui/button";
 import { usePathname } from "next/navigation";
+import { ThemeSwitcher } from "@/components/themes/theme-switcher";
+import { ScrollArea } from "@/components/shadcn-ui/scroll-area";
+import TooltipHover from "./tooltip-hover";
 import { cn } from "@/lib/utils";
-import { ThemeSwitcher } from "../themes/theme-switcher";
-import { ScrollArea } from "../shadcn-ui/scroll-area";
 
 type Props = {
   children: React.ReactNode;
   leftDashbaord?: React.ReactNode;
   rightDashbaord?: React.ReactNode;
+  toolbar?: React.ReactNode;
 };
 
 export default function Navigation({
   children,
   leftDashbaord,
   rightDashbaord,
+  toolbar,
 }: Props) {
   const pathname = usePathname();
   const [isNavOpen, setIsNavOpen] = useState(false);
+  const [isShowDashboard, setIsShowDashboard] = useState(true);
+
+  const toggleShowHideDashboard = () => {
+    setIsShowDashboard(!isShowDashboard);
+  };
 
   return (
     <div className="grid w-full relative">
       <div className="hidden md:block z-50 shadow-lg">
-        <div className="flex h-full max-h-screen flex-col gap-2 left-0 translate-y-[60px] pb-16 w-[375px] fixed">
+        <div
+          className={cn(
+            "flex h-full max-h-screen flex-col gap-2 left-0 translate-y-[60px] pb-16 w-[350px] fixed transition-transform duration-500 ease-in-out",
+            isShowDashboard ? "translate-x-0" : "-translate-x-full"
+          )}
+        >
           <ScrollArea className="pr-1">
             <div className="flex-1">
               <div className="grid items-start py-2 px-2 gap-2">
@@ -43,7 +56,12 @@ export default function Navigation({
             </div>
           </ScrollArea>
         </div>
-        <div className="hidden xl:flex h-full max-h-screen flex-col gap-2 right-0 translate-y-[60px] pb-16 w-[375px] fixed">
+        <div
+          className={cn(
+            "hidden xl:flex h-full max-h-screen flex-col gap-2 right-0 translate-y-[60px] pb-16 w-[350px] fixed transition-transform duration-500 ease-in-out",
+            isShowDashboard ? "translate-x-0" : "translate-x-full"
+          )}
+        >
           <ScrollArea className="pr-1">
             <div className="flex-1">
               <div className="grid items-start py-2 px-2 gap-2">
@@ -51,6 +69,30 @@ export default function Navigation({
               </div>
             </div>
           </ScrollArea>
+        </div>
+        <div
+          className={cn(
+            "absolute flex flex-col gap-2 items-center bg-primary-foreground/50 p-2 rounded-lg  top-[4.25rem] transition-transform duration-500 ease-in-out",
+            isShowDashboard ? "translate-x-[350px]" : "translate-x-[10px]"
+          )}
+        >
+          <TooltipHover
+            content={isShowDashboard ? "Hide Dashboard" : "Show Dashboard"}
+            position="right"
+          >
+            <Button
+              variant="outline"
+              size="icon"
+              onClick={toggleShowHideDashboard}
+            >
+              {isShowDashboard ? (
+                <PanelLeftDashed className="h-5 w-5" />
+              ) : (
+                <PanelLeftOpen className="h-5 w-5" />
+              )}
+            </Button>
+          </TooltipHover>
+          {toolbar}
         </div>
       </div>
 
@@ -72,15 +114,7 @@ export default function Navigation({
               className="flex flex-col overflow-y-scroll custom-scrollbar w-[90%]"
             >
               <div className="grid gap-2 text-base font-medium">
-                <div className="flex gap-2 items-center justify-start">
-                  <Button
-                    variant="outline"
-                    size="icon"
-                    className="shrink-0 md:hidden"
-                  >
-                    <MapPinned className="h-5 w-5" />
-                  </Button>
-                </div>
+                <div className="flex gap-2 items-center justify-start"></div>
                 <hr className="my-2" />
                 {leftDashbaord}
                 <div className="md:hidden">{rightDashbaord}</div>
