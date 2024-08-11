@@ -28,14 +28,10 @@ export default function Navigation({
   const pathname = usePathname();
   const [isNavOpen, setIsNavOpen] = useState(false);
 
-  const handleMenuItemClick = () => {
-    setIsNavOpen(false);
-  };
-
   return (
     <div className="grid w-full relative">
       <div className="hidden md:block z-50 shadow-lg">
-        <div className="flex h-full max-h-screen flex-col gap-2 left-0 translate-y-[60px] pb-16 w-[300px] fixed">
+        <div className="flex h-full max-h-screen flex-col gap-2 left-0 translate-y-[60px] pb-16 w-[375px] fixed">
           <ScrollArea className="pr-1">
             <div className="flex-1">
               <div className="grid items-start py-2 px-2 gap-2">
@@ -47,7 +43,7 @@ export default function Navigation({
             </div>
           </ScrollArea>
         </div>
-        <div className="hidden xl:flex h-full max-h-screen flex-col gap-2 right-0 translate-y-[60px] pb-16 w-[300px] fixed">
+        <div className="hidden xl:flex h-full max-h-screen flex-col gap-2 right-0 translate-y-[60px] pb-16 w-[375px] fixed">
           <ScrollArea className="pr-1">
             <div className="flex-1">
               <div className="grid items-start py-2 px-2 gap-2">
@@ -73,7 +69,7 @@ export default function Navigation({
             </SheetTrigger>
             <SheetContent
               side="left"
-              className="flex flex-col overflow-y-scroll custom-scrollbar"
+              className="flex flex-col overflow-y-scroll custom-scrollbar w-[90%]"
             >
               <div className="grid gap-2 text-base font-medium">
                 <div className="flex gap-2 items-center justify-start">

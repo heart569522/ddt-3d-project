@@ -15,30 +15,39 @@ import {
   ChartTooltip,
   ChartTooltipContent,
 } from "@/components/shadcn-ui/chart";
+import { Progress } from "@/components/shadcn-ui/progress";
+import { monthNames } from "@/lib/utils";
+import { IAverageEnvironment, IEnvironmentLineChart } from "@/types/model";
 import React, { useMemo } from "react";
-import { Label, PieChart, Pie, LineChart, CartesianGrid, XAxis, Line, YAxis } from "recharts";
+import {
+  Label,
+  PieChart,
+  Pie,
+  LineChart,
+  CartesianGrid,
+  XAxis,
+  Line,
+  YAxis,
+} from "recharts";
 
-const chartData = [
-  { browser: "chrome", visitors: 275, fill: "var(--color-chrome)" },
-  { browser: "safari", visitors: 200, fill: "var(--color-safari)" },
-];
-const chartConfig = {
-  visitors: {
-    label: "Visitors",
-  },
-  chrome: {
-    label: "Chrome",
-    color: "hsl(var(--chart-1))",
-  },
-  safari: {
-    label: "Safari",
-    color: "hsl(var(--chart-2))",
-  },
-} satisfies ChartConfig;
-export function EnvironmentChart() {
-  const totalVisitors = useMemo(() => {
-    return chartData.reduce((acc, curr) => acc + curr.visitors, 0);
-  }, []);
+interface AverageProps {
+  data: IAverageEnvironment;
+}
+
+interface PMProps {
+  data: IEnvironmentLineChart[];
+}
+
+export function EnvironmentAverage({ data }: AverageProps) {
+  const {
+    averagePM25 = null,
+    averageTemp = null,
+    averageHumidity = null,
+  } = data || {};
+
+  const calculatePercents = (value: number, total: number) => {
+    return Math.round((value / total) * 100);
+  };
 
   return (
     <Card>
@@ -48,176 +57,93 @@ export function EnvironmentChart() {
         </CardTitle>
         {/* <CardDescription>January - June 2024</CardDescription> */}
       </CardHeader>
-      <CardContent className="flex-1 pb-0 scale-95">
-        <ChartContainer
-          config={chartConfig}
-          className="mx-auto aspect-square max-h-[250px]"
-        >
-          <PieChart>
-            <ChartTooltip
-              cursor={false}
-              content={<ChartTooltipContent hideLabel />}
+      <CardContent className="flex flex-col flex-1 pb-8 gap-4">
+        <Card className="mt-4 transition bg-secondary/60 hover:bg-secondary/30">
+          <CardHeader className="pb-4">
+            <CardDescription className="text-base sm:text-lg">
+              PM 2.5
+            </CardDescription>
+            <CardTitle className="text-3xl sm:text-4xl">
+              {averagePM25?.toFixed(2)}
+            </CardTitle>
+          </CardHeader>
+          <CardFooter>
+            <Progress
+              className="bg-zinc-200 dark:bg-muted"
+              value={calculatePercents(averagePM25 as number, 400)}
+              aria-label={`${calculatePercents(
+                averagePM25 as number,
+                400
+              )}% increase`}
             />
-            <Pie
-              data={chartData}
-              dataKey="visitors"
-              nameKey="browser"
-              innerRadius={60}
-              strokeWidth={5}
-            >
-              <Label
-                content={({ viewBox }) => {
-                  if (viewBox && "cx" in viewBox && "cy" in viewBox) {
-                    return (
-                      <text
-                        x={viewBox.cx}
-                        y={viewBox.cy}
-                        textAnchor="middle"
-                        dominantBaseline="middle"
-                      >
-                        <tspan
-                          x={viewBox.cx}
-                          y={viewBox.cy}
-                          className="fill-foreground text-3xl font-bold"
-                        >
-                          {totalVisitors.toLocaleString()}
-                        </tspan>
-                        <tspan
-                          x={viewBox.cx}
-                          y={(viewBox.cy || 0) + 24}
-                          className="fill-muted-foreground"
-                        >
-                          Visitors
-                        </tspan>
-                      </text>
-                    );
-                  }
-                }}
-              />
-            </Pie>
-          </PieChart>
-        </ChartContainer>
-        <ChartContainer
-          config={chartConfig}
-          className="mx-auto aspect-square max-h-[250px]"
-        >
-          <PieChart>
-            <ChartTooltip
-              cursor={false}
-              content={<ChartTooltipContent hideLabel />}
+          </CardFooter>
+        </Card>
+        <Card className="transition bg-secondary/60 hover:bg-secondary/30">
+          <CardHeader className="pb-4">
+            <CardDescription className="text-base sm:text-lg">
+              Temperature (C)
+            </CardDescription>
+            <CardTitle className="text-3xl sm:text-4xl">
+              {averageTemp && (
+                <>
+                  {averageTemp.toFixed(2)}&nbsp;
+                  <span className="text-base sm:text-lg align-super">°C</span>
+                </>
+              )}
+            </CardTitle>
+          </CardHeader>
+          <CardFooter>
+            <Progress
+              className="bg-zinc-200 dark:bg-muted"
+              value={calculatePercents(averageTemp as number, 50)}
+              aria-label={`${calculatePercents(
+                averageTemp as number,
+                50
+              )}% increase`}
             />
-            <Pie
-              data={chartData}
-              dataKey="visitors"
-              nameKey="browser"
-              innerRadius={60}
-              strokeWidth={5}
-            >
-              <Label
-                content={({ viewBox }) => {
-                  if (viewBox && "cx" in viewBox && "cy" in viewBox) {
-                    return (
-                      <text
-                        x={viewBox.cx}
-                        y={viewBox.cy}
-                        textAnchor="middle"
-                        dominantBaseline="middle"
-                      >
-                        <tspan
-                          x={viewBox.cx}
-                          y={viewBox.cy}
-                          className="fill-foreground text-3xl font-bold"
-                        >
-                          {totalVisitors.toLocaleString()}
-                        </tspan>
-                        <tspan
-                          x={viewBox.cx}
-                          y={(viewBox.cy || 0) + 24}
-                          className="fill-muted-foreground"
-                        >
-                          Visitors
-                        </tspan>
-                      </text>
-                    );
-                  }
-                }}
-              />
-            </Pie>
-          </PieChart>
-        </ChartContainer>
-        <ChartContainer
-          config={chartConfig}
-          className="mx-auto aspect-square max-h-[250px]"
-        >
-          <PieChart>
-            <ChartTooltip
-              cursor={false}
-              content={<ChartTooltipContent hideLabel />}
+          </CardFooter>
+        </Card>
+        <Card className="transition bg-secondary/60 hover:bg-secondary/30">
+          <CardHeader className="pb-4">
+            <CardDescription className="text-base sm:text-lg">
+              Humidity
+            </CardDescription>
+            <CardTitle className="text-3xl sm:text-4xl">
+              {averageHumidity?.toFixed(2)}
+            </CardTitle>
+          </CardHeader>
+          <CardFooter>
+            <Progress
+              className="bg-zinc-200 dark:bg-muted"
+              value={calculatePercents(averageHumidity as number, 100)}
+              aria-label={`${calculatePercents(
+                averageHumidity as number,
+                100
+              )}% increase`}
             />
-            <Pie
-              data={chartData}
-              dataKey="visitors"
-              nameKey="browser"
-              innerRadius={60}
-              strokeWidth={5}
-            >
-              <Label
-                content={({ viewBox }) => {
-                  if (viewBox && "cx" in viewBox && "cy" in viewBox) {
-                    return (
-                      <text
-                        x={viewBox.cx}
-                        y={viewBox.cy}
-                        textAnchor="middle"
-                        dominantBaseline="middle"
-                      >
-                        <tspan
-                          x={viewBox.cx}
-                          y={viewBox.cy}
-                          className="fill-foreground text-3xl font-bold"
-                        >
-                          {totalVisitors.toLocaleString()}
-                        </tspan>
-                        <tspan
-                          x={viewBox.cx}
-                          y={(viewBox.cy || 0) + 24}
-                          className="fill-muted-foreground"
-                        >
-                          Visitors
-                        </tspan>
-                      </text>
-                    );
-                  }
-                }}
-              />
-            </Pie>
-          </PieChart>
-        </ChartContainer>
+          </CardFooter>
+        </Card>
       </CardContent>
     </Card>
   );
 }
 
-const chartPMData = [
-  { month: "January", desktop: 186, mobile: 80 },
-  { month: "February", desktop: 305, mobile: 200 },
-  { month: "March", desktop: 237, mobile: 120 },
-  { month: "April", desktop: 73, mobile: 190 },
-  { month: "May", desktop: 209, mobile: 130 },
-  { month: "June", desktop: 214, mobile: 140 },
-];
-const chartPMConfig = {
-  desktop: {
-    label: "Desktop",
+const chartConfig = {
+  min: {
+    label: "Min",
     color: "hsl(var(--chart-1))",
   },
-  mobile: {
-    label: "Mobile",
+  max: {
+    label: "Max",
     color: "hsl(var(--chart-2))",
+  },
+  mean: {
+    label: "Mean",
+    color: "hsl(var(--chart-3))",
   },
 } satisfies ChartConfig;
 
-export function EnvironmentPMChart() {
+export function EnvironmentPMChart({ data }: PMProps) {
   return (
     <Card>
       <CardHeader>
@@ -226,10 +152,10 @@ export function EnvironmentPMChart() {
         </CardTitle>
       </CardHeader>
       <CardContent>
-        <ChartContainer config={chartPMConfig}>
+        <ChartContainer config={chartConfig}>
           <LineChart
             accessibilityLayer
-            data={chartPMData}
+            data={data}
             margin={{
               left: 12,
               right: 12,
@@ -245,24 +171,36 @@ export function EnvironmentPMChart() {
             />
             <ChartTooltip cursor={false} content={<ChartTooltipContent />} />
             <Line
-              dataKey="desktop"
+              dataKey="min"
               type="monotone"
-              stroke="var(--color-desktop)"
+              stroke="var(--color-min)"
               strokeWidth={2}
               dot={{
-                fill: "var(--color-desktop)",
+                fill: "var(--color-min)",
               }}
               activeDot={{
                 r: 6,
               }}
             />
             <Line
-              dataKey="mobile"
+              dataKey="max"
               type="monotone"
-              stroke="var(--color-mobile)"
+              stroke="var(--color-max)"
               strokeWidth={2}
               dot={{
-                fill: "var(--color-mobile)",
+                fill: "var(--color-max)",
+              }}
+              activeDot={{
+                r: 6,
+              }}
+            />
+            <Line
+              dataKey="mean"
+              type="monotone"
+              stroke="var(--color-mean)"
+              strokeWidth={2}
+              dot={{
+                fill: "var(--color-mean)",
               }}
               activeDot={{
                 r: 6,

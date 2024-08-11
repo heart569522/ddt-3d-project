@@ -13,33 +13,30 @@ import {
   ChartTooltip,
   ChartTooltipContent,
 } from "@/components/shadcn-ui/chart";
+import { IEnvironmentLineChart } from "@/types/model";
 import React from "react";
 import { CartesianGrid, Line, LineChart, XAxis } from "recharts";
 
-const chartData = [
-  { month: "January", desktop: 186, mobile: 80, tablet: 134 },
-  { month: "February", desktop: 305, mobile: 200, tablet: 172 },
-  { month: "March", desktop: 237, mobile: 120, tablet: 192 },
-  { month: "April", desktop: 73, mobile: 190, tablet: 245 },
-  { month: "May", desktop: 209, mobile: 130, tablet: 265 },
-  { month: "June", desktop: 214, mobile: 140, tablet: 130 },
-];
 const chartConfig = {
-  desktop: {
-    label: "Desktop",
+  min: {
+    label: "Min",
     color: "hsl(var(--chart-1))",
   },
-  mobile: {
-    label: "Mobile",
+  max: {
+    label: "Max",
     color: "hsl(var(--chart-2))",
   },
-  tablet: {
-    label: "Tablet",
+  mean: {
+    label: "Mean",
     color: "hsl(var(--chart-3))",
   },
 } satisfies ChartConfig;
 
-export default function TemperatureChart() {
+interface TempProps {
+  data: IEnvironmentLineChart[];
+}
+
+export default function TemperatureChart({ data }: TempProps) {
   return (
     <Card>
       <CardHeader>
@@ -51,7 +48,7 @@ export default function TemperatureChart() {
         <ChartContainer config={chartConfig}>
           <LineChart
             accessibilityLayer
-            data={chartData}
+            data={data}
             margin={{
               left: 12,
               right: 12,
@@ -67,36 +64,36 @@ export default function TemperatureChart() {
             />
             <ChartTooltip cursor={false} content={<ChartTooltipContent />} />
             <Line
-              dataKey="desktop"
+              dataKey="min"
               type="monotone"
-              stroke="var(--color-desktop)"
+              stroke="var(--color-min)"
               strokeWidth={2}
               dot={{
-                fill: "var(--color-desktop)",
+                fill: "var(--color-min)",
               }}
               activeDot={{
                 r: 6,
               }}
             />
             <Line
-              dataKey="mobile"
+              dataKey="max"
               type="monotone"
-              stroke="var(--color-mobile)"
+              stroke="var(--color-max)"
               strokeWidth={2}
               dot={{
-                fill: "var(--color-mobile)",
+                fill: "var(--color-max)",
               }}
               activeDot={{
                 r: 6,
               }}
             />
             <Line
-              dataKey="tablet"
+              dataKey="mean"
               type="monotone"
-              stroke="var(--color-tablet)"
+              stroke="var(--color-mean)"
               strokeWidth={2}
               dot={{
-                fill: "var(--color-tablet)",
+                fill: "var(--color-mean)",
               }}
               activeDot={{
                 r: 6,
