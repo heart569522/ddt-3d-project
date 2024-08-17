@@ -1,9 +1,9 @@
 import {
   getAverageElectricityUsage,
   getAverageEnvironment,
-  getElectricityUsage,
+  getData,
   getPmTempHmdData,
-} from "@/actions/data";
+} from "@/actions/actions";
 import TurtleStuff from "@/components/models/turttle-stuff";
 import { Button } from "@/components/shadcn-ui/button";
 import CardInfo from "@/components/ui/dashboard/card-info";
@@ -28,12 +28,14 @@ import {
 import { Droplets, MapPin, Thermometer } from "lucide-react";
 import { IconFaceMask } from "@tabler/icons-react";
 import TooltipHover from "@/components/ui/tooltip-hover";
+import { configs } from "@/lib/configs";
+import Link from "next/link";
 
 export default async function Overview() {
   const avgEnvironment = await getAverageEnvironment();
   const avgElectricUsage = await getAverageElectricityUsage();
   const pmTempHmdData = await getPmTempHmdData();
-  const electricUsage = await getElectricityUsage("UseRateToday");
+  const electricUsage = await getData("UseRateToday");
 
   let PMData: IEnvironmentLineChart[] = [];
   let TempData: IEnvironmentLineChart[] = [];
@@ -45,23 +47,23 @@ export default async function Overview() {
 
     PMData.push({
       month: monthName,
-      min: parseFloat(item.PM25Min.toFixed(2)),
-      max: parseFloat(item.PM25Max.toFixed(2)),
-      mean: parseFloat(item.PM25Month.toFixed(2)),
+      min: parseFloat(item.PM25Min.toFixed(configs.numberOfDecimal)),
+      max: parseFloat(item.PM25Max.toFixed(configs.numberOfDecimal)),
+      mean: parseFloat(item.PM25Month.toFixed(configs.numberOfDecimal)),
     });
 
     TempData.push({
       month: monthName,
-      min: parseFloat(item.TempMin.toFixed(2)),
-      max: parseFloat(item.TempMax.toFixed(2)),
-      mean: parseFloat(item.TempMonth.toFixed(2)),
+      min: parseFloat(item.TempMin.toFixed(configs.numberOfDecimal)),
+      max: parseFloat(item.TempMax.toFixed(configs.numberOfDecimal)),
+      mean: parseFloat(item.TempMonth.toFixed(configs.numberOfDecimal)),
     });
 
     HumidityData.push({
       month: monthName,
-      min: parseFloat(item.HumidMin.toFixed(2)),
-      max: parseFloat(item.HumidMax.toFixed(2)),
-      mean: parseFloat(item.HumidMonth.toFixed(2)),
+      min: parseFloat(item.HumidMin.toFixed(configs.numberOfDecimal)),
+      max: parseFloat(item.HumidMax.toFixed(configs.numberOfDecimal)),
+      mean: parseFloat(item.HumidMonth.toFixed(configs.numberOfDecimal)),
     });
   });
 
@@ -89,25 +91,31 @@ export default async function Overview() {
       }
       toolbar={
         <>
-          <TooltipHover content={"View Map"} position="right">
+          <TooltipHover content={"View Map"} position="top">
             <Button variant="outline" size="icon">
               <MapPin className="h-5 w-5" />
             </Button>
           </TooltipHover>
-          <TooltipHover content={"Temperature"} position="right">
-            <Button variant="outline" size="icon">
-              <Thermometer className="h-5 w-5" />
-            </Button>
+          <TooltipHover content={"Temperature"} position="top">
+            <Link href={"/contour/temperature"}>
+              <Button variant="outline" size="icon">
+                <Thermometer className="h-5 w-5" />
+              </Button>
+            </Link>
           </TooltipHover>
-          <TooltipHover content={"Humidity"} position="right">
-            <Button variant="outline" size="icon">
-              <Droplets className="h-5 w-5" />
-            </Button>
+          <TooltipHover content={"Humidity"} position="top">
+            <Link href={"/contour/humidity"}>
+              <Button variant="outline" size="icon">
+                <Droplets className="h-5 w-5" />
+              </Button>
+            </Link>
           </TooltipHover>
-          <TooltipHover content={"PM 2.5"} position="right">
-            <Button variant="outline" size="icon">
-              <IconFaceMask className="h-5 w-5" />
-            </Button>
+          <TooltipHover content={"PM 2.5"} position="top">
+            <Link href={"/contour/pm25"}>
+              <Button variant="outline" size="icon">
+                <IconFaceMask className="h-5 w-5" />
+              </Button>
+            </Link>
           </TooltipHover>
         </>
       }

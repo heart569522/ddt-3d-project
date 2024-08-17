@@ -1,4 +1,4 @@
-import { getAverageEnvironment } from "@/actions/data"
+import { getAverageEnvironment } from "@/actions/actions"
 
 export default async function page() {
   const data = await getAverageEnvironment()

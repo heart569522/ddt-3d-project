@@ -37,20 +37,19 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/shadcn-ui/select";
-import {
-  IAverageElectricityUsage,
-  IElectricUsageChart,
-} from "@/types/model";
+import { IAverageElectricityUsage, IElectricUsageChart } from "@/types/model";
 import { monthNames, suffixesNumber } from "@/lib/utils";
 import { useEffect, useState } from "react";
-import { getElectricityUsage } from "@/actions/data";
-import { formatElectric24Usage } from "@/lib/formats";
+import { getData } from "@/actions/actions";
+import { formatElectric24Usage, formatElectricTodayUsage } from "@/lib/formats";
+import { configs } from "@/lib/configs";
 
 interface ElectricProps {
   data: IElectricUsageChart[];
 }
 
 export function ElectricChart({ data }: ElectricProps) {
+  console.log("🚀 ~ ElectricChart ~ data:", data)
   const [chartData, setChartData] = useState<IElectricUsageChart[]>(data);
   const [selectedTimeRange, setSelectedTimeRange] = useState("today");
 
@@ -60,7 +59,7 @@ export function ElectricChart({ data }: ElectricProps) {
 
       switch (selectedTimeRange) {
         case "24hr":
-          const response = await getElectricityUsage("UseRate24");
+          const response = await getData("UseRate24");
           newData = formatElectric24Usage(response);
 
           break;
@@ -76,10 +75,15 @@ export function ElectricChart({ data }: ElectricProps) {
         //   break;
         case "today":
         default:
-          newData = data;
+          if (data.length === 0) {
+            const response = await getData("UseRateToday");
+            newData = formatElectricTodayUsage(response);
+          } else {
+            newData = data;
+          }
+
           break;
       }
-
       setChartData(newData as any);
     };
 
@@ -96,7 +100,9 @@ export function ElectricChart({ data }: ElectricProps) {
 
   const pieChartData = chartData?.map((item) => ({
     ...item,
-    percent: parseFloat(((item.value / item.total) * 100).toFixed(2)),
+    percent: parseFloat(
+      ((item.value / item.total) * 100).toFixed(configs.numberOfDecimal)
+    ),
   }));
 
   const CustomTooltip = ({ active, payload }: any) => {
@@ -173,6 +179,8 @@ export function ElectricChart({ data }: ElectricProps) {
             data={chartData}
             margin={{
               top: 20,
+              right: 6,
+              left: 6,
             }}
           >
             <CartesianGrid vertical={false} />
@@ -186,13 +194,13 @@ export function ElectricChart({ data }: ElectricProps) {
               cursor={false}
               content={<ChartTooltipContent hideLabel />}
             />
-            <Bar dataKey="value" fill="var(--color-desktop)" radius={4}>
+            <Bar dataKey="value" radius={4}>
               <LabelList
                 position="top"
                 dataKey="value"
                 offset={12}
                 className="fill-foreground"
-                fontSize={12}
+                fontSize={10}
               />
             </Bar>
           </BarChart>
@@ -254,8 +262,9 @@ export function AverageElectricUsage({ data }: Props) {
             accessibilityLayer
             data={chartData}
             margin={{
+              top: 12,
               left: -20,
-              right: 0,
+              right: 6,
             }}
           >
             <CartesianGrid vertical={false} />

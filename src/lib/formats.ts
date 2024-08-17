@@ -1,9 +1,13 @@
 import { IElectric24Usage, IElectricTodayUsage } from "@/types/model";
+import { configs } from "./configs";
 
 export function formatElectricTodayUsage(data: IElectricTodayUsage[]) {
   const buildingUsageMap: { [key: string]: any } = {};
+  // const abnormalThreshold = 100000;
 
   data?.forEach((item: IElectricTodayUsage) => {
+    // if (item.UseRateToday > abnormalThreshold) return;
+
     const buildingNumber = item.fl_id.substring(2, 5);
 
     if (buildingUsageMap[buildingNumber]) {
@@ -25,8 +29,8 @@ export function formatElectricTodayUsage(data: IElectricTodayUsage[]) {
     })
     .map((item) => ({
       ...item,
-      value: parseFloat(item.useToday.toFixed(2)),
-      total: parseFloat(item.useTotal.toFixed(2)),
+      value: parseFloat(item.useToday.toFixed(configs.numberOfDecimal)),
+      total: parseFloat(item.useTotal.toFixed(configs.numberOfDecimal)),
     }));
 
   return formatData;
@@ -58,8 +62,8 @@ export function formatElectric24Usage(data: IElectric24Usage[]) {
     })
     .map((item) => ({
       ...item,
-      value: parseFloat(item.useYesterday.toFixed(2)),
-      total: parseFloat(item.useTotal.toFixed(2)),
+      value: parseFloat(item.useYesterday.toFixed(configs.numberOfDecimal)),
+      total: parseFloat(item.useTotal.toFixed(configs.numberOfDecimal)),
     }));
 
   return formatData;

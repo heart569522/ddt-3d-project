@@ -50,8 +50,9 @@ export default function TemperatureChart({ data }: TempProps) {
             accessibilityLayer
             data={data}
             margin={{
-              left: 12,
-              right: 12,
+              top: 12,
+              right: 6,
+              left: 6,
             }}
           >
             <CartesianGrid vertical={false} />

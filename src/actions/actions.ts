@@ -41,15 +41,16 @@ export async function getPmTempHmdData() {
   }
 }
 
-export async function getElectricityUsage(apiPath: string) {
+export async function getData(apiPath: string) {
   try {
     const res = await axios.get(`${process.env.API_URL}/${apiPath}`);
 
     if (!res.data) {
       return null;
     }
+
     return res.data;
   } catch (error) {
-    console.log("🚀 ~ getElectricityUsage ~ error:", error);
+    console.log("🚀 ~ getData ~ error:", error);
   }
 }

@@ -51,3 +51,29 @@ export interface IElectricUsageChart {
   value: number;
   total: number;
 }
+
+export interface IAvatar {
+  name: string;
+  image: string;
+}
+
+export interface ITemperatureContour {
+  temperatureData: number[];
+  maxTemp: number;
+  minTemp: number;
+  contourInterval: number;
+}
+
+export interface IHumidityContour {
+  humidityData: number[];
+  minHumidity: number;
+  maxHumidity: number;
+  contourInterval: number;
+}
+
+export interface IPM25Contour {
+  pm25Data: number[];
+  maxPM25: number;
+  minPM25: number;
+  contourInterval: number;
+}

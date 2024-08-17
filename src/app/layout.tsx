@@ -5,8 +5,8 @@ import { anuphan } from "@/lib/fonts";
 
 export const metadata: Metadata = {
   title: {
-    template: '%s | Engineering Digital Twin',
-    default: 'Engineering Digital Twin',
+    template: "%s | Engineering Digital Twin",
+    default: "Engineering Digital Twin",
   },
   description: "...",
 };
@@ -18,14 +18,16 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <body className={anuphan.className}>
+      <body className={`${anuphan.className}`}>
         <ThemeProvider
           attribute="class"
           defaultTheme="system"
           enableSystem
           disableTransitionOnChange
         >
-          {children}
+          <main className="bg-foreground/10 h-dvh w-full overflow-x-hidden">
+            {children}
+          </main>
         </ThemeProvider>
       </body>
     </html>

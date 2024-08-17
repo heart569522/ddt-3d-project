@@ -16,6 +16,7 @@ import {
   ChartTooltipContent,
 } from "@/components/shadcn-ui/chart";
 import { Progress } from "@/components/shadcn-ui/progress";
+import { configs } from "@/lib/configs";
 import { monthNames } from "@/lib/utils";
 import { IAverageEnvironment, IEnvironmentLineChart } from "@/types/model";
 import React, { useMemo } from "react";
@@ -64,7 +65,7 @@ export function EnvironmentAverage({ data }: AverageProps) {
               PM 2.5
             </CardDescription>
             <CardTitle className="text-3xl sm:text-4xl">
-              {averagePM25?.toFixed(2)}
+              {averagePM25?.toFixed(configs.numberOfDecimal)}
             </CardTitle>
           </CardHeader>
           <CardFooter>
@@ -86,7 +87,7 @@ export function EnvironmentAverage({ data }: AverageProps) {
             <CardTitle className="text-3xl sm:text-4xl">
               {averageTemp && (
                 <>
-                  {averageTemp.toFixed(2)}&nbsp;
+                  {averageTemp.toFixed(configs.numberOfDecimal)}&nbsp;
                   <span className="text-base sm:text-lg align-super">°C</span>
                 </>
               )}
@@ -109,7 +110,7 @@ export function EnvironmentAverage({ data }: AverageProps) {
               Humidity
             </CardDescription>
             <CardTitle className="text-3xl sm:text-4xl">
-              {averageHumidity?.toFixed(2)}
+              {averageHumidity?.toFixed(configs.numberOfDecimal)}
             </CardTitle>
           </CardHeader>
           <CardFooter>
@@ -157,8 +158,9 @@ export function EnvironmentPMChart({ data }: PMProps) {
             accessibilityLayer
             data={data}
             margin={{
-              left: 12,
-              right: 12,
+              top: 12,
+              right: 6,
+              left: 6,
             }}
           >
             <CartesianGrid vertical={false} />
