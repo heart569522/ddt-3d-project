@@ -1,3 +1,4 @@
+import { ILoginSchema } from "@/types/form";
 import axios from "axios";
 
 export async function getAverageEnvironment() {
@@ -53,4 +54,8 @@ export async function getData(apiPath: string) {
   } catch (error) {
     console.log("🚀 ~ getData ~ error:", error);
   }
+}
+
+export async function login(data: ILoginSchema) {
+  console.log("🚀 ~ login ~ data:", data);
 }

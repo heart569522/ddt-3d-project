@@ -2,6 +2,8 @@ import type { Metadata } from "next";
 import "./globals.css";
 import { ThemeProvider } from "@/components/themes/theme-provider";
 import { anuphan } from "@/lib/fonts";
+import { getServerSession } from "next-auth";
+import SessionProvider from "@/components/sessionProvider";
 
 export const metadata: Metadata = {
   title: {
@@ -11,24 +13,28 @@ export const metadata: Metadata = {
   description: "...",
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const session = await getServerSession();
+
   return (
     <html lang="en" suppressHydrationWarning>
       <body className={`${anuphan.className}`}>
-        <ThemeProvider
-          attribute="class"
-          defaultTheme="system"
-          enableSystem
-          disableTransitionOnChange
-        >
-          <main className="bg-foreground/10 h-dvh w-full overflow-x-hidden">
-            {children}
-          </main>
-        </ThemeProvider>
+        <SessionProvider session={session}>
+          <ThemeProvider
+            attribute="class"
+            defaultTheme="system"
+            enableSystem
+            disableTransitionOnChange
+          >
+            <main className="bg-foreground/10 h-dvh w-full overflow-x-hidden">
+              {children}
+            </main>
+          </ThemeProvider>
+        </SessionProvider>
       </body>
     </html>
   );

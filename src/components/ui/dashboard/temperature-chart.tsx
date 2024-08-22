@@ -38,9 +38,9 @@ interface TempProps {
 
 export default function TemperatureChart({ data }: TempProps) {
   return (
-    <Card>
+    <Card className="transition bg-secondary/60 hover:bg-secondary/30">
       <CardHeader>
-        <CardTitle className="text-base md:text-lg text-left">
+        <CardTitle className="text-sm md:text-base text-left">
           Temperature (C)
         </CardTitle>
       </CardHeader>
@@ -52,7 +52,7 @@ export default function TemperatureChart({ data }: TempProps) {
             margin={{
               top: 12,
               right: 6,
-              left: 6,
+              left: 10,
             }}
           >
             <CartesianGrid vertical={false} />

@@ -25,48 +25,19 @@ import {
   IEnvironmentLineChart,
   IPmTempHmd,
 } from "@/types/model";
-import { Droplets, MapPin, Thermometer } from "lucide-react";
+import { Droplets, LoaderCircle, MapPin, Thermometer } from "lucide-react";
 import { IconFaceMask } from "@tabler/icons-react";
 import TooltipHover from "@/components/ui/tooltip-hover";
 import { configs } from "@/lib/configs";
 import Link from "next/link";
+import EnvironmentInfoChart from "@/components/ui/dashboard/environment-info-chart";
+import CanvasScreen from "@/components/ui/canvas-screen/canvas";
+import { Suspense } from "react";
 
 export default async function Overview() {
   const avgEnvironment = await getAverageEnvironment();
   const avgElectricUsage = await getAverageElectricityUsage();
-  const pmTempHmdData = await getPmTempHmdData();
   const electricUsage = await getData("UseRateToday");
-
-  let PMData: IEnvironmentLineChart[] = [];
-  let TempData: IEnvironmentLineChart[] = [];
-  let HumidityData: IEnvironmentLineChart[] = [];
-
-  pmTempHmdData?.forEach((item: IPmTempHmd) => {
-    const [, month] = item.Month.split("-").map(Number);
-    const monthName = monthNames[month - 1];
-
-    PMData.push({
-      month: monthName,
-      min: parseFloat(item.PM25Min.toFixed(configs.numberOfDecimal)),
-      max: parseFloat(item.PM25Max.toFixed(configs.numberOfDecimal)),
-      mean: parseFloat(item.PM25Month.toFixed(configs.numberOfDecimal)),
-    });
-
-    TempData.push({
-      month: monthName,
-      min: parseFloat(item.TempMin.toFixed(configs.numberOfDecimal)),
-      max: parseFloat(item.TempMax.toFixed(configs.numberOfDecimal)),
-      mean: parseFloat(item.TempMonth.toFixed(configs.numberOfDecimal)),
-    });
-
-    HumidityData.push({
-      month: monthName,
-      min: parseFloat(item.HumidMin.toFixed(configs.numberOfDecimal)),
-      max: parseFloat(item.HumidMax.toFixed(configs.numberOfDecimal)),
-      mean: parseFloat(item.HumidMonth.toFixed(configs.numberOfDecimal)),
-    });
-  });
-
   const electricUsageData = formatElectricTodayUsage(electricUsage);
 
   return (
@@ -78,9 +49,7 @@ export default async function Overview() {
             detail="asd';asl 654q qweqwe adc 1asdasdasd"
           />
           <EnvironmentAverage data={avgEnvironment} />
-          <EnvironmentPMChart data={PMData} />
-          <TemperatureChart data={TempData} />
-          <HumidityChart data={HumidityData} />
+          <EnvironmentInfoChart />
         </>
       }
       rightDashbaord={
@@ -91,27 +60,51 @@ export default async function Overview() {
       }
       toolbar={
         <>
-          <TooltipHover content={"View Map"} position="top">
+          <TooltipHover
+            content={"View Map"}
+            position={"top"}
+            isUseMediaQuery={true}
+            mediaQuerySize="md"
+            positionMediaQuery="right"
+          >
             <Button variant="outline" size="icon">
               <MapPin className="h-5 w-5" />
             </Button>
           </TooltipHover>
-          <TooltipHover content={"Temperature"} position="top">
-            <Link href={"/contour/temperature"}>
+          <TooltipHover
+            content={"Temperature"}
+            position="top"
+            isUseMediaQuery={true}
+            mediaQuerySize="md"
+            positionMediaQuery="right"
+          >
+            <Link target="_blank" href={"/contour/temperature"}>
               <Button variant="outline" size="icon">
                 <Thermometer className="h-5 w-5" />
               </Button>
             </Link>
           </TooltipHover>
-          <TooltipHover content={"Humidity"} position="top">
-            <Link href={"/contour/humidity"}>
+          <TooltipHover
+            content={"Humidity"}
+            position="top"
+            isUseMediaQuery={true}
+            mediaQuerySize="md"
+            positionMediaQuery="right"
+          >
+            <Link target="_blank" href={"/contour/humidity"}>
               <Button variant="outline" size="icon">
                 <Droplets className="h-5 w-5" />
               </Button>
             </Link>
           </TooltipHover>
-          <TooltipHover content={"PM 2.5"} position="top">
-            <Link href={"/contour/pm25"}>
+          <TooltipHover
+            content={"PM 2.5"}
+            position="top"
+            isUseMediaQuery={true}
+            mediaQuerySize="md"
+            positionMediaQuery="right"
+          >
+            <Link target="_blank" href={"/contour/pm25"}>
               <Button variant="outline" size="icon">
                 <IconFaceMask className="h-5 w-5" />
               </Button>
@@ -120,7 +113,9 @@ export default async function Overview() {
         </>
       }
     >
-      <div className="w-full h-dvh bg-cyan-700"></div>
+      <div className="w-full h-dvh">
+        {/* <CanvasScreen /> */}
+      </div>
     </Navigation>
   );
 }

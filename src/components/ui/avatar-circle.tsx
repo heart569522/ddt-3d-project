@@ -16,10 +16,10 @@ export default function AvatarCircles({
       {avatar.map((item, index) => (
         <Image
           key={index}
-          className="h-10 w-10 rounded-full border-2 border-white dark:border-gray-800"
+          className="h-10 w-10 rounded-md border-2 border-white dark:border-gray-800"
           src={item.image}
-          width={40}
-          height={40}
+          width={80}
+          height={80}
           alt={`Avatar ${item.name}`}
         />
       ))}

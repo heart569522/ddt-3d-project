@@ -21,7 +21,7 @@ export default function Toolbar({
       {/* Desktop */}
       <motion.div
         className={cn(
-          "hidden md:flex flex-col gap-2 items-center absolute bg-primary-foreground/50 p-2 rounded-lg top-[4.25rem]"
+          "hidden md:flex flex-col gap-2 items-center absolute bg-background/50 p-2 rounded-lg top-[4.25rem] z-50"
         )}
         animate={{
           x: isShowDashboard ? 350 : 10,
@@ -50,7 +50,7 @@ export default function Toolbar({
       {/* Mobile */}
       <motion.div
         className={cn(
-          "md:hidden flex gap-2 items-center absolute bg-primary-foreground/50 p-2 rounded-lg bottom-2 justify-center left-1/2 transform -translate-x-1/2"
+          "md:hidden flex gap-2 items-center absolute bg-background/50 p-2 rounded-lg bottom-2 justify-center left-1/2 transform -translate-x-1/2 z-50"
         )}
         transition={{ duration: 0.5, ease: "easeInOut" }}
       >

@@ -38,10 +38,10 @@ interface HumidityProps {
 
 export default function HumidityChart({ data }: HumidityProps) {
   return (
-    <Card>
+    <Card className="transition bg-secondary/60 hover:bg-secondary/30">
       <CardHeader>
-        <CardTitle className="text-base md:text-lg text-left">
-          Humidity (C)
+        <CardTitle className="text-sm md:text-base text-left">
+          Humidity (%)
         </CardTitle>
       </CardHeader>
       <CardContent>
@@ -52,7 +52,7 @@ export default function HumidityChart({ data }: HumidityProps) {
             margin={{
               top: 12,
               right: 6,
-              left: 6,
+              left: 10,
             }}
           >
             <CartesianGrid vertical={false} />

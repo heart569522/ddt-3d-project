@@ -1,7 +1,7 @@
 "use client";
 import Link from "next/link";
 import React, { useState } from "react";
-import { ArrowLeft, ChartPie } from "lucide-react";
+import { ArrowLeft, ChartPie, UserRoundCog } from "lucide-react";
 import {
   Sheet,
   SheetContent,
@@ -132,17 +132,23 @@ export default function Navigation({
               <span className="sr-only">Toggle Back</span>
             </Button>
           )}
-          <Link href={'/overview'}>
+          <Link href={"/overview"}>
             <h2
               className={cn(
-                "text-base md:text-lg lg:text-xl font-semibold tracking-wide md:-translate-x-12",
-                isHideDashbaord && "md:-translate-x-12"
+                "text-base md:text-lg lg:text-xl font-semibold tracking-wide"
               )}
             >
               Engineering Digital Twin
             </h2>
           </Link>
-          <ThemeSwitcher />
+          <div className="flex justify-end items-center gap-1">
+            <ThemeSwitcher />
+            <Link href="/admin/login" target="_blank">
+              <Button variant="ghost" size="icon">
+                <UserRoundCog className="h-[1.2rem] w-[1.2rem]" />
+              </Button>
+            </Link>
+          </div>
         </header>
         {children}
       </div>

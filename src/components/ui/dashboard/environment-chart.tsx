@@ -19,6 +19,7 @@ import { Progress } from "@/components/shadcn-ui/progress";
 import { configs } from "@/lib/configs";
 import { monthNames } from "@/lib/utils";
 import { IAverageEnvironment, IEnvironmentLineChart } from "@/types/model";
+import { Minus } from "lucide-react";
 import React, { useMemo } from "react";
 import {
   Label,
@@ -50,79 +51,123 @@ export function EnvironmentAverage({ data }: AverageProps) {
     return Math.round((value / total) * 100);
   };
 
+  const getTempColorProgress = (value: number): string => {
+    if (value <= 25) return "bg-blue-500";
+    if (value <= 50) return "bg-green-500";
+    if (value <= 75) return "bg-yellow-500";
+    return "bg-red-500";
+  };
+
+  const getHumidityColorProgress = (value: number): string => {
+    if (value <= 25) return "bg-red-500";
+    if (value <= 50) return "bg-yellow-500";
+    if (value <= 75) return "bg-green-500";
+    return "bg-blue-500";
+  };
+
+  const getPM25ColorProgress = (value: number): string => {
+    if (value < 10) return "bg-[#0000FF]";
+    if (value < 20) return "bg-green-500";
+    if (value < 30) return "bg-yellow-500";
+    if (value < 40) return "bg-red-500";
+    if (value < 55) return "bg-[#9002a8]";
+    if (value < 60) return "bg-[#7002a8]";
+    if (value < 70) return "bg-[#600170]";
+    if (value < 80) return "bg-[#500072]";
+    if (value < 90) return "bg-[#440061]";
+    if (value < 100) return "bg-[#390051]";
+    return "bg-[#220030]";
+  };
+
   return (
     <Card>
       <CardHeader className="pb-0">
         <CardTitle className="text-base md:text-lg text-left">
-          Environment Data
+          Realtime Environment Data
         </CardTitle>
         {/* <CardDescription>January - June 2024</CardDescription> */}
       </CardHeader>
       <CardContent className="flex flex-col flex-1 pb-8 gap-4">
         <Card className="mt-4 transition bg-secondary/60 hover:bg-secondary/30">
-          <CardHeader className="pb-4">
-            <CardDescription className="text-base sm:text-lg">
-              PM 2.5
-            </CardDescription>
-            <CardTitle className="text-3xl sm:text-4xl">
-              {averagePM25?.toFixed(configs.numberOfDecimal)}
-            </CardTitle>
-          </CardHeader>
-          <CardFooter>
-            <Progress
-              className="bg-zinc-200 dark:bg-muted"
-              value={calculatePercents(averagePM25 as number, 400)}
-              aria-label={`${calculatePercents(
-                averagePM25 as number,
-                400
-              )}% increase`}
-            />
-          </CardFooter>
+          <CardContent className="mt-4 flex flex-col gap-2 sm:gap-3">
+            <div className="flex gap-2 items-end justify-start ">
+              <h4 className="text-sm sm:text-base opacity-90">PM 2.5 :</h4>
+              <p className="text-xl sm:text-2xl font-semibold">
+                {averagePM25?.toFixed(configs.numberOfDecimal)}
+              </p>
+            </div>
+            <div className="flex justify-between items-center gap-2">
+              <span className="">0</span>
+              <Progress
+                className="bg-zinc-200 dark:bg-zinc-700"
+                indicatorColor={getPM25ColorProgress(
+                  calculatePercents(averagePM25 as number, 600)
+                )}
+                value={calculatePercents(averagePM25 as number, 600)}
+                aria-label={`${calculatePercents(
+                  averagePM25 as number,
+                  600
+                )}% increase`}
+              />
+              <span className="">600</span>
+            </div>
+          </CardContent>
         </Card>
         <Card className="transition bg-secondary/60 hover:bg-secondary/30">
-          <CardHeader className="pb-4">
-            <CardDescription className="text-base sm:text-lg">
-              Temperature (C)
-            </CardDescription>
-            <CardTitle className="text-3xl sm:text-4xl">
-              {averageTemp && (
-                <>
-                  {averageTemp.toFixed(configs.numberOfDecimal)}&nbsp;
-                  <span className="text-base sm:text-lg align-super">°C</span>
-                </>
-              )}
-            </CardTitle>
-          </CardHeader>
-          <CardFooter>
-            <Progress
-              className="bg-zinc-200 dark:bg-muted"
-              value={calculatePercents(averageTemp as number, 50)}
-              aria-label={`${calculatePercents(
-                averageTemp as number,
-                50
-              )}% increase`}
-            />
-          </CardFooter>
+          <CardContent className="mt-4 flex flex-col gap-2 sm:gap-3">
+            <div className="flex gap-2 items-end justify-start ">
+              <h4 className="text-sm sm:text-base opacity-90">Temperature :</h4>
+              <p className="text-xl sm:text-2xl font-semibold">
+                {averageTemp && (
+                  <>
+                    {averageTemp.toFixed(configs.numberOfDecimal)}&nbsp;
+                    <span className="text-base sm:text-lg align-super">°C</span>
+                  </>
+                )}
+              </p>
+            </div>
+            <div className="flex justify-between items-center gap-2">
+              <span className="">0</span>
+              <Progress
+                className="bg-zinc-200 dark:bg-zinc-700"
+                indicatorColor={getTempColorProgress(
+                  calculatePercents(averageTemp as number, 50)
+                )}
+                value={calculatePercents(averageTemp as number, 50)}
+                aria-label={`${calculatePercents(
+                  averageTemp as number,
+                  50
+                )}% increase`}
+              />
+              <span className="">50</span>
+            </div>
+          </CardContent>
         </Card>
         <Card className="transition bg-secondary/60 hover:bg-secondary/30">
-          <CardHeader className="pb-4">
-            <CardDescription className="text-base sm:text-lg">
-              Humidity
-            </CardDescription>
-            <CardTitle className="text-3xl sm:text-4xl">
-              {averageHumidity?.toFixed(configs.numberOfDecimal)}
-            </CardTitle>
-          </CardHeader>
-          <CardFooter>
-            <Progress
-              className="bg-zinc-200 dark:bg-muted"
-              value={calculatePercents(averageHumidity as number, 100)}
-              aria-label={`${calculatePercents(
-                averageHumidity as number,
-                100
-              )}% increase`}
-            />
-          </CardFooter>
+          <CardContent className="mt-4 flex flex-col gap-2 sm:gap-3">
+            <div className="flex gap-2 items-end justify-start ">
+              <h4 className="text-sm sm:text-base opacity-90">Humidity :</h4>
+              <p className="text-xl sm:text-2xl font-semibold">
+                {averageHumidity?.toFixed(configs.numberOfDecimal)}&nbsp;
+                <span className="text-base sm:text-lg">%</span>
+              </p>
+            </div>
+            <div className="flex justify-between items-center gap-2">
+              <span className="">0</span>
+              <Progress
+                className="bg-zinc-200 dark:bg-zinc-700"
+                indicatorColor={getHumidityColorProgress(
+                  calculatePercents(averageHumidity as number, 100)
+                )}
+                value={calculatePercents(averageHumidity as number, 100)}
+                aria-label={`${calculatePercents(
+                  averageHumidity as number,
+                  100
+                )}% increase`}
+              />
+              <span className="">100</span>
+            </div>
+          </CardContent>
         </Card>
       </CardContent>
     </Card>
@@ -146,10 +191,10 @@ const chartConfig = {
 
 export function EnvironmentPMChart({ data }: PMProps) {
   return (
-    <Card>
+    <Card className="transition bg-secondary/60 hover:bg-secondary/30">
       <CardHeader>
-        <CardTitle className="text-base md:text-lg text-left">
-          Environment PM2.5
+        <CardTitle className="text-sm md:text-base text-left">
+          PM 2.5
         </CardTitle>
       </CardHeader>
       <CardContent>
@@ -160,7 +205,7 @@ export function EnvironmentPMChart({ data }: PMProps) {
             margin={{
               top: 12,
               right: 6,
-              left: 6,
+              left: 10,
             }}
           >
             <CartesianGrid vertical={false} />

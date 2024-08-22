@@ -6,6 +6,7 @@ import {
   BarChart,
   CartesianGrid,
   LabelList,
+  Legend,
   Line,
   LineChart,
   Pie,
@@ -49,7 +50,6 @@ interface ElectricProps {
 }
 
 export function ElectricChart({ data }: ElectricProps) {
-  console.log("🚀 ~ ElectricChart ~ data:", data)
   const [chartData, setChartData] = useState<IElectricUsageChart[]>(data);
   const [selectedTimeRange, setSelectedTimeRange] = useState("today");
 
@@ -143,8 +143,9 @@ export function ElectricChart({ data }: ElectricProps) {
             </SelectItem> */}
           </SelectContent>
         </Select>
-        <CardTitle className="text-base md:text-lg text-left pt-4">
-          Total Electricity Usage Rate
+        <CardTitle className="text-sm md:text-base text-left pt-4">
+          {selectedTimeRange === "today" ? "Today" : "24 Hour"} Electricity
+          Usage Rate
         </CardTitle>
         {/* <CardDescription>January - June 2024</CardDescription> */}
       </CardHeader>
@@ -162,16 +163,7 @@ export function ElectricChart({ data }: ElectricProps) {
               )}
             </CardTitle>
           </CardHeader>
-          <CardFooter>
-            {/* <Progress
-              className="bg-zinc-200 dark:bg-muted"
-              value={calculatePercents(averagePM25 as number, 400)}
-              aria-label={`${calculatePercents(
-                averagePM25 as number,
-                400
-              )}% increase`}
-            /> */}
-          </CardFooter>
+          <CardFooter></CardFooter>
         </Card>
         <ChartContainer config={chartConfig}>
           <BarChart
@@ -205,8 +197,10 @@ export function ElectricChart({ data }: ElectricProps) {
             </Bar>
           </BarChart>
         </ChartContainer>
+        <p className="text-sm text-center italic mt-1">(Building Number)</p>
+        {/* Pie Chart */}
         <h3 className="text-base md:text-lg font-semibold mt-6 text-left">
-          Today Usage (%)
+          {selectedTimeRange === "today" ? "Today" : "24 Hour"} Usage (%)
         </h3>
         <ChartContainer
           config={chartConfig}
@@ -253,8 +247,9 @@ export function AverageElectricUsage({ data }: Props) {
     <Card>
       <CardHeader>
         <CardTitle className="text-base md:text-lg text-left">
-          Average Electronicity Usage
+          Average Electricity Usage
         </CardTitle>
+        <CardDescription>Last 6 Month</CardDescription>
       </CardHeader>
       <CardContent>
         <ChartContainer config={averageChartConfig}>
