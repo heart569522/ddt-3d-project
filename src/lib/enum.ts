@@ -1,0 +1,15 @@
+export enum ColumnNameEnum {
+  rm_id = "รหัสห้อง",
+  bu_id = "รหัสอาคาร",
+  bu_name = "ชื่ออาคาร",
+  rm_name = "ชื่อห้อง",
+  type = "ประเภท",
+  air_amount = "จำนวนแอร์",
+  lamp_amount = "จำนวนโคม",
+  sensor_air = "sensor_air",
+  sensor_cctv = "sensor_cctv",
+  sensor_htpm = "sensor_htpm",
+  sensor_receptacle = "จำนวนเต้าเสียบ",
+  sensor_switch = "จำนวนสวิตซ์ไฟ",
+  sensor_meter = "sensor_meter",
+}

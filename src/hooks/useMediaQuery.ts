@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 
 const screenSizes: { [key: string]: string } = {
+  xs: "(max-width: 420px)",
   sm: "(min-width: 640px)",
   md: "(min-width: 768px)",
   lg: "(min-width: 1024px)",

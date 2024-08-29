@@ -4,9 +4,9 @@ import { redirect } from "next/navigation";
 import { getServerSession } from "next-auth/next";
 
 export default async function LogIn() {
-  // const session = await getServerSession(authOptions);
-  // if (session) {
-  //   redirect("./management");
-  // }
+  const session = await getServerSession(authOptions);
+  if (session) {
+    redirect("./management");
+  }
   return <LoginForm />;
 }

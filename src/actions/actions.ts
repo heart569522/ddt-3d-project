@@ -1,5 +1,7 @@
+import { authOptions } from "@/auth";
 import { ILoginSchema } from "@/types/form";
 import axios from "axios";
+import { getServerSession } from "next-auth";
 
 export async function getAverageEnvironment() {
   try {
@@ -42,9 +44,29 @@ export async function getPmTempHmdData() {
   }
 }
 
-export async function getData(apiPath: string) {
+export async function getData(apiPath: string, key?: string) {
   try {
-    const res = await axios.get(`${process.env.API_URL}/${apiPath}`);
+    const headers = key ? { "x-api-key": key } : {};
+    const res = await axios.get(`${process.env.API_URL}/${apiPath}`, {
+      headers,
+    });
+
+    if (!res.data) {
+      return null;
+    }
+
+    return res.data;
+  } catch (error) {
+    console.log("🚀 ~ getData ~ error:", error);
+  }
+}
+
+export async function getDataById(apiPath: string, id: string | number, key?: string) {
+  try {
+    const headers = key ? { "x-api-key": key } : {};
+    const res = await axios.get(`${process.env.API_URL}/${apiPath}/${id}`, {
+      headers,
+    });
 
     if (!res.data) {
       return null;
@@ -57,5 +79,15 @@ export async function getData(apiPath: string) {
 }
 
 export async function login(data: ILoginSchema) {
-  console.log("🚀 ~ login ~ data:", data);
+  try {
+    const res = await axios.post(`${process.env.API_URL}/auth/login`, data);
+
+    if (!res.data) {
+      return null;
+    }
+
+    return res;
+  } catch (error) {
+    // console.log("🚀 ~ getData ~ error:", error);
+  }
 }

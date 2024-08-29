@@ -20,6 +20,8 @@ import { PasswordInput } from "@/components/shadcn-ui/password-input";
 import ButtonLoading from "../../button-loading";
 import { login } from "@/actions/actions";
 import Link from "next/link";
+import { signIn } from "next-auth/react";
+import { LogIn } from "lucide-react";
 
 export default function LoginForm() {
   const {
@@ -65,35 +67,32 @@ export default function LoginForm() {
     }
 
     try {
-      // const response = await login(data);
-      // if (response.isCorrect) {
-      //   const signInData = await signIn("credentials", {
-      //     username: data.username,
-      //     password: data.password,
-      //     redirect: false,
-      //   });
-      //   router.push("/admin/management");
-      //   if (signInData?.error) {
-      //     console.log(signInData.error);
-      //   } else {
-      //     setShowAlert({
-      //       type: "success",
-      //       detail: "Login Successfully",
-      //       onClose: clearAlert,
-      //     });
-      //   }
-      // } else {
-      //   setShowAlert({
-      //     type: "warning",
-      //     detail: "Login failed, please try again.",
-      //     onClose: clearAlert,
-      //   });
-      //   return;
-      // }
-    } catch {
+      const signInData = await signIn("credentials", {
+        username: data.username,
+        password: data.password,
+        redirect: false,
+      });
+
+      if (signInData?.error) {
+        console.log("Error:", signInData.error);
+        setShowAlert({
+          type: "warning",
+          detail: "Login failed, please try again.",
+          onClose: clearAlert,
+        });
+      } else {
+        setShowAlert({
+          type: "success",
+          detail: "Login Successfully",
+          onClose: clearAlert,
+        });
+        router.push("/admin/management");
+      }
+    } catch (error) {
+      console.log("🚀 ~ onSubmit ~ error:", error);
       setShowAlert({
         type: "error",
-        detail: "Something went wrong, please try again later",
+        detail: error as any,
         onClose: clearAlert,
       });
     }
@@ -154,8 +153,8 @@ export default function LoginForm() {
               isLoading={isSubmitting}
               text={"Login"}
               textLoading="Checking..."
+              icon={LogIn}
             />
-            <Link href={"/admin/management"}>Go to Management</Link>
           </CardFooter>
         </Card>
       </form>

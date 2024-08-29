@@ -77,3 +77,32 @@ export interface IPM25Contour {
   minPM25: number;
   contourInterval: number;
 }
+
+export interface IRoom {
+  rm_id: string;
+  bu_id: string;
+  bu_name: string;
+  rm_name: string | null;
+  type: string;
+  air_amount: number;
+  lamp_amount: number;
+  sensor_air: number;
+  sensor_cctv: number;
+  sensor_htpm: number;
+  sensor_receptacle: number;
+  sensor_switch: number;
+  sensor_meter: number;
+}
+
+export interface IBuilding {
+  bu_id: string;
+  bu_name: string;
+  bu_info: string | null;
+  fl_amount: number | null;
+  rm_amount: number | null;
+}
+
+export interface IRoomType {
+  rm_type: string;
+  type: string;
+}

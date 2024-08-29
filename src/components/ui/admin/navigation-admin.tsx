@@ -86,7 +86,7 @@ export default function AdminNavigation({
                 className="h-8 w-8 rounded-lg"
                 loading="lazy"
               />
-              <h1 className="text-xl uppercase">EDT Admin</h1>
+              <h1 className="text-xl uppercase">DDT Admin</h1>
             </Link>
           </div>
           <div className="flex-1">
@@ -185,7 +185,7 @@ export default function AdminNavigation({
                     className="h-8 w-8 rounded-lg"
                     loading="lazy"
                   />
-                  <SheetTitle className="uppercase">EDT ADMIN</SheetTitle>
+                  <SheetTitle className="uppercase">DDT ADMIN</SheetTitle>
                 </Link>
                 <hr className="my-2" />
                 {navAdminMenu.map((item, i) => {
@@ -279,7 +279,7 @@ export default function AdminNavigation({
               <DropdownMenuItem
                 onClick={() =>
                   signOut({ redirect: false }).then(() => {
-                    window.location.replace("/login");
+                    window.location.replace("/admin/login");
                   })
                 }
               >

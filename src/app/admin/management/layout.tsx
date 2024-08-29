@@ -1,5 +1,14 @@
 import AdminNavigation from "@/components/ui/admin/navigation-admin";
+import { Metadata } from "next/types";
 import React from "react";
+
+export const metadata: Metadata = {
+  title: {
+    template: "%s | DDT Admin",
+    default: "DDT Admin",
+  },
+  description: "...",
+};
 
 export default function AdminLayout({
   children,

@@ -30,7 +30,7 @@ export default async function RootLayout({
             enableSystem
             disableTransitionOnChange
           >
-            <main className="bg-foreground/10 h-dvh w-full overflow-x-hidden">
+            <main className="bg-foreground/5 dark:bg-foreground/10 w-full overflow-x-hidden">
               {children}
             </main>
           </ThemeProvider>
