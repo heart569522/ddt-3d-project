@@ -12,6 +12,7 @@ import {
 import {
   Sheet,
   SheetContent,
+  SheetDescription,
   SheetTitle,
   SheetTrigger,
 } from "@/components/shadcn-ui/sheet";
@@ -29,6 +30,7 @@ import { cn } from "@/lib/utils";
 import { signOut, useSession } from "next-auth/react";
 import { navAdminMenu } from "@/lib/data";
 import { ThemeSwitcher } from "@/components/themes/theme-switcher";
+import { useAuthRefresh } from "@/hooks/useAuthRefresh";
 
 type OpenSubMenus = {
   [key: number]: boolean;
@@ -39,6 +41,8 @@ export default function AdminNavigation({
 }: {
   children: React.ReactNode;
 }) {
+  // useAuthRefresh();
+
   const pathname = usePathname();
   const [isNavOpen, setIsNavOpen] = useState(false);
   const [openSubMenus, setOpenSubMenus] = useState<OpenSubMenus>({});
@@ -70,7 +74,7 @@ export default function AdminNavigation({
   };
 
   return (
-    <div className="grid min-h-screen w-full md:grid-cols-[290px_1fr] relative">
+    <div className="grid min-h-screen md:grid-cols-[290px_1fr] relative">
       <div className="hidden border-r bg-background md:block z-50 shadow-lg">
         <div className="flex h-full max-h-screen flex-col gap-2 w-[290px] fixed">
           <div className="flex h-14 items-center border-b px-4 md:h-[60px] md:px-6">
@@ -158,8 +162,8 @@ export default function AdminNavigation({
           </div>
         </div>
       </div>
-      <div className="flex flex-col">
-        <header className="flex h-14 items-center gap-2 border-b bg-background px-4 md:h-[60px] w-full md:w-[calc(100%-290px)] fixed md:px-6 z-50  shadow-sm">
+      <div className="flex flex-col overflow-x-auto">
+        <header className="flex h-14 items-center gap-2 border-b bg-background px-4 md:h-[60px] w-full md:w-[calc(100%-290px)] fixed md:px-6 z-50 shadow-sm">
           <Sheet open={isNavOpen} onOpenChange={setIsNavOpen}>
             <SheetTrigger asChild>
               <Button
@@ -186,6 +190,7 @@ export default function AdminNavigation({
                     loading="lazy"
                   />
                   <SheetTitle className="uppercase">DDT ADMIN</SheetTitle>
+                  <SheetDescription></SheetDescription>
                 </Link>
                 <hr className="my-2" />
                 {navAdminMenu.map((item, i) => {
@@ -279,11 +284,11 @@ export default function AdminNavigation({
               <DropdownMenuItem
                 onClick={() =>
                   signOut({ redirect: false }).then(() => {
-                    window.location.replace("/admin/login");
+                    window.location.replace("/overview");
                   })
                 }
               >
-                <p>Logout</p>
+                <p>ออกจากระบบ</p>
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>

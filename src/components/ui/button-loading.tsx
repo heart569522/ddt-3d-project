@@ -4,6 +4,7 @@ import { Loader2, LogIn } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 interface Props {
+  type?: "button" | "submit" | "reset" | undefined;
   isLoading: boolean;
   text: string;
   textLoading: string;
@@ -17,12 +18,13 @@ export default function ButtonLoading({
   textLoading,
   className,
   icon,
+  type = "submit",
 }: Props) {
   const Icon = icon;
 
   return (
     <Button
-      type="submit"
+      type={type}
       className={cn("w-full", className)}
       disabled={isLoading}
     >

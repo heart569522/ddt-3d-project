@@ -102,7 +102,7 @@ export interface IBuilding {
   rm_amount: number | null;
 }
 
-export interface IRoomType {
+export interface IRoomTypes {
   rm_type: string;
   type: string;
 }

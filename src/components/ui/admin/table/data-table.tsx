@@ -72,7 +72,7 @@ export function DataTable<TData, TValue>({
         addButtonTitle={addButtonTitle}
         addButtonPath={addButtonPath}
       />
-      <div className=" xl:block">
+      {/* <div className=""> */}
         <Table className="bg-background rounded-md h-fit">
           <TableHeader>
             {table.getHeaderGroups().map((headerGroup) => (
@@ -119,16 +119,16 @@ export function DataTable<TData, TValue>({
                   colSpan={columns.length}
                   className="h-20 text-center"
                 >
-                  No results.
+                  ไม่มีข้อมูล
                 </TableCell>
               </TableRow>
             )}
           </TableBody>
         </Table>
-      </div>
-      <div className="block xl:hidden">
-        asdasd
-      </div>
+      {/* </div> */}
+      {/* <div className="block xl:hidden">
+        responsive table
+      </div> */}
 
       <DataTablePagination table={table} />
     </div>

@@ -9,7 +9,7 @@ import {
 } from "@/components/shadcn-ui/card";
 import { Label } from "@/components/shadcn-ui/label";
 import { IRoomSchema, roomSchema } from "@/types/form";
-import { IBuilding, IRoomType } from "@/types/model";
+import { IBuilding, IRoom, IRoomTypes } from "@/types/model";
 import { zodResolver } from "@hookform/resolvers/zod";
 import React, { useState } from "react";
 import { useForm } from "react-hook-form";
@@ -17,16 +17,30 @@ import Combobox from "../../combobox";
 import ButtonLoading from "../../button-loading";
 import { Input } from "@/components/shadcn-ui/input";
 import { cn } from "@/lib/utils";
-import { AlertBar, AlertProps } from "../../alert-bar";
+import { AlertModal, AlertProps } from "../../alert-modal";
+import { Session } from "next-auth";
+import { createData, updateData } from "@/actions/actions";
+import { useRouter } from "next/navigation";
 
 interface Props {
-  roomType: IRoomType;
+  roomTypes: IRoomTypes[];
   building: IBuilding;
+  session: Session;
+  isFormEdit?: boolean;
+  initData?: IRoom;
 }
 
-export default function RoomForm({ roomType, building }: Props) {
+export default function RoomForm({
+  roomTypes,
+  building,
+  session,
+  isFormEdit = false,
+  initData,
+}: Props) {
+  console.log("🚀 ~ roomType:", roomTypes);
   const {
     register,
+    getValues,
     setValue,
     handleSubmit,
     formState: { errors, isSubmitting },
@@ -35,15 +49,22 @@ export default function RoomForm({ roomType, building }: Props) {
   } = useForm<IRoomSchema>({
     resolver: zodResolver(roomSchema),
     defaultValues: {
-      airAmount: 0,
-      lampAmount: 0,
-      switchAmount: 0,
-      receptacleAmount: 0,
+      roomCode: isFormEdit ? initData?.rm_id : "",
+      building: isFormEdit ? initData?.bu_id : "",
+      roomType: isFormEdit ? initData?.type : "",
+      roomName: isFormEdit ? (initData?.rm_name as string) : "",
+      airAmount: isFormEdit ? initData?.air_amount : 0,
+      lampAmount: isFormEdit ? initData?.lamp_amount : 0,
+      switchAmount: isFormEdit ? initData?.sensor_switch : 0,
+      receptacleAmount: isFormEdit ? initData?.sensor_receptacle : 0,
     },
   });
 
   const [showAlert, setShowAlert] = useState<AlertProps | null>(null);
   const clearAlert = () => setShowAlert(null);
+  const router = useRouter();
+  const [triggerResetCombobox, setTriggerResetCombobox] =
+    useState<boolean>(false);
 
   const validateFormData = (data: IRoomSchema): boolean => {
     let isValid = true;
@@ -51,7 +72,7 @@ export default function RoomForm({ roomType, building }: Props) {
     if (!data.roomCode) {
       setError("roomCode", {
         type: "server",
-        message: "Please enter room code.",
+        message: "กรุณากรอกรหัสห้อง",
       });
       isValid = false;
     }
@@ -59,15 +80,7 @@ export default function RoomForm({ roomType, building }: Props) {
     if (!data.building) {
       setError("building", {
         type: "server",
-        message: "Please select building.",
-      });
-      isValid = false;
-    }
-
-    if (!data.roomName) {
-      setError("roomName", {
-        type: "server",
-        message: "Please enter room name.",
+        message: "กรุณาเลือกอาคาร",
       });
       isValid = false;
     }
@@ -75,8 +88,17 @@ export default function RoomForm({ roomType, building }: Props) {
     if (!data.roomType) {
       setError("roomType", {
         type: "server",
-        message: "Please select room type.",
+        message: "กรุณาเลือกประเภทห้อง",
       });
+      isValid = false;
+    }
+
+    if (
+      data.airAmount < 0 ||
+      data.lampAmount < 0 ||
+      data.switchAmount < 0 ||
+      data.receptacleAmount < 0
+    ) {
       isValid = false;
     }
 
@@ -98,35 +120,70 @@ export default function RoomForm({ roomType, building }: Props) {
       switchAmount,
       receptacleAmount,
     } = data;
-    // let url = `MenuProfile/${merchantId}/translate?menuprofilecode=${encodeURIComponent(
-    //   menuProfileCode
-    // )}&language=${language}`;
 
-    // try {
-    //   // const response = await getData(endPoint, url);
-    //   const response = await axios.get(`${endPoint}/api/${url}`, {
-    //     headers: {
-    //       Accept: "application/json",
-    //       key: endPointToken(endPoint as string),
-    //     },
-    //   });
-    //   if (response.status === 200) {
-    //     setData(response.data);
-    //   } else {
-    //     setShowAlert({
-    //       type: "warning",
-    //       detail: "Search failed, please try again.",
-    //       onClose: clearAlert,
-    //     });
-    //     return;
-    //   }
-    // } catch {
-    //   setShowAlert({
-    //     type: "error",
-    //     detail: "Something went wrong, please try again later",
-    //     onClose: clearAlert,
-    //   });
-    // }
+    try {
+      let response;
+      const selectedRoomType = roomTypes.find((item) => item.type === roomType);
+
+      if (isFormEdit) {
+        response = await updateData(
+          "updateRoom",
+          session.user.accessToken,
+          {
+            rm_name: roomName,
+            rm_type: selectedRoomType?.rm_type,
+            air_amount: airAmount,
+            lamp_amount: lampAmount,
+          },
+          roomCode
+        );
+      } else {
+        response = await createData("addRoom", session.user.accessToken, {
+          rm_id: roomCode,
+          bu_id: building,
+          rm_name: roomName,
+          rm_type: roomType,
+          air_amount: airAmount,
+          lamp_amount: lampAmount,
+          switch_amount: switchAmount,
+          receptacle_amount: receptacleAmount,
+        });
+      }
+      if (response && response.status === 200) {
+        setShowAlert({
+          openModal: true,
+          type: "success",
+          detail: isFormEdit
+            ? `Update room: ${initData?.rm_id} success`
+            : "Create new room success",
+          onClose: clearAlert,
+        });
+        setTriggerResetCombobox(true);
+        reset();
+        if (isFormEdit) {
+          setTimeout(() => {
+            router.push("/admin/management/rooms");
+          }, 1500);
+        }
+      } else {
+        setShowAlert({
+          openModal: true,
+          type: "warning",
+          detail: isFormEdit
+            ? `Update faild, please try again.`
+            : "Create new room faild, please try again.",
+          onClose: clearAlert,
+        });
+      }
+    } catch (error) {
+      // console.error("🚀 ~ onSubmit ~ error:", error);
+      setShowAlert({
+        openModal: true,
+        type: "error",
+        detail: "Something went wrong, please try again later",
+        onClose: clearAlert,
+      });
+    }
   };
 
   return (
@@ -137,19 +194,20 @@ export default function RoomForm({ roomType, building }: Props) {
           <form onSubmit={handleSubmit(onSubmit)}>
             <Card>
               <CardHeader>
-                {/* <CardTitle className="text-xl md:text-2xl">
-                  Search by Merchant ID
-                </CardTitle> */}
+                <CardTitle className="text-lg md:text-xl">
+                  {isFormEdit ? "แก้ไขข้อมูลห้อง" : "เพิ่มห้อง"}
+                </CardTitle>
               </CardHeader>
               <CardContent>
                 <div className="grid gap-6">
                   <div className="grid gap-3">
-                    <Label htmlFor="roomCode">Room Code</Label>
+                    <Label htmlFor="roomCode">รหัสห้อง</Label>
                     <Input
                       {...register("roomCode")}
                       type="text"
                       id="roomCode"
-                      placeholder="Enter Room Code"
+                      placeholder="กรอกรหัสห้อง"
+                      disabled={isFormEdit}
                     />
                     {errors.roomCode && (
                       <p className="text-sm text-red-500">
@@ -158,17 +216,20 @@ export default function RoomForm({ roomType, building }: Props) {
                     )}
                   </div>
                   <div className="grid gap-3">
-                    <Label htmlFor="Building">Building</Label>
+                    <Label htmlFor="Building">อาคาร</Label>
                     <Combobox
-                      title="Building"
+                      title="อาคาร"
                       listData={building}
+                      defaultValue={getValues("building")}
                       valueKey="bu_id"
                       nameKey="bu_name"
                       showValueWithName={true}
                       showResetButton={true}
+                      triggerReset={triggerResetCombobox}
                       onValueChange={(selectedValue) => {
                         setValue("building", selectedValue);
                       }}
+                      disabled={isFormEdit}
                     />
                     {errors.building && (
                       <p className="text-sm text-red-500">
@@ -177,12 +238,12 @@ export default function RoomForm({ roomType, building }: Props) {
                     )}
                   </div>
                   <div className="grid gap-3">
-                    <Label htmlFor="roomName">Room Name</Label>
+                    <Label htmlFor="roomName">ชื่อห้อง</Label>
                     <Input
                       {...register("roomName")}
                       type="text"
                       id="roomName"
-                      placeholder="Enter Room Name"
+                      placeholder="กรอกชื่อห้อง"
                     />
                     {errors.roomName && (
                       <p className="text-sm text-red-500">
@@ -191,14 +252,16 @@ export default function RoomForm({ roomType, building }: Props) {
                     )}
                   </div>
                   <div className="grid gap-3">
-                    <Label htmlFor="roomType">Room Type</Label>
+                    <Label htmlFor="roomType">ประเภทห้อง</Label>
                     <Combobox
-                      title="Room Type"
-                      listData={roomType}
+                      title="ประเภทห้อง"
+                      listData={roomTypes}
+                      defaultValue={getValues("roomType")}
                       valueKey="rm_type"
                       nameKey="type"
                       showValueWithName={false}
                       showResetButton={true}
+                      triggerReset={triggerResetCombobox}
                       onValueChange={(selectedValue) => {
                         setValue("roomType", selectedValue);
                       }}
@@ -209,79 +272,192 @@ export default function RoomForm({ roomType, building }: Props) {
                       </p>
                     )}
                   </div>
-                  <hr className="h-1" />
-                  <div className="grid grid-cols-12 gap-3">
+                  <div className="flex justify-start items-center gap-4 w-full">
+                    <span className=" text-nowrap text-lg md:text-xl font-semibold leading-none tracking-tight">
+                      จำนวนอุปกรณ์
+                    </span>
+                    <hr className="h-0.5 w-full bg-primary/10 rounded-md" />
+                  </div>
+                  <div className="grid grid-cols-12 gap-x-8 gap-y-3">
                     <div
                       className={cn(
-                        "flex justify-between gap-2 items-center col-span-12 sm:col-span-6"
+                        "flex justify-between gap-4 items-center col-span-12 sm:col-span-6"
                       )}
                     >
-                      <Label htmlFor="airAmount">Air</Label>
+                      <Label htmlFor="airAmount">แอร์</Label>
                       <Input
-                        {...register("airAmount")}
+                        {...register("airAmount", { valueAsNumber: true })}
                         type="number"
                         id="airAmount"
                         placeholder=""
                         className="text-right"
                         min={0}
                       />
-                      <Label htmlFor="airAmount">Unit.</Label>
+                      <Label htmlFor="airAmount">เครื่อง</Label>
                     </div>
                     <div
                       className={cn(
-                        "flex justify-between gap-2 items-center col-span-12 sm:col-span-6"
+                        "flex justify-between gap-4 items-center col-span-12 sm:col-span-6"
                       )}
                     >
-                      <Label htmlFor="lampAmount">Lamp</Label>
+                      <Label htmlFor="lampAmount" className=" text-nowrap">
+                        โคมไฟ
+                      </Label>
                       <Input
-                        {...register("lampAmount")}
+                        {...register("lampAmount", { valueAsNumber: true })}
                         type="number"
                         id="lampAmount"
                         placeholder=""
                         className="text-right"
                         min={0}
                       />
-                      <Label htmlFor="lampAmount">Unit.</Label>
+                      <Label htmlFor="lampAmount">โคม</Label>
                     </div>
                     <div
                       className={cn(
-                        "flex justify-between gap-2 items-center col-span-12 sm:col-span-6"
+                        "flex justify-between gap-4 items-center col-span-12 sm:col-span-6"
                       )}
                     >
-                      <Label htmlFor="switchAmount">Switches</Label>
+                      <Label htmlFor="switchAmount">สวิตซ์</Label>
                       <Input
-                        {...register("switchAmount")}
+                        {...register("switchAmount", { valueAsNumber: true })}
                         type="number"
                         id="switchAmount"
                         placeholder=""
                         className="text-right"
                         min={0}
                       />
-                      <Label htmlFor="switchAmount">Unit.</Label>
+                      <Label htmlFor="switchAmount">ตัว</Label>
                     </div>
                     <div
                       className={cn(
-                        "flex justify-between gap-2 items-center col-span-12 sm:col-span-6"
+                        "flex justify-between gap-4 items-center col-span-12 sm:col-span-6"
                       )}
                     >
-                      <Label htmlFor="receptacleAmount">Receptacle</Label>
+                      <Label htmlFor="receptacleAmount">เต้าเสียบ</Label>
                       <Input
-                        {...register("receptacleAmount")}
+                        {...register("receptacleAmount", {
+                          valueAsNumber: true,
+                        })}
                         type="number"
                         id="receptacleAmount"
                         placeholder=""
                         className="text-right"
                         min={0}
                       />
-                      <Label htmlFor="receptacleAmount">Unit.</Label>
+                      <Label htmlFor="receptacleAmount">ตัว</Label>
                     </div>
                   </div>
+
+                  {isFormEdit && (
+                    <>
+                      <div className="flex justify-start items-center gap-4 w-full">
+                        <span className=" text-nowrap text-lg md:text-xl font-semibold leading-none tracking-tight">
+                          จำนวน Sensor
+                        </span>
+                        <hr className="h-0.5 w-full bg-primary/10 rounded-md" />
+                      </div>
+                      <div className="grid grid-cols-12 gap-x-8 gap-y-3">
+                        <div
+                          className={cn(
+                            "flex justify-between gap-4 items-center col-span-12 sm:col-span-6"
+                          )}
+                        >
+                          <Label>Air</Label>
+                          <Input
+                            type="number"
+                            placeholder=""
+                            value={initData?.sensor_air}
+                            className="text-right w-full"
+                            disabled
+                          />
+                          <Label>ตัว</Label>
+                        </div>
+                        <div
+                          className={cn(
+                            "flex justify-between gap-4 items-center col-span-12 sm:col-span-6"
+                          )}
+                        >
+                          <Label>CCTV</Label>
+                          <Input
+                            type="number"
+                            value={initData?.sensor_cctv}
+                            placeholder=""
+                            className="text-right w-full"
+                            disabled
+                          />
+                          <Label>ตัว</Label>
+                        </div>
+                        <div
+                          className={cn(
+                            "flex justify-between gap-4 items-center col-span-12 sm:col-span-6"
+                          )}
+                        >
+                          <Label>HTPM</Label>
+                          <Input
+                            type="number"
+                            value={initData?.sensor_htpm}
+                            placeholder=""
+                            className="text-right w-full"
+                            disabled
+                          />
+                          <Label>ตัว</Label>
+                        </div>
+                        <div
+                          className={cn(
+                            "flex justify-between gap-4 items-center col-span-12 sm:col-span-6"
+                          )}
+                        >
+                          <Label>Receptacle</Label>
+                          <Input
+                            type="number"
+                            value={initData?.sensor_receptacle}
+                            placeholder=""
+                            className="text-right w-full"
+                            disabled
+                          />
+                          <Label>ตัว</Label>
+                        </div>
+                        <div
+                          className={cn(
+                            "flex justify-between gap-4 items-center col-span-12 sm:col-span-6"
+                          )}
+                        >
+                          <Label>Meter</Label>
+                          <Input
+                            type="number"
+                            value={initData?.sensor_meter}
+                            placeholder=""
+                            className="text-right w-full"
+                            disabled
+                          />
+                          <Label>ตัว</Label>
+                        </div>
+                        <div
+                          className={cn(
+                            "flex justify-between gap-4 items-center col-span-12 sm:col-span-6"
+                          )}
+                        >
+                          <Label>Switch</Label>
+                          <Input
+                            type="number"
+                            value={initData?.sensor_switch}
+                            placeholder=""
+                            className="text-right w-full"
+                            disabled
+                          />
+                          <Label>ตัว</Label>
+                        </div>
+                      </div>
+                    </>
+                  )}
                 </div>
               </CardContent>
               <CardFooter className="gap-2 justify-center">
                 <ButtonLoading
-                  text="Submit"
-                  textLoading="Submitting"
+                  type="submit"
+                  text="ตกลง"
+                  textLoading="ตรวจสอบ..."
                   isLoading={isSubmitting}
                 />
               </CardFooter>
@@ -290,7 +466,8 @@ export default function RoomForm({ roomType, building }: Props) {
         </div>
       </div>
       {showAlert && (
-        <AlertBar
+        <AlertModal
+          openModal={showAlert.openModal}
           type={showAlert.type}
           detail={showAlert.detail}
           onClose={clearAlert}

@@ -28,6 +28,9 @@ type ComboboxProps = {
   showValueWithName?: boolean;
   showResetButton?: boolean;
   isMultiple?: boolean;
+  triggerReset?: boolean;
+  defaultValue?: string | string[];
+  disabled?: boolean;
   onValueChange: (selectedValue: any) => void;
   onValueReset?: () => void;
 };
@@ -41,6 +44,9 @@ export default function Combobox({
   showValueWithName = false,
   showResetButton = false,
   isMultiple = false,
+  triggerReset = false,
+  defaultValue,
+  disabled = false,
   onValueChange,
   onValueReset,
 }: ComboboxProps) {
@@ -51,6 +57,38 @@ export default function Combobox({
   if (listData === null || listData === undefined) {
     listData = [];
   }
+
+  useEffect(() => {
+    // Initialize selected values based on defaultValue
+    if (defaultValue) {
+      const defaultValuesArray = Array.isArray(defaultValue)
+        ? defaultValue
+        : [defaultValue];
+      const defaultValueKeys = defaultValuesArray
+        .map((value) => {
+          // Check if the value is a name or ID
+          const item = listData.find(
+            (item: any) => item[nameKey] === value || item[valueKey] === value
+          );
+          return item ? item[valueKey] : undefined;
+        })
+        .filter((value: any) => value !== undefined);
+
+      if (isMultiple) {
+        setSelectedValues(defaultValueKeys);
+      } else {
+        setSelectedValues(
+          defaultValueKeys.length > 0 ? [defaultValueKeys[0]] : []
+        );
+      }
+    }
+  }, [defaultValue, listData, isMultiple]);
+
+  useEffect(() => {
+    if (triggerReset) {
+      handleReset();
+    }
+  }, [triggerReset]);
 
   useEffect(() => {
     if (listData.length === 0 && selectedValues.length > 0) {
@@ -107,7 +145,7 @@ export default function Combobox({
           role="combobox"
           aria-expanded={open}
           className="justify-between overflow-x-hidden"
-          disabled={!listData.length || listData.length < 1}
+          disabled={!listData.length || listData.length < 1 || disabled}
         >
           <TooltipHover
             position="bottom"
@@ -124,7 +162,7 @@ export default function Combobox({
                     : selectedItems
                         .map((item: { [x: string]: any }) => `${item[nameKey]}`)
                         .join(", ")
-                  : `Select ${title}`}
+                  : `เลือก${title}`}
               </div>
             }
           >
@@ -140,7 +178,7 @@ export default function Combobox({
                   : selectedItems
                       .map((item: { [x: string]: any }) => `${item[nameKey]}`)
                       .join(", ")
-                : `Select ${title}`}
+                : `เลือก${title}`}
             </p>
           </TooltipHover>
           {loading ? (
@@ -174,14 +212,14 @@ export default function Combobox({
             <input
               type="text"
               className="flex h-11 w-full rounded-md bg-transparent truncate py-3 text-sm outline-none placeholder:text-muted-foreground disabled:cursor-not-allowed disabled:opacity-50"
-              placeholder={`Search ${title}`}
+              placeholder={`ค้นหา${title}`}
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
             />
           </div>
           <CommandList>
             {filteredData.length === 0 ? (
-              <CommandEmpty>No {title} found.</CommandEmpty>
+              <CommandEmpty>ไม่พบ{title}</CommandEmpty>
             ) : (
               <CommandGroup>
                 {filteredData.map((item: any) => (

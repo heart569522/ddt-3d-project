@@ -31,7 +31,7 @@ export function DataTableToolbar<TData>({
     <div className="flex items-center justify-between">
       <div className="flex flex-1 items-center space-x-2">
         <Input
-          placeholder={searchPlaceholder ? searchPlaceholder : "Search..."}
+          placeholder={searchPlaceholder ? searchPlaceholder : "ค้นหา..."}
           value={
             (table.getColumn(searchColumn)?.getFilterValue() as string) ?? ""
           }
@@ -46,16 +46,18 @@ export function DataTableToolbar<TData>({
             onClick={() => table.resetColumnFilters()}
             className="px-2 lg:px-3"
           >
-            Reset
-            <X className="ml-2 h-4 w-4" />
+            <X className="sm:mr-1 h-4 w-4" />
+            <span className="hidden sm:block">รีเซ็ท</span>
           </Button>
         )}
       </div>
       <div className="flex items-center gap-2">
         <Link href={addButtonPath}>
           <Button variant="outline" size="sm" className="ml-auto">
-            <CirclePlus className="mr-2 h-4 w-4" />
-            {addButtonTitle ? addButtonTitle : "New"}
+            <CirclePlus className="sm:mr-2 h-4 w-4" />
+            <span className="hidden sm:block">
+              {addButtonTitle ? addButtonTitle : "New"}
+            </span>
           </Button>
         </Link>
         <DataTableViewOptions table={table} />

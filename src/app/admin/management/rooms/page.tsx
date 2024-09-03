@@ -17,7 +17,7 @@ export default async function RoomMangement() {
 
   return (
     <>
-      <TitleHeader title="Rooms Management" type="static" />
+      <TitleHeader title="จัดการห้อง" type="static" />
       <div className="w-full mx-auto">
         <DataTable
           columns={roomsColumn}

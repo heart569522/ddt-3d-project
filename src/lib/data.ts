@@ -25,33 +25,27 @@ type NavAdminMenuItem = {
 
 export const navAdminMenu: NavAdminMenuItem[] = [
   {
-    name: "Home",
+    name: "หน้าแรก",
     href: "/admin/management",
     icon: Home,
     sub_menu: [],
   },
   {
-    name: "Rooms",
+    name: "จัดการห้อง",
     href: "/admin/management/rooms",
     icon: DoorOpen,
     sub_menu: [],
   },
   {
-    name: "Air Conditioners",
+    name: "จัดการแอร์",
     href: "/admin/management/air-conditioners",
     icon: AirVent,
     sub_menu: [],
   },
   {
-    name: "Lamp & Plug",
+    name: "จัดการโคม/สวิตช์ไฟ",
     href: "/admin/management/lamp-plug",
     icon: HousePlug,
-    sub_menu: [],
-  },
-  {
-    name: "dashboard",
-    href: "/admin/management/dashboard",
-    icon: LayoutDashboard,
     sub_menu: [],
   },
 ];

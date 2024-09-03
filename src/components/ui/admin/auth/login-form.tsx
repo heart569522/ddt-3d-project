@@ -15,7 +15,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { ILoginSchema, loginSchema } from "@/types/form";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
-import { AlertBar, AlertProps } from "../../alert-bar";
+import { AlertModal, AlertProps } from "../../alert-modal";
 import { PasswordInput } from "@/components/shadcn-ui/password-input";
 import ButtonLoading from "../../button-loading";
 import { login } from "@/actions/actions";
@@ -74,25 +74,21 @@ export default function LoginForm() {
       });
 
       if (signInData?.error) {
-        console.log("Error:", signInData.error);
+        // console.log("Error:", signInData.error);
         setShowAlert({
+          openModal: true,
           type: "warning",
           detail: "Login failed, please try again.",
           onClose: clearAlert,
         });
       } else {
-        setShowAlert({
-          type: "success",
-          detail: "Login Successfully",
-          onClose: clearAlert,
-        });
         router.push("/admin/management");
       }
     } catch (error) {
-      console.log("🚀 ~ onSubmit ~ error:", error);
       setShowAlert({
+        openModal: true,
         type: "error",
-        detail: error as any,
+        detail: "Something wen wrong, please try again later.",
         onClose: clearAlert,
       });
     }
@@ -150,6 +146,7 @@ export default function LoginForm() {
           </CardContent>
           <CardFooter className="flex flex-col gap-2">
             <ButtonLoading
+              type="submit"
               isLoading={isSubmitting}
               text={"Login"}
               textLoading="Checking..."
@@ -159,7 +156,8 @@ export default function LoginForm() {
         </Card>
       </form>
       {showAlert && (
-        <AlertBar
+        <AlertModal
+          openModal={showAlert.openModal}
           type={showAlert.type}
           detail={showAlert.detail}
           onClose={clearAlert}

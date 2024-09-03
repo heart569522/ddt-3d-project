@@ -61,7 +61,11 @@ export async function getData(apiPath: string, key?: string) {
   }
 }
 
-export async function getDataById(apiPath: string, id: string | number, key?: string) {
+export async function getDataById(
+  apiPath: string,
+  id: string | number,
+  key?: string
+) {
   try {
     const headers = key ? { "x-api-key": key } : {};
     const res = await axios.get(`${process.env.API_URL}/${apiPath}/${id}`, {
@@ -78,6 +82,43 @@ export async function getDataById(apiPath: string, id: string | number, key?: st
   }
 }
 
+export async function createData(apiPath: string, key?: string, data?: any) {
+  try {
+    const headers = key ? { "x-api-key": key } : {};
+    const res = await axios.post(`${process.env.API_URL}/${apiPath}`, data, {
+      headers,
+    });
+
+    return res;
+  } catch (error) {
+    console.log("🚀 ~ getData ~ error:", error);
+    return null;
+  }
+}
+
+export async function updateData(
+  apiPath: string,
+  key?: string,
+  data?: any,
+  id?: string | number
+) {
+  try {
+    const headers = key ? { "x-api-key": key } : {};
+    const res = await axios.put(
+      `${process.env.API_URL}/${apiPath}/${id}`,
+      data,
+      {
+        headers,
+      }
+    );
+
+    return res;
+  } catch (error) {
+    console.log("🚀 ~ getData ~ error:", error);
+    return null;
+  }
+}
+
 export async function login(data: ILoginSchema) {
   try {
     const res = await axios.post(`${process.env.API_URL}/auth/login`, data);
@@ -89,5 +130,22 @@ export async function login(data: ILoginSchema) {
     return res;
   } catch (error) {
     // console.log("🚀 ~ getData ~ error:", error);
+  }
+}
+
+export async function refreshToken(refreshToken: string) {
+  try {
+    const res = await axios.post(`${process.env.API_URL}/auth/refresh-token`, {
+      refreshToken,
+    });
+
+    if (!res.data) {
+      return null;
+    }
+
+    return res.data;
+  } catch (error) {
+    console.error("Error refreshing token:", error);
+    return null;
   }
 }

@@ -24,13 +24,13 @@ export function DataTableViewOptions<TData>({
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button variant="outline" size="sm" className="ml-auto hidden lg:flex">
-          <Settings2 className="mr-2 h-4 w-4" />
-          View
+        <Button variant="outline" size="sm" className="ml-auto flex">
+          <Settings2 className="sm:mr-2 h-4 w-4" />
+          <span className="hidden sm:block">แสดงคอลัมภ์</span>
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end" className="w-fit">
-        <DropdownMenuLabel>Columns</DropdownMenuLabel>
+        <DropdownMenuLabel>คอลัมภ์</DropdownMenuLabel>
         <DropdownMenuSeparator />
         {table
           .getAllColumns()

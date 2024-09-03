@@ -1,4 +1,5 @@
 import AdminNavigation from "@/components/ui/admin/navigation-admin";
+import { useAuthRefresh } from "@/hooks/useAuthRefresh";
 import { Metadata } from "next/types";
 import React from "react";
 
