@@ -8,7 +8,7 @@ import { authOptions } from "@/auth";
 import { Metadata } from "next/types";
 
 export const metadata: Metadata = {
-  title: "Rooms Management",
+  title: "จัดการห้อง",
 };
 
 export default async function RoomMangement() {

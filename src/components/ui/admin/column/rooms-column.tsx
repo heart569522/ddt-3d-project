@@ -8,6 +8,13 @@ import { DataTableColumnHeader } from "../table/column-header";
 import { IRoom } from "@/types/model";
 import { ColumnNameEnum } from "@/lib/enum";
 import Link from "next/link";
+import ConfirmModal from "../../confirm-modal";
+import { useState } from "react";
+import { deleteData } from "@/actions/actions";
+import { useSession } from "next-auth/react";
+import { AlertModal, AlertProps } from "../../alert-modal";
+import { revalidatePath } from "next/cache";
+import { useRouter } from "next/navigation";
 
 export const roomsColumn: ColumnDef<IRoom>[] = [
   {
@@ -103,6 +110,51 @@ export const roomsColumn: ColumnDef<IRoom>[] = [
     id: "actions",
     cell: ({ row }) => {
       const room = row.original;
+      const { data: session } = useSession();
+      const router = useRouter();
+      const [isConfirmOpen, setIsConfirmOpen] = useState(false);
+      const [showAlert, setShowAlert] = useState<AlertProps | null>(null);
+      const clearAlert = () => setShowAlert(null);
+
+      const handleCloseConfirm = () => {
+        setIsConfirmOpen(false);
+      };
+
+      const handleConfirm = async () => {
+        setShowAlert((el) => ({
+          ...el,
+          openModal: true,
+          loading: true,
+          onClose: clearAlert,
+        }));
+
+        try {
+          const response = await deleteData(
+            "deleteRoom",
+            session?.user.accessToken,
+            room.rm_id
+          );
+
+          if (response?.status === 200) {
+            setShowAlert({
+              openModal: true,
+              loading: false,
+              type: "success",
+              detail: "ลบข้อมูลห้องสำเร็จ",
+              onClose: clearAlert,
+            });
+            router.refresh();
+          }
+        } catch {
+          setShowAlert({
+            openModal: true,
+            loading: false,
+            type: "error",
+            detail: "เกิดข้อผิดพลาด, โปรดลองอีกครั้ง",
+            onClose: clearAlert,
+          });
+        }
+      };
 
       return (
         <div className="flex gap-1 justify-center items-center">
@@ -115,9 +167,29 @@ export const roomsColumn: ColumnDef<IRoom>[] = [
             variant={"ghost"}
             size={"icon"}
             className="opacity-50 hover:opacity-100"
+            onClick={() => setIsConfirmOpen(true)}
           >
             <Trash className="size-4" />
           </Button>
+
+          <ConfirmModal
+            title="ยืนยันการลบข้อมูล"
+            desc={`คุณยืนยันที่จะลบข้อมูลห้อง: ${room.rm_id} หรือไม่ ?`}
+            type="danger"
+            open={isConfirmOpen}
+            onClose={handleCloseConfirm}
+            onSubmit={handleConfirm}
+          />
+
+          {showAlert && (
+            <AlertModal
+              openModal={showAlert.openModal}
+              loading={showAlert.loading}
+              type={showAlert.type}
+              detail={showAlert.detail}
+              onClose={showAlert.onClose}
+            />
+          )}
         </div>
       );
     },

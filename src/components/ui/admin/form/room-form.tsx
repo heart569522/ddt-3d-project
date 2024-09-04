@@ -163,7 +163,7 @@ export default function RoomForm({
         if (isFormEdit) {
           setTimeout(() => {
             router.push("/admin/management/rooms");
-          }, 1500);
+          }, 2000);
         }
       } else {
         setShowAlert({
@@ -180,7 +180,7 @@ export default function RoomForm({
       setShowAlert({
         openModal: true,
         type: "error",
-        detail: "Something went wrong, please try again later",
+        detail: "เกิดข้อผิดพลาด, โปรดลองอีกครั้ง",
         onClose: clearAlert,
       });
     }
@@ -199,7 +199,7 @@ export default function RoomForm({
                 </CardTitle>
               </CardHeader>
               <CardContent>
-                <div className="grid gap-6">
+                <div className="flex flex-col gap-6">
                   <div className="grid gap-3">
                     <Label htmlFor="roomCode">รหัสห้อง</Label>
                     <Input
@@ -278,74 +278,78 @@ export default function RoomForm({
                     </span>
                     <hr className="h-0.5 w-full bg-primary/10 rounded-md" />
                   </div>
-                  <div className="grid grid-cols-12 gap-x-8 gap-y-3">
-                    <div
-                      className={cn(
-                        "flex justify-between gap-4 items-center col-span-12 sm:col-span-6"
-                      )}
-                    >
-                      <Label htmlFor="airAmount">แอร์</Label>
-                      <Input
-                        {...register("airAmount", { valueAsNumber: true })}
-                        type="number"
-                        id="airAmount"
-                        placeholder=""
-                        className="text-right"
-                        min={0}
-                      />
-                      <Label htmlFor="airAmount">เครื่อง</Label>
+                  <div className="space-y-3">
+                    <div className="flex flex-col flex-wrap sm:flex-row gap-x-8 gap-y-3">
+                      <div
+                        className={cn(
+                          "flex flex-1 justify-between gap-4 items-center col-span-12 sm:col-span-6"
+                        )}
+                      >
+                        <Label htmlFor="airAmount">แอร์</Label>
+                        <Input
+                          {...register("airAmount", { valueAsNumber: true })}
+                          type="number"
+                          id="airAmount"
+                          placeholder=""
+                          className="text-right"
+                          min={0}
+                        />
+                        <Label htmlFor="airAmount">เครื่อง</Label>
+                      </div>
+                      <div
+                        className={cn(
+                          "flex flex-1 justify-between gap-4 items-center col-span-12 sm:col-span-6"
+                        )}
+                      >
+                        <Label htmlFor="lampAmount" className=" text-nowrap">
+                          โคมไฟ
+                        </Label>
+                        <Input
+                          {...register("lampAmount", { valueAsNumber: true })}
+                          type="number"
+                          id="lampAmount"
+                          placeholder=""
+                          className="text-right"
+                          min={0}
+                        />
+                        <Label htmlFor="lampAmount">โคม</Label>
+                      </div>
                     </div>
-                    <div
-                      className={cn(
-                        "flex justify-between gap-4 items-center col-span-12 sm:col-span-6"
-                      )}
-                    >
-                      <Label htmlFor="lampAmount" className=" text-nowrap">
-                        โคมไฟ
-                      </Label>
-                      <Input
-                        {...register("lampAmount", { valueAsNumber: true })}
-                        type="number"
-                        id="lampAmount"
-                        placeholder=""
-                        className="text-right"
-                        min={0}
-                      />
-                      <Label htmlFor="lampAmount">โคม</Label>
-                    </div>
-                    <div
-                      className={cn(
-                        "flex justify-between gap-4 items-center col-span-12 sm:col-span-6"
-                      )}
-                    >
-                      <Label htmlFor="switchAmount">สวิตซ์</Label>
-                      <Input
-                        {...register("switchAmount", { valueAsNumber: true })}
-                        type="number"
-                        id="switchAmount"
-                        placeholder=""
-                        className="text-right"
-                        min={0}
-                      />
-                      <Label htmlFor="switchAmount">ตัว</Label>
-                    </div>
-                    <div
-                      className={cn(
-                        "flex justify-between gap-4 items-center col-span-12 sm:col-span-6"
-                      )}
-                    >
-                      <Label htmlFor="receptacleAmount">เต้าเสียบ</Label>
-                      <Input
-                        {...register("receptacleAmount", {
-                          valueAsNumber: true,
-                        })}
-                        type="number"
-                        id="receptacleAmount"
-                        placeholder=""
-                        className="text-right"
-                        min={0}
-                      />
-                      <Label htmlFor="receptacleAmount">ตัว</Label>
+                    <div className="flex flex-col flex-wrap sm:flex-row gap-x-8 gap-y-3">
+                      <div
+                        className={cn(
+                          "flex flex-1 justify-between gap-4 items-center col-span-12 sm:col-span-6"
+                        )}
+                      >
+                        <Label htmlFor="switchAmount">สวิตซ์</Label>
+                        <Input
+                          {...register("switchAmount", { valueAsNumber: true })}
+                          type="number"
+                          id="switchAmount"
+                          placeholder=""
+                          className="text-right"
+                          min={0}
+                        />
+                        <Label htmlFor="switchAmount">ตัว</Label>
+                      </div>
+                      <div
+                        className={cn(
+                          "flex flex-1 justify-between gap-4 items-center col-span-12 sm:col-span-6"
+                        )}
+                      >
+                        <Label htmlFor="receptacleAmount">เต้าเสียบ</Label>
+                        <Input
+                          {...register("receptacleAmount", {
+                            valueAsNumber: true,
+                          })}
+                          type="number"
+                          id="receptacleAmount"
+                          placeholder=""
+                          className="text-right"
+                          min={0}
+                        />
+                        <Label htmlFor="receptacleAmount">ตัว</Label>
+                      </div>
                     </div>
                   </div>
 
@@ -357,96 +361,102 @@ export default function RoomForm({
                         </span>
                         <hr className="h-0.5 w-full bg-primary/10 rounded-md" />
                       </div>
-                      <div className="grid grid-cols-12 gap-x-8 gap-y-3">
-                        <div
-                          className={cn(
-                            "flex justify-between gap-4 items-center col-span-12 sm:col-span-6"
-                          )}
-                        >
-                          <Label>Air</Label>
-                          <Input
-                            type="number"
-                            placeholder=""
-                            value={initData?.sensor_air}
-                            className="text-right w-full"
-                            disabled
-                          />
-                          <Label>ตัว</Label>
+                      <div className="space-y-3">
+                        <div className="flex flex-col flex-wrap sm:flex-row gap-x-8 gap-y-3">
+                          <div
+                            className={cn(
+                              "flex flex-1 justify-between gap-4 items-center col-span-12 sm:col-span-6"
+                            )}
+                          >
+                            <Label>Air</Label>
+                            <Input
+                              type="number"
+                              placeholder=""
+                              value={initData?.sensor_air}
+                              className="text-right w-full"
+                              disabled
+                            />
+                            <Label>ตัว</Label>
+                          </div>
+                          <div
+                            className={cn(
+                              "flex flex-1 justify-between gap-4 items-center col-span-12 sm:col-span-6"
+                            )}
+                          >
+                            <Label>CCTV</Label>
+                            <Input
+                              type="number"
+                              value={initData?.sensor_cctv}
+                              placeholder=""
+                              className="text-right w-full"
+                              disabled
+                            />
+                            <Label>ตัว</Label>
+                          </div>
                         </div>
-                        <div
-                          className={cn(
-                            "flex justify-between gap-4 items-center col-span-12 sm:col-span-6"
-                          )}
-                        >
-                          <Label>CCTV</Label>
-                          <Input
-                            type="number"
-                            value={initData?.sensor_cctv}
-                            placeholder=""
-                            className="text-right w-full"
-                            disabled
-                          />
-                          <Label>ตัว</Label>
+                        <div className="flex flex-col flex-wrap sm:flex-row gap-x-8 gap-y-3">
+                          <div
+                            className={cn(
+                              "flex flex-1 justify-between gap-4 items-center col-span-12 sm:col-span-6"
+                            )}
+                          >
+                            <Label>HTPM</Label>
+                            <Input
+                              type="number"
+                              value={initData?.sensor_htpm}
+                              placeholder=""
+                              className="text-right w-full"
+                              disabled
+                            />
+                            <Label>ตัว</Label>
+                          </div>
+                          <div
+                            className={cn(
+                              "flex flex-1 justify-between gap-4 items-center col-span-12 sm:col-span-6"
+                            )}
+                          >
+                            <Label>Receptacle</Label>
+                            <Input
+                              type="number"
+                              value={initData?.sensor_receptacle}
+                              placeholder=""
+                              className="text-right w-full"
+                              disabled
+                            />
+                            <Label>ตัว</Label>
+                          </div>
                         </div>
-                        <div
-                          className={cn(
-                            "flex justify-between gap-4 items-center col-span-12 sm:col-span-6"
-                          )}
-                        >
-                          <Label>HTPM</Label>
-                          <Input
-                            type="number"
-                            value={initData?.sensor_htpm}
-                            placeholder=""
-                            className="text-right w-full"
-                            disabled
-                          />
-                          <Label>ตัว</Label>
-                        </div>
-                        <div
-                          className={cn(
-                            "flex justify-between gap-4 items-center col-span-12 sm:col-span-6"
-                          )}
-                        >
-                          <Label>Receptacle</Label>
-                          <Input
-                            type="number"
-                            value={initData?.sensor_receptacle}
-                            placeholder=""
-                            className="text-right w-full"
-                            disabled
-                          />
-                          <Label>ตัว</Label>
-                        </div>
-                        <div
-                          className={cn(
-                            "flex justify-between gap-4 items-center col-span-12 sm:col-span-6"
-                          )}
-                        >
-                          <Label>Meter</Label>
-                          <Input
-                            type="number"
-                            value={initData?.sensor_meter}
-                            placeholder=""
-                            className="text-right w-full"
-                            disabled
-                          />
-                          <Label>ตัว</Label>
-                        </div>
-                        <div
-                          className={cn(
-                            "flex justify-between gap-4 items-center col-span-12 sm:col-span-6"
-                          )}
-                        >
-                          <Label>Switch</Label>
-                          <Input
-                            type="number"
-                            value={initData?.sensor_switch}
-                            placeholder=""
-                            className="text-right w-full"
-                            disabled
-                          />
-                          <Label>ตัว</Label>
+                        <div className="flex flex-col flex-wrap sm:flex-row gap-x-8 gap-y-3">
+                          <div
+                            className={cn(
+                              "flex flex-1 justify-between gap-4 items-center col-span-12 sm:col-span-6"
+                            )}
+                          >
+                            <Label>Meter</Label>
+                            <Input
+                              type="number"
+                              value={initData?.sensor_meter}
+                              placeholder=""
+                              className="text-right w-full"
+                              disabled
+                            />
+                            <Label>ตัว</Label>
+                          </div>
+                          <div
+                            className={cn(
+                              "flex flex-1 justify-between gap-4 items-center col-span-12 sm:col-span-6"
+                            )}
+                          >
+                            <Label>Switch</Label>
+                            <Input
+                              type="number"
+                              value={initData?.sensor_switch}
+                              placeholder=""
+                              className="text-right w-full"
+                              disabled
+                            />
+                            <Label>ตัว</Label>
+                          </div>
                         </div>
                       </div>
                     </>

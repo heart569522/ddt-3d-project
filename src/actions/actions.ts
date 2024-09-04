@@ -119,6 +119,27 @@ export async function updateData(
   }
 }
 
+export async function deleteData(
+  apiPath: string,
+  key?: string,
+  id?: string | number
+) {
+  try {
+    const headers = key ? { "x-api-key": key } : {};
+    const res = await axios.delete(
+      `${process.env.API_URL}/${apiPath}/${id}`,
+      {
+        headers,
+      }
+    );
+
+    return res;
+  } catch (error) {
+    console.log("🚀 ~ getData ~ error:", error);
+    return null;
+  }
+}
+
 export async function login(data: ILoginSchema) {
   try {
     const res = await axios.post(`${process.env.API_URL}/auth/login`, data);
