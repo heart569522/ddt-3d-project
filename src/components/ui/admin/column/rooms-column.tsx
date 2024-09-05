@@ -13,7 +13,6 @@ import { useState } from "react";
 import { deleteData } from "@/actions/actions";
 import { useSession } from "next-auth/react";
 import { AlertModal, AlertProps } from "../../alert-modal";
-import { revalidatePath } from "next/cache";
 import { useRouter } from "next/navigation";
 
 export const roomsColumn: ColumnDef<IRoom>[] = [

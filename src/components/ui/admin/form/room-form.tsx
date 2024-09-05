@@ -110,6 +110,13 @@ export default function RoomForm({
       return;
     }
 
+    setShowAlert((el) => ({
+      ...el,
+      openModal: true,
+      loading: true,
+      onClose: clearAlert,
+    }));
+
     const {
       roomCode,
       roomName,
@@ -152,6 +159,7 @@ export default function RoomForm({
       if (response && response.status === 200) {
         setShowAlert({
           openModal: true,
+          loading: false,
           type: "success",
           detail: isFormEdit
             ? `Update room: ${initData?.rm_id} success`
@@ -168,6 +176,7 @@ export default function RoomForm({
       } else {
         setShowAlert({
           openModal: true,
+          loading: false,
           type: "warning",
           detail: isFormEdit
             ? `Update faild, please try again.`
@@ -179,6 +188,7 @@ export default function RoomForm({
       // console.error("🚀 ~ onSubmit ~ error:", error);
       setShowAlert({
         openModal: true,
+        loading: false,
         type: "error",
         detail: "เกิดข้อผิดพลาด, โปรดลองอีกครั้ง",
         onClose: clearAlert,
@@ -478,6 +488,7 @@ export default function RoomForm({
       {showAlert && (
         <AlertModal
           openModal={showAlert.openModal}
+          loading={showAlert.loading}
           type={showAlert.type}
           detail={showAlert.detail}
           onClose={clearAlert}
