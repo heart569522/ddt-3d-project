@@ -8,6 +8,8 @@ import {
   getFilteredRowModel,
   getPaginationRowModel,
   getSortedRowModel,
+  Header,
+  HeaderContext,
   SortingState,
   useReactTable,
   VisibilityState,
@@ -17,6 +19,7 @@ import {
   Table,
   TableBody,
   TableCell,
+  TableFooter,
   TableHead,
   TableHeader,
   TableRow,
@@ -24,14 +27,14 @@ import {
 import { useState } from "react";
 import { DataTablePagination } from "./pagination";
 import { DataTableToolbar, ToolbarProps } from "./toolbar";
-import { Skeleton } from "@/components/shadcn-ui/skeleton";
+import React from "react";
 
-interface DataTableProps<TData, TValue> extends ToolbarProps {
+export interface DataTableProps<TData, TValue> extends ToolbarProps {
   columns: ColumnDef<TData, TValue>[];
   data: TData[] | undefined;
 }
 
-export function DataTable<TData, TValue>({
+export default function DataTable<TData, TValue>({
   columns,
   data,
   searchColumn,
@@ -45,7 +48,7 @@ export function DataTable<TData, TValue>({
   const [rowSelection, setRowSelection] = useState({});
 
   if (!data || data == undefined || data == null) {
-    data = [];
+    data = [] as TData[];
   }
 
   const table = useReactTable({
@@ -77,8 +80,9 @@ export function DataTable<TData, TValue>({
         addButtonTitle={addButtonTitle}
         addButtonPath={addButtonPath}
       />
-      {/* <div className=""> */}
-      <Table className="bg-background rounded-md h-fit">
+
+      {/* Desktop */}
+      <Table className="bg-background rounded-md h-fit hidden md:table">
         <TableHeader>
           {table?.getHeaderGroups()?.map((headerGroup) => (
             <TableRow key={headerGroup.id}>
@@ -88,6 +92,7 @@ export function DataTable<TData, TValue>({
                     key={header.id}
                     colSpan={header.colSpan}
                     className="p-2"
+                    style={{ width: `${header.column.getSize()}%` }}
                   >
                     {header.isPlaceholder
                       ? null
@@ -102,21 +107,19 @@ export function DataTable<TData, TValue>({
           ))}
         </TableHeader>
         <TableBody>
-          {/* {data && (
-            <TableRow>
-              <TableCell colSpan={columns.length} className="text-center">
-                <Skeleton className="w-full h-4 rounded-full" />
-              </TableCell>
-            </TableRow>
-          )} */}
-          {table?.getRowModel()?.rows?.length ? (
-            table?.getRowModel()?.rows?.map((row) => (
+          {table?.getRowModel().rows.length ? (
+            table?.getRowModel().rows.map((row) => (
               <TableRow
                 key={row.id}
+                className="hidden md:table-row"
                 data-state={row.getIsSelected() && "selected"}
               >
                 {row.getVisibleCells().map((cell) => (
-                  <TableCell key={cell.id} className="p-2">
+                  <TableCell
+                    key={cell.id}
+                    className="p-2"
+                    style={{ width: `${cell.column.getSize()}%` }}
+                  >
                     {flexRender(cell.column.columnDef.cell, cell.getContext())}
                   </TableCell>
                 ))}
@@ -131,10 +134,78 @@ export function DataTable<TData, TValue>({
           )}
         </TableBody>
       </Table>
-      {/* </div> */}
-      {/* <div className="block xl:hidden">
-        responsive table
-      </div> */}
+
+      {/* Mobile */}
+      <div className="bg-background relative w-full overflow-auto text-sm rounded-md h-fit table divide-y-8 divide-[#F2F2F3] dark:divide-[#232120] md:hidden">
+        {table?.getRowModel().rows.length ? (
+          table.getRowModel().rows.map((row) => (
+            <div key={row.id} className="flex flex-col">
+              <div className="flex justify-between gap-4 pt-2">
+                <div className="flex flex-col gap-4 w-full">
+                  {table?.getHeaderGroups()?.map((headerGroup) => (
+                    <div
+                      className="flex flex-col w-full font-semibold"
+                      key={headerGroup.id}
+                    >
+                      {headerGroup.headers.map((header) => (
+                        <div
+                          className="flex justify-between px-3 py-2 h-auto"
+                          key={header.id}
+                        >
+                          {header.isPlaceholder
+                            ? null
+                            : flexRender(
+                                header.column.columnDef.header,
+                                header.getContext()
+                              )}
+                        </div>
+                      ))}
+                    </div>
+                  ))}
+                </div>
+
+                <div className="flex flex-col gap-4 w-full">
+                  <div className="flex flex-col w-full">
+                    {row.getVisibleCells().map((cell, index, cells) =>
+                      index < cells.length - 1 ? (
+                        <div
+                          className="flex justify-between px-3 py-2"
+                          key={cell.id}
+                        >
+                          {flexRender(
+                            cell.column.columnDef.cell,
+                            cell.getContext()
+                          )}
+                        </div>
+                      ) : null
+                    )}
+                  </div>
+                </div>
+              </div>
+
+              <div className="border-t bg-muted/50 font-medium [&>tr]:last:border-b-0">
+                {row.getVisibleCells().length > 0 && (
+                  <div className="px-4 py-2 text-center">
+                    {flexRender(
+                      row.getVisibleCells()[row.getVisibleCells().length - 1]
+                        .column.columnDef.cell,
+                      row
+                        .getVisibleCells()
+                        [row.getVisibleCells().length - 1].getContext()
+                    )}
+                  </div>
+                )}
+              </div>
+            </div>
+          ))
+        ) : (
+          <TableRow>
+            <TableCell colSpan={columns.length} className="h-20 text-center">
+              ไม่มีข้อมูล
+            </TableCell>
+          </TableRow>
+        )}
+      </div>
 
       <DataTablePagination table={table} />
     </div>

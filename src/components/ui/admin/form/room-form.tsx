@@ -37,7 +37,6 @@ export default function RoomForm({
   isFormEdit = false,
   initData,
 }: Props) {
-  console.log("🚀 ~ roomType:", roomTypes);
   const {
     register,
     getValues,

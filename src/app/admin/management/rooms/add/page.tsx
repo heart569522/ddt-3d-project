@@ -25,7 +25,7 @@ export default async function AddRoom() {
   return (
     <>
       <BreadcrumbResponsive items={breadcrumbItems} />
-      <TitleHeader title={`เพิ่มห้อง`} type="static" className="-mt-4" />
+      <TitleHeader title={`เพิ่มห้อง`} type="static" className="-mt-3 md:-mt-4" />
       <RoomForm
         roomTypes={roomType}
         building={buiding}
