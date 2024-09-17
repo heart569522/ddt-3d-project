@@ -19,7 +19,7 @@ import Link from "next/link";
 import EnvironmentInfoChart from "@/components/ui/dashboard/environment-info-chart";
 import CanvasScreen from "@/components/ui/canvas-screen/canvas";
 import { EN117Building } from "@/components/models/en117/building/En117Building";
-import RoomFloor8 from "@/components/models/en124/room/room-floor8";
+import RoomFloor8 from "@/components/models/en124/room/Room_floor_8";
 
 export default async function Overview() {
   const avgEnvironment = await getAverageEnvironment();
@@ -100,9 +100,16 @@ export default async function Overview() {
         </>
       }
     >
-      <div className="w-full h-dvh">
+      <div className="w-full h-dvh relative">
         <CanvasScreen
-          model={<RoomFloor8 castShadow receiveShadow />}
+          model={
+            <RoomFloor8
+              isShowLamp={false}
+              isShowAir={false}
+              castShadow
+              receiveShadow
+            />
+          }
           cameraPosition={[-5, 6, 12]}
           controlSettings={{
             minPolarAngle: 0,

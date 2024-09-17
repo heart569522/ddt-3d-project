@@ -54,6 +54,12 @@ export default function DataTable<TData, TValue>({
   const table = useReactTable({
     data,
     columns,
+    initialState: {
+      columnVisibility: {
+        sensor_switch: true,
+        sensor_receptacle: true,
+      },
+    },
     state: {
       sorting,
       columnFilters,
@@ -138,69 +144,64 @@ export default function DataTable<TData, TValue>({
       {/* Mobile */}
       <div className="bg-background relative w-full overflow-auto text-sm rounded-md h-fit table divide-y-8 divide-[#F2F2F3] dark:divide-[#232120] md:hidden">
         {table?.getRowModel().rows.length ? (
-          table.getRowModel().rows.map((row) => (
-            <div key={row.id} className="flex flex-col">
-              <div className="flex justify-between gap-4 pt-2">
-                <div className="flex flex-col gap-4 w-full">
-                  {table?.getHeaderGroups()?.map((headerGroup) => (
-                    <div
-                      className="flex flex-col w-full font-semibold"
-                      key={headerGroup.id}
-                    >
-                      {headerGroup.headers.map((header) => (
-                        <div
-                          className="flex justify-between px-3 py-2 h-auto"
-                          key={header.id}
-                        >
-                          {header.isPlaceholder
-                            ? null
-                            : flexRender(
-                                header.column.columnDef.header,
-                                header.getContext()
-                              )}
-                        </div>
-                      ))}
-                    </div>
-                  ))}
-                </div>
+          <Table className="w-full">
+            <TableBody className="">
+              {table.getRowModel().rows.map((row) => (
+                <React.Fragment key={row.id}>
+                  {table.getHeaderGroups()?.map((headerGroup) =>
+                    headerGroup.headers
+                      .slice(0, -1)
+                      .map((header, headerIndex) => (
+                        <TableRow key={header.id}>
+                          <TableCell className="font-semibold px-3 py-2 h-auto w-2/5 text-center">
+                            {header.isPlaceholder
+                              ? null
+                              : flexRender(
+                                  header.column.columnDef.header,
+                                  header.getContext()
+                                )}
+                          </TableCell>
 
-                <div className="flex flex-col gap-4 w-full">
-                  <div className="flex flex-col w-full">
-                    {row.getVisibleCells().map((cell, index, cells) =>
-                      index < cells.length - 1 ? (
-                        <div
-                          className="flex justify-between px-3 py-2"
-                          key={cell.id}
-                        >
-                          {flexRender(
-                            cell.column.columnDef.cell,
-                            cell.getContext()
-                          )}
-                        </div>
-                      ) : null
-                    )}
-                  </div>
-                </div>
-              </div>
+                          <TableCell className="px-3 py-2 w-3/5 text-center">
+                            {flexRender(
+                              row.getVisibleCells()[headerIndex]?.column
+                                .columnDef.cell,
+                              row.getVisibleCells()[headerIndex]?.getContext()
+                            )}
+                          </TableCell>
+                        </TableRow>
+                      ))
+                  )}
 
-              <div className="border-t bg-muted/50 font-medium [&>tr]:last:border-b-0">
-                {row.getVisibleCells().length > 0 && (
-                  <div className="px-4 py-2 text-center">
-                    {flexRender(
-                      row.getVisibleCells()[row.getVisibleCells().length - 1]
-                        .column.columnDef.cell,
-                      row
-                        .getVisibleCells()
-                        [row.getVisibleCells().length - 1].getContext()
-                    )}
-                  </div>
-                )}
-              </div>
-            </div>
-          ))
+                  {row.getVisibleCells().length > 0 && (
+                    <TableRow className="border-t bg-muted/50 font-medium">
+                      <TableCell colSpan={2} className="px-4 py-2 text-center">
+                        {flexRender(
+                          row.getVisibleCells()[
+                            row.getVisibleCells().length - 1
+                          ].column.columnDef.cell,
+                          row
+                            .getVisibleCells()
+                            [row.getVisibleCells().length - 1].getContext()
+                        )}
+                      </TableCell>
+                    </TableRow>
+                  )}
+
+                  {/* Last row for mock table space */}
+                  <TableRow className="bg-[#F2F2F3] dark:bg-[#232120] border-none last:hidden">
+                    <TableCell colSpan={2} /> 
+                  </TableRow>
+                </React.Fragment>
+              ))}
+            </TableBody>
+          </Table>
         ) : (
           <TableRow>
-            <TableCell colSpan={columns.length} className="h-20 text-center">
+            <TableCell
+              colSpan={table.getHeaderGroups()?.[0]?.headers.length || 2}
+              className="h-20 text-center"
+            >
               ไม่มีข้อมูล
             </TableCell>
           </TableRow>

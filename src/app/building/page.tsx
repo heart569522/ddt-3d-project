@@ -19,6 +19,7 @@ import Link from "next/link";
 import EnvironmentInfoChart from "@/components/ui/dashboard/environment-info-chart";
 import CanvasScreen from "@/components/ui/canvas-screen/canvas";
 import { EN117Building } from "@/components/models/en117/building/En117Building";
+import EN124Building from "@/components/models/en124/building/en124-building";
 
 export default async function Overview() {
   const avgEnvironment = await getAverageEnvironment();
@@ -101,13 +102,14 @@ export default async function Overview() {
     >
       <div className="w-full h-dvh">
         <CanvasScreen
-          model={<EN117Building castShadow receiveShadow />}
-          cameraPosition={[-5, 6, 12]}
+          model={<EN124Building castShadow receiveShadow />}
+          cameraPosition={[0, 30, 45]}
           controlSettings={{
             minPolarAngle: 0,
             maxPolarAngle: Math.PI / 2.25,
-            minDistance: 20,
-            maxDistance: 50,
+            minDistance: 30,
+            maxDistance: 80,
+            enablePan: false,
           }}
         />
       </div>

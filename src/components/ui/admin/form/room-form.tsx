@@ -94,9 +94,7 @@ export default function RoomForm({
 
     if (
       data.airAmount < 0 ||
-      data.lampAmount < 0 ||
-      data.switchAmount < 0 ||
-      data.receptacleAmount < 0
+      data.lampAmount < 0
     ) {
       isValid = false;
     }
@@ -151,8 +149,6 @@ export default function RoomForm({
           rm_type: roomType,
           air_amount: airAmount,
           lamp_amount: lampAmount,
-          switch_amount: switchAmount,
-          receptacle_amount: receptacleAmount,
         });
       }
       if (response && response.status === 200) {
@@ -294,7 +290,7 @@ export default function RoomForm({
                           "flex flex-1 justify-between gap-4 items-center col-span-12 sm:col-span-6"
                         )}
                       >
-                        <Label htmlFor="airAmount">แอร์</Label>
+                        <Label htmlFor="airAmount" className=" text-nowrap">เครื่องปรับอากาศ</Label>
                         <Input
                           {...register("airAmount", { valueAsNumber: true })}
                           type="number"
@@ -310,7 +306,7 @@ export default function RoomForm({
                           "flex flex-1 justify-between gap-4 items-center col-span-12 sm:col-span-6"
                         )}
                       >
-                        <Label htmlFor="lampAmount" className=" text-nowrap">
+                        <Label htmlFor="lampAmount" className="text-nowrap">
                           โคมไฟ
                         </Label>
                         <Input
@@ -321,10 +317,10 @@ export default function RoomForm({
                           className="text-right"
                           min={0}
                         />
-                        <Label htmlFor="lampAmount">โคม</Label>
+                        <Label htmlFor="lampAmount">ตัว</Label>
                       </div>
                     </div>
-                    <div className="flex flex-col flex-wrap sm:flex-row gap-x-8 gap-y-3">
+                    {/* <div className="flex flex-col flex-wrap sm:flex-row gap-x-8 gap-y-3">
                       <div
                         className={cn(
                           "flex flex-1 justify-between gap-4 items-center col-span-12 sm:col-span-6"
@@ -359,7 +355,7 @@ export default function RoomForm({
                         />
                         <Label htmlFor="receptacleAmount">ตัว</Label>
                       </div>
-                    </div>
+                    </div> */}
                   </div>
 
                   {isFormEdit && (
@@ -377,7 +373,7 @@ export default function RoomForm({
                               "flex flex-1 justify-between gap-4 items-center col-span-12 sm:col-span-6"
                             )}
                           >
-                            <Label>Air</Label>
+                            <Label className="text-nowrap">เครื่องปรับอากาศ</Label>
                             <Input
                               type="number"
                               placeholder=""
@@ -392,7 +388,7 @@ export default function RoomForm({
                               "flex flex-1 justify-between gap-4 items-center col-span-12 sm:col-span-6"
                             )}
                           >
-                            <Label>CCTV</Label>
+                            <Label className="text-nowrap">กล้องวงจรปิด</Label>
                             <Input
                               type="number"
                               value={initData?.sensor_cctv}
@@ -409,7 +405,7 @@ export default function RoomForm({
                               "flex flex-1 justify-between gap-4 items-center col-span-12 sm:col-span-6"
                             )}
                           >
-                            <Label>HTPM</Label>
+                            <Label>ความชื้น/ฝุ่น/อุณหภูมิ</Label>
                             <Input
                               type="number"
                               value={initData?.sensor_htpm}
@@ -424,7 +420,7 @@ export default function RoomForm({
                               "flex flex-1 justify-between gap-4 items-center col-span-12 sm:col-span-6"
                             )}
                           >
-                            <Label>Receptacle</Label>
+                            <Label>เต้าเสียบ</Label>
                             <Input
                               type="number"
                               value={initData?.sensor_receptacle}
@@ -441,7 +437,7 @@ export default function RoomForm({
                               "flex flex-1 justify-between gap-4 items-center col-span-12 sm:col-span-6"
                             )}
                           >
-                            <Label>Meter</Label>
+                            <Label>มิเตอร์</Label>
                             <Input
                               type="number"
                               value={initData?.sensor_meter}
@@ -456,7 +452,7 @@ export default function RoomForm({
                               "flex flex-1 justify-between gap-4 items-center col-span-12 sm:col-span-6"
                             )}
                           >
-                            <Label>Switch</Label>
+                            <Label>สวิตซ์</Label>
                             <Input
                               type="number"
                               value={initData?.sensor_switch}

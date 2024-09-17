@@ -705,7 +705,11 @@ type GLTFResult = GLTF & {
   }
 }
 
-export default function RoomFloor8(props: JSX.IntrinsicElements['group']) {
+type RoomFloor8Props = JSX.IntrinsicElements['group'] & {
+  isShowLampAir?: boolean;
+};
+
+export default function RoomFloor8(props: RoomFloor8Props) {
   const { nodes, materials } = useGLTF('/models/building/en124/floor_8/room.glb') as GLTFResult
   
   return (
@@ -1100,67 +1104,71 @@ export default function RoomFloor8(props: JSX.IntrinsicElements['group']) {
         <mesh castShadow receiveShadow name="1100mm004_20" geometry={nodes['1100mm004_20'].geometry} material={materials['AB_Steel.001']} />
         <mesh castShadow receiveShadow name="1100mm004_21" geometry={nodes['1100mm004_21'].geometry} material={materials['AB_Hose White.001']} />
       </group>
-      <group name="EN1240812-Air" position={[-10.159, 3.638, -6.765]} rotation={[-Math.PI / 2, 0, 0]} scale={0.305}>
-        <mesh castShadow receiveShadow name="PCY-SM42KAL-TH" geometry={nodes['PCY-SM42KAL-TH'].geometry} material={materials['Gypsum Wall Board']} />
-        <mesh castShadow receiveShadow name="PCY-SM42KAL-TH_1" geometry={nodes['PCY-SM42KAL-TH_1'].geometry} material={materials.Copper} />
-        <mesh castShadow receiveShadow name="PCY-SM42KAL-TH_2" geometry={nodes['PCY-SM42KAL-TH_2'].geometry} material={materials.Plastic} />
-        <mesh castShadow receiveShadow name="PCY-SM42KAL-TH_3" geometry={nodes['PCY-SM42KAL-TH_3'].geometry} material={materials['Wall Texture, Orange Peel']} />
-        <mesh castShadow receiveShadow name="PCY-SM42KAL-TH_4" geometry={nodes['PCY-SM42KAL-TH_4'].geometry} material={materials['Plastic, Formed']} />
-      </group>
-      <group name="EN1240818-Air" position={[-22.491, 3.638, 3.556]} rotation={[-Math.PI / 2, 0, 0]} scale={0.305}>
-        <mesh castShadow receiveShadow name="PCY-SM42KAL-TH003" geometry={nodes['PCY-SM42KAL-TH003'].geometry} material={materials.Plastic} />
-        <mesh castShadow receiveShadow name="PCY-SM42KAL-TH003_1" geometry={nodes['PCY-SM42KAL-TH003_1'].geometry} material={materials.Copper} />
-        <mesh castShadow receiveShadow name="PCY-SM42KAL-TH003_2" geometry={nodes['PCY-SM42KAL-TH003_2'].geometry} material={materials['Wall Texture, Orange Peel']} />
-        <mesh castShadow receiveShadow name="PCY-SM42KAL-TH003_3" geometry={nodes['PCY-SM42KAL-TH003_3'].geometry} material={materials['Plastic, Formed']} />
-      </group>
-      <group name="EN1240829-Air" position={[-5.095, 3.639, 24.983]} rotation={[-Math.PI / 2, 0, 0]} scale={0.305}>
-        <mesh castShadow receiveShadow name="PCY-SM42KAL-TH006" geometry={nodes['PCY-SM42KAL-TH006'].geometry} material={materials.Plastic} />
-        <mesh castShadow receiveShadow name="PCY-SM42KAL-TH006_1" geometry={nodes['PCY-SM42KAL-TH006_1'].geometry} material={materials.Copper} />
-        <mesh castShadow receiveShadow name="PCY-SM42KAL-TH006_2" geometry={nodes['PCY-SM42KAL-TH006_2'].geometry} material={materials['Wall Texture, Orange Peel']} />
-        <mesh castShadow receiveShadow name="PCY-SM42KAL-TH006_3" geometry={nodes['PCY-SM42KAL-TH006_3'].geometry} material={materials['Plastic, Formed']} />
-      </group>
-      <group name="EN1240826-Air" position={[8.906, 3.631, 17.028]} rotation={[-Math.PI / 2, 0, 0]} scale={0.305}>
-        <mesh castShadow receiveShadow name="PCY-SM42KAL-TH008" geometry={nodes['PCY-SM42KAL-TH008'].geometry} material={materials.Plastic} />
-        <mesh castShadow receiveShadow name="PCY-SM42KAL-TH008_1" geometry={nodes['PCY-SM42KAL-TH008_1'].geometry} material={materials.Copper} />
-        <mesh castShadow receiveShadow name="PCY-SM42KAL-TH008_2" geometry={nodes['PCY-SM42KAL-TH008_2'].geometry} material={materials['Wall Texture, Orange Peel']} />
-        <mesh castShadow receiveShadow name="PCY-SM42KAL-TH008_3" geometry={nodes['PCY-SM42KAL-TH008_3'].geometry} material={materials['Plastic, Formed']} />
-      </group>
-      <group name="EN1240827-Air" position={[12.907, 3.631, 17.028]} rotation={[-Math.PI / 2, 0, 0]} scale={0.305}>
-        <mesh castShadow receiveShadow name="ระดับพื้นหลังคา" geometry={nodes.ระดับพื้นหลังคา.geometry} material={materials.Plastic} />
-        <mesh castShadow receiveShadow name="ระดับพื้นหลังคา_1" geometry={nodes.ระดับพื้นหลังคา_1.geometry} material={materials.Copper} />
-        <mesh castShadow receiveShadow name="ระดับพื้นหลังคา_2" geometry={nodes.ระดับพื้นหลังคา_2.geometry} material={materials['Wall Texture, Orange Peel']} />
-        <mesh castShadow receiveShadow name="ระดับพื้นหลังคา_3" geometry={nodes.ระดับพื้นหลังคา_3.geometry} material={materials['Plastic, Formed']} />
-      </group>
-      <group name="EN1240829-Light" position={[-4.658, 3.87, 21.228]} rotation={[-Math.PI / 2, 0, 0]} scale={0.305}>
-        <mesh castShadow receiveShadow name="L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300007" geometry={nodes['L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300007'].geometry} material={materials['Glass.012']} />
-        <mesh castShadow receiveShadow name="L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300007_1" geometry={nodes['L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300007_1'].geometry} material={materials['Mirror anodized aluminium']} />
-        <mesh castShadow receiveShadow name="L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300007_2" geometry={nodes['L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300007_2'].geometry} material={materials['Die-formed cold roll steel']} />
-      </group>
-      <group name="EN1240818-Light" position={[-20.667, 3.87, 4.991]} rotation={[-Math.PI / 2, 0, 0]} scale={0.305}>
-        <mesh castShadow receiveShadow name="L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300008" geometry={nodes['L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300008'].geometry} material={materials['Glass.012']} />
-        <mesh castShadow receiveShadow name="L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300008_1" geometry={nodes['L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300008_1'].geometry} material={materials['Mirror anodized aluminium']} />
-        <mesh castShadow receiveShadow name="L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300008_2" geometry={nodes['L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300008_2'].geometry} material={materials['Die-formed cold roll steel']} />
-      </group>
-      <group name="EN1240812-Light" position={[-9.907, 3.861, -3.017]} rotation={[-Math.PI / 2, 0, 0]} scale={0.305}>
-        <mesh castShadow receiveShadow name="L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300017" geometry={nodes['L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300017'].geometry} material={materials['Glass.012']} />
-        <mesh castShadow receiveShadow name="L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300017_1" geometry={nodes['L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300017_1'].geometry} material={materials['Mirror anodized aluminium']} />
-        <mesh castShadow receiveShadow name="L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300017_2" geometry={nodes['L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300017_2'].geometry} material={materials['Die-formed cold roll steel']} />
-      </group>
-      <group name="EN1240827-Light" position={[13.664, 3.872, 14.961]} rotation={[-Math.PI / 2, 0, 0]} scale={0.305}>
-        <mesh castShadow receiveShadow name="L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300032" geometry={nodes['L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300032'].geometry} material={materials['Glass.012']} />
-        <mesh castShadow receiveShadow name="L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300032_1" geometry={nodes['L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300032_1'].geometry} material={materials['Mirror anodized aluminium']} />
-        <mesh castShadow receiveShadow name="L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300032_2" geometry={nodes['L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300032_2'].geometry} material={materials['Die-formed cold roll steel']} />
-      </group>
-      <group name="EN1240826-Light" position={[9.039, 3.872, 15.346]} rotation={[-Math.PI / 2, 0, 0]} scale={0.305}>
-        <mesh castShadow receiveShadow name="L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300033" geometry={nodes['L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300033'].geometry} material={materials['Glass.012']} />
-        <mesh castShadow receiveShadow name="L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300033_1" geometry={nodes['L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300033_1'].geometry} material={materials['Mirror anodized aluminium']} />
-        <mesh castShadow receiveShadow name="L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300033_2" geometry={nodes['L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300033_2'].geometry} material={materials['Die-formed cold roll steel']} />
-      </group>
-      <group name="EN1240899-Light" position={[-1.219, 3.858, 1.265]} rotation={[-Math.PI / 2, 0, 0]} scale={0.305}>
-        <mesh castShadow receiveShadow name="L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300034" geometry={nodes['L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300034'].geometry} material={materials['Glass.012']} />
-        <mesh castShadow receiveShadow name="L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300034_1" geometry={nodes['L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300034_1'].geometry} material={materials['Mirror anodized aluminium']} />
-        <mesh castShadow receiveShadow name="L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300034_2" geometry={nodes['L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300034_2'].geometry} material={materials['Die-formed cold roll steel']} />
-      </group>
+      {props.isShowLampAir && (
+        <>
+          <group name="EN1240812-Air" position={[-10.159, 3.638, -6.765]} rotation={[-Math.PI / 2, 0, 0]} scale={0.305}>
+            <mesh castShadow receiveShadow name="PCY-SM42KAL-TH" geometry={nodes['PCY-SM42KAL-TH'].geometry} material={materials['Gypsum Wall Board']} />
+            <mesh castShadow receiveShadow name="PCY-SM42KAL-TH_1" geometry={nodes['PCY-SM42KAL-TH_1'].geometry} material={materials.Copper} />
+            <mesh castShadow receiveShadow name="PCY-SM42KAL-TH_2" geometry={nodes['PCY-SM42KAL-TH_2'].geometry} material={materials.Plastic} />
+            <mesh castShadow receiveShadow name="PCY-SM42KAL-TH_3" geometry={nodes['PCY-SM42KAL-TH_3'].geometry} material={materials['Wall Texture, Orange Peel']} />
+            <mesh castShadow receiveShadow name="PCY-SM42KAL-TH_4" geometry={nodes['PCY-SM42KAL-TH_4'].geometry} material={materials['Plastic, Formed']} />
+          </group>
+          <group name="EN1240818-Air" position={[-22.491, 3.638, 3.556]} rotation={[-Math.PI / 2, 0, 0]} scale={0.305}>
+            <mesh castShadow receiveShadow name="PCY-SM42KAL-TH003" geometry={nodes['PCY-SM42KAL-TH003'].geometry} material={materials.Plastic} />
+            <mesh castShadow receiveShadow name="PCY-SM42KAL-TH003_1" geometry={nodes['PCY-SM42KAL-TH003_1'].geometry} material={materials.Copper} />
+            <mesh castShadow receiveShadow name="PCY-SM42KAL-TH003_2" geometry={nodes['PCY-SM42KAL-TH003_2'].geometry} material={materials['Wall Texture, Orange Peel']} />
+            <mesh castShadow receiveShadow name="PCY-SM42KAL-TH003_3" geometry={nodes['PCY-SM42KAL-TH003_3'].geometry} material={materials['Plastic, Formed']} />
+          </group>
+          <group name="EN1240829-Air" position={[-5.095, 3.639, 24.983]} rotation={[-Math.PI / 2, 0, 0]} scale={0.305}>
+            <mesh castShadow receiveShadow name="PCY-SM42KAL-TH006" geometry={nodes['PCY-SM42KAL-TH006'].geometry} material={materials.Plastic} />
+            <mesh castShadow receiveShadow name="PCY-SM42KAL-TH006_1" geometry={nodes['PCY-SM42KAL-TH006_1'].geometry} material={materials.Copper} />
+            <mesh castShadow receiveShadow name="PCY-SM42KAL-TH006_2" geometry={nodes['PCY-SM42KAL-TH006_2'].geometry} material={materials['Wall Texture, Orange Peel']} />
+            <mesh castShadow receiveShadow name="PCY-SM42KAL-TH006_3" geometry={nodes['PCY-SM42KAL-TH006_3'].geometry} material={materials['Plastic, Formed']} />
+          </group>
+          <group name="EN1240826-Air" position={[8.906, 3.631, 17.028]} rotation={[-Math.PI / 2, 0, 0]} scale={0.305}>
+            <mesh castShadow receiveShadow name="PCY-SM42KAL-TH008" geometry={nodes['PCY-SM42KAL-TH008'].geometry} material={materials.Plastic} />
+            <mesh castShadow receiveShadow name="PCY-SM42KAL-TH008_1" geometry={nodes['PCY-SM42KAL-TH008_1'].geometry} material={materials.Copper} />
+            <mesh castShadow receiveShadow name="PCY-SM42KAL-TH008_2" geometry={nodes['PCY-SM42KAL-TH008_2'].geometry} material={materials['Wall Texture, Orange Peel']} />
+            <mesh castShadow receiveShadow name="PCY-SM42KAL-TH008_3" geometry={nodes['PCY-SM42KAL-TH008_3'].geometry} material={materials['Plastic, Formed']} />
+          </group>
+          <group name="EN1240827-Air" position={[12.907, 3.631, 17.028]} rotation={[-Math.PI / 2, 0, 0]} scale={0.305}>
+            <mesh castShadow receiveShadow name="ระดับพื้นหลังคา" geometry={nodes.ระดับพื้นหลังคา.geometry} material={materials.Plastic} />
+            <mesh castShadow receiveShadow name="ระดับพื้นหลังคา_1" geometry={nodes.ระดับพื้นหลังคา_1.geometry} material={materials.Copper} />
+            <mesh castShadow receiveShadow name="ระดับพื้นหลังคา_2" geometry={nodes.ระดับพื้นหลังคา_2.geometry} material={materials['Wall Texture, Orange Peel']} />
+            <mesh castShadow receiveShadow name="ระดับพื้นหลังคา_3" geometry={nodes.ระดับพื้นหลังคา_3.geometry} material={materials['Plastic, Formed']} />
+          </group>
+          <group name="EN1240829-Light" position={[-4.658, 3.87, 21.228]} rotation={[-Math.PI / 2, 0, 0]} scale={0.305}>
+            <mesh castShadow receiveShadow name="L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300007" geometry={nodes['L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300007'].geometry} material={materials['Glass.012']} />
+            <mesh castShadow receiveShadow name="L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300007_1" geometry={nodes['L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300007_1'].geometry} material={materials['Mirror anodized aluminium']} />
+            <mesh castShadow receiveShadow name="L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300007_2" geometry={nodes['L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300007_2'].geometry} material={materials['Die-formed cold roll steel']} />
+          </group>
+          <group name="EN1240818-Light" position={[-20.667, 3.87, 4.991]} rotation={[-Math.PI / 2, 0, 0]} scale={0.305}>
+            <mesh castShadow receiveShadow name="L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300008" geometry={nodes['L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300008'].geometry} material={materials['Glass.012']} />
+            <mesh castShadow receiveShadow name="L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300008_1" geometry={nodes['L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300008_1'].geometry} material={materials['Mirror anodized aluminium']} />
+            <mesh castShadow receiveShadow name="L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300008_2" geometry={nodes['L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300008_2'].geometry} material={materials['Die-formed cold roll steel']} />
+          </group>
+          <group name="EN1240812-Light" position={[-9.907, 3.861, -3.017]} rotation={[-Math.PI / 2, 0, 0]} scale={0.305}>
+            <mesh castShadow receiveShadow name="L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300017" geometry={nodes['L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300017'].geometry} material={materials['Glass.012']} />
+            <mesh castShadow receiveShadow name="L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300017_1" geometry={nodes['L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300017_1'].geometry} material={materials['Mirror anodized aluminium']} />
+            <mesh castShadow receiveShadow name="L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300017_2" geometry={nodes['L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300017_2'].geometry} material={materials['Die-formed cold roll steel']} />
+          </group>
+          <group name="EN1240827-Light" position={[13.664, 3.872, 14.961]} rotation={[-Math.PI / 2, 0, 0]} scale={0.305}>
+            <mesh castShadow receiveShadow name="L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300032" geometry={nodes['L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300032'].geometry} material={materials['Glass.012']} />
+            <mesh castShadow receiveShadow name="L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300032_1" geometry={nodes['L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300032_1'].geometry} material={materials['Mirror anodized aluminium']} />
+            <mesh castShadow receiveShadow name="L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300032_2" geometry={nodes['L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300032_2'].geometry} material={materials['Die-formed cold roll steel']} />
+          </group>
+          <group name="EN1240826-Light" position={[9.039, 3.872, 15.346]} rotation={[-Math.PI / 2, 0, 0]} scale={0.305}>
+            <mesh castShadow receiveShadow name="L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300033" geometry={nodes['L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300033'].geometry} material={materials['Glass.012']} />
+            <mesh castShadow receiveShadow name="L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300033_1" geometry={nodes['L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300033_1'].geometry} material={materials['Mirror anodized aluminium']} />
+            <mesh castShadow receiveShadow name="L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300033_2" geometry={nodes['L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300033_2'].geometry} material={materials['Die-formed cold roll steel']} />
+          </group>
+          <group name="EN1240899-Light" position={[-1.219, 3.858, 1.265]} rotation={[-Math.PI / 2, 0, 0]} scale={0.305}>
+            <mesh castShadow receiveShadow name="L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300034" geometry={nodes['L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300034'].geometry} material={materials['Glass.012']} />
+            <mesh castShadow receiveShadow name="L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300034_1" geometry={nodes['L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300034_1'].geometry} material={materials['Mirror anodized aluminium']} />
+            <mesh castShadow receiveShadow name="L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300034_2" geometry={nodes['L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300034_2'].geometry} material={materials['Die-formed cold roll steel']} />
+          </group>
+        </>
+      )}
     </group>
   )
 }

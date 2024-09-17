@@ -6,6 +6,7 @@ interface Props {
   type: "fixed" | "static";
   screen?: string;
   className?: string;
+  description?: string;
 }
 
 export default function TitleHeader({
@@ -13,6 +14,7 @@ export default function TitleHeader({
   type,
   screen = "lg",
   className,
+  description
 }: Props) {
   const renderHeader = () => {
     switch (type) {

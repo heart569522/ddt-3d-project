@@ -46,7 +46,16 @@ export default async function Overview() {
         <>
           <CardInfo
             title="General Information"
-            detail="asd';asl 654q qweqwe adc 1asdasdasd"
+            detail={
+              <>
+                <p className="text-base text-card-foreground">
+                  Area: 1234 Square meters
+                </p>
+                <p className="text-base text-card-foreground">
+                  Number of Buildings: 12 units
+                </p>
+              </>
+            }
           />
           <EnvironmentAverage data={avgEnvironment} />
           <EnvironmentInfoChart />
@@ -113,9 +122,7 @@ export default async function Overview() {
         </>
       }
     >
-      <div className="w-full h-dvh">
-        {/* <CanvasScreen /> */}
-      </div>
+      <div className="w-full h-dvh">{/* <CanvasScreen /> */}</div>
     </Navigation>
   );
 }

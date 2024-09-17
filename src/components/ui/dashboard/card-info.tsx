@@ -4,10 +4,11 @@ import {
   CardTitle,
   CardContent,
 } from "@/components/shadcn-ui/card";
+import React from "react";
 
 type Props = {
   title: string;
-  detail: string;
+  detail: React.ReactNode;
 };
 
 export default function CardInfo({ title, detail }: Props) {
@@ -17,7 +18,7 @@ export default function CardInfo({ title, detail }: Props) {
         <CardTitle className="text-lg">{title}</CardTitle>
       </CardHeader>
       <CardContent>
-        <p className="text-base text-card-foreground">{detail}</p>
+        {detail}
       </CardContent>
     </Card>
   );
