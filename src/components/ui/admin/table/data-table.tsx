@@ -29,7 +29,7 @@ import { DataTablePagination } from "./pagination";
 import { DataTableToolbar, ToolbarProps } from "./toolbar";
 import React from "react";
 
-export interface DataTableProps<TData, TValue> extends ToolbarProps {
+export interface DataTableProps<TData, TValue> extends ToolbarProps<TData> {
   columns: ColumnDef<TData, TValue>[];
   data: TData[] | undefined;
 }
@@ -41,11 +41,13 @@ export default function DataTable<TData, TValue>({
   searchPlaceholder,
   addButtonTitle,
   addButtonPath,
+  columnEnum
 }: DataTableProps<TData, TValue>) {
   const [sorting, setSorting] = useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
   const [rowSelection, setRowSelection] = useState({});
+  const [globalFilter, setGlobalFilter] = useState("");
 
   if (!data || data == undefined || data == null) {
     data = [] as TData[];
@@ -54,27 +56,31 @@ export default function DataTable<TData, TValue>({
   const table = useReactTable({
     data,
     columns,
-    initialState: {
-      columnVisibility: {
-        sensor_switch: true,
-        sensor_receptacle: true,
-      },
-    },
     state: {
       sorting,
       columnFilters,
       columnVisibility,
       rowSelection,
+      globalFilter,
     },
     enableRowSelection: true,
     onRowSelectionChange: setRowSelection,
     onSortingChange: setSorting,
     onColumnFiltersChange: setColumnFilters,
     onColumnVisibilityChange: setColumnVisibility,
+    onGlobalFilterChange: setGlobalFilter,
     getCoreRowModel: getCoreRowModel(),
     getFilteredRowModel: getFilteredRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
     getSortedRowModel: getSortedRowModel(),
+    globalFilterFn: (row, columnId, filterValue) => {
+      const searchValue = filterValue.toLowerCase();
+      return searchColumn.some((column) =>
+        String(row.getValue(column as string))
+          .toLowerCase()
+          .includes(searchValue)
+      );
+    },
   });
 
   return (
@@ -85,6 +91,7 @@ export default function DataTable<TData, TValue>({
         searchPlaceholder={searchPlaceholder}
         addButtonTitle={addButtonTitle}
         addButtonPath={addButtonPath}
+        columnEnum={columnEnum}
       />
 
       {/* Desktop */}
@@ -190,7 +197,7 @@ export default function DataTable<TData, TValue>({
 
                   {/* Last row for mock table space */}
                   <TableRow className="bg-[#F2F2F3] dark:bg-[#232120] border-none last:hidden">
-                    <TableCell colSpan={2} /> 
+                    <TableCell colSpan={2} />
                   </TableRow>
                 </React.Fragment>
               ))}

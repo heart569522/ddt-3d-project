@@ -12,14 +12,16 @@ import {
   DropdownMenuSeparator,
 } from "@/components/shadcn-ui/dropdown-menu";
 import { Settings2 } from "lucide-react";
-import { ColumnNameEnum } from "@/lib/enum";
+import { ColumnRoomEnum } from "@/lib/enum";
 
 interface DataTableViewOptionsProps<TData> {
   table: Table<TData>;
+  columnEnum: Record<string, string>;
 }
 
 export function DataTableViewOptions<TData>({
   table,
+  columnEnum,
 }: DataTableViewOptionsProps<TData>) {
   return (
     <DropdownMenu>
@@ -39,7 +41,7 @@ export function DataTableViewOptions<TData>({
               typeof column.accessorFn !== "undefined" && column.getCanHide()
           )
           .map((column) => {
-            let columnKey = column.id as keyof typeof ColumnNameEnum;
+            let columnKey = column.id as keyof typeof columnEnum;
 
             return (
               <DropdownMenuCheckboxItem
@@ -48,7 +50,7 @@ export function DataTableViewOptions<TData>({
                 checked={column.getIsVisible()}
                 onCheckedChange={(value) => column.toggleVisibility(!!value)}
               >
-                {ColumnNameEnum[columnKey]}
+                {columnEnum[columnKey]}
               </DropdownMenuCheckboxItem>
             );
           })}

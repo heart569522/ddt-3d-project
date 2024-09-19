@@ -11,10 +11,13 @@ import ConfirmModal from "../../confirm-modal";
 import { useMediaQuery } from "@/hooks/useMediaQuery";
 
 interface Props {
+  title: string;
   dataId: string | number;
+  editPagePath: string;
+  apiDeletePath: string;
 }
 
-export default function ActionColumn({ dataId }: Props) {
+export default function ActionColumn({ title, dataId, editPagePath, apiDeletePath }: Props) {
   const { data: session } = useSession();
   const isMediumScreen = useMediaQuery("md");
   const router = useRouter();
@@ -36,7 +39,7 @@ export default function ActionColumn({ dataId }: Props) {
 
     try {
       const response = await deleteData(
-        "deleteRoom",
+        apiDeletePath,
         session?.user.accessToken,
         dataId
       );
@@ -46,7 +49,7 @@ export default function ActionColumn({ dataId }: Props) {
           openModal: true,
           loading: false,
           type: "success",
-          detail: "ลบข้อมูลห้องสำเร็จ",
+          detail: `ลบข้อมูล${title}สำเร็จ`,
           onClose: clearAlert,
         });
         router.refresh();
@@ -64,7 +67,7 @@ export default function ActionColumn({ dataId }: Props) {
 
   return (
     <div className="flex gap-1 justify-center items-center">
-      <Link href={`/admin/management/rooms/${dataId}/edit`}>
+      <Link href={editPagePath}>
         <Button
           className="flex gap-1"
           variant={isMediumScreen ? "ghost" : "outline"}
@@ -86,7 +89,7 @@ export default function ActionColumn({ dataId }: Props) {
 
       <ConfirmModal
         title="ยืนยันการลบข้อมูล"
-        desc={`คุณยืนยันที่จะลบข้อมูลห้อง: ${dataId} หรือไม่ ?`}
+        desc={`คุณยืนยันที่จะลบข้อมูล${title}: ${dataId} หรือไม่ ?`}
         type="danger"
         open={isConfirmOpen}
         onClose={handleCloseConfirm}

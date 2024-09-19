@@ -1,23 +1,23 @@
 "use client";
 import React from "react";
 import { ToolbarProps } from "./toolbar";
-import dynamic from "next/dynamic";
 import DataTable from "./data-table";
 
-// const DataTable = dynamic(() => import('./data-table'), { ssr: false })
-
-interface ResponsiveTableProps extends ToolbarProps {
+interface ResponsiveTableProps<TData>
+  extends Omit<ToolbarProps<TData>, "searchColumn"> {
   columnHook: () => any;
-  data: any;
+  data: TData[];
+  searchColumn: (keyof TData)[];
 }
 
-export default function ResponsiveTable({
+export default function ResponsiveTable<TData>({
   columnHook,
   data,
   searchColumn,
   addButtonTitle,
   addButtonPath,
-}: ResponsiveTableProps) {
+  columnEnum
+}: ResponsiveTableProps<TData>) {
   const column = columnHook();
 
   return (
@@ -27,6 +27,7 @@ export default function ResponsiveTable({
       searchColumn={searchColumn}
       addButtonTitle={addButtonTitle}
       addButtonPath={addButtonPath}
+      columnEnum={columnEnum}
     />
   );
 }

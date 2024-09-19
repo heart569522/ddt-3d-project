@@ -94,6 +94,23 @@ export interface IRoom {
   sensor_meter: number;
 }
 
+export interface IAir {
+  a_id: string
+  rm_id: string
+  a_code: string
+  brand_code: string
+  gen: string
+  u_srID: string
+  a_installer: string
+  order_id: string
+  buyer: string
+  a_install_date: string
+  order_date: string
+  received_date: string
+  warranty_period: string
+}
+
+
 export interface IBuilding {
   bu_id: string;
   bu_name: string;

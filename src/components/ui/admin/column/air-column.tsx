@@ -4,12 +4,13 @@ import { Button } from "@/components/shadcn-ui/button";
 import { Checkbox } from "@/components/shadcn-ui/checkbox";
 import { ColumnDef } from "@tanstack/react-table";
 import { DataTableColumnHeader } from "../table/column-header";
-import { IRoom } from "@/types/model";
-import { ColumnRoomEnum } from "@/lib/enum";
+import { IAir } from "@/types/model";
+import { ColumnAirEnum } from "@/lib/enum";
 import { useMediaQuery } from "@/hooks/useMediaQuery";
 import ActionColumn from "./action-column";
+import { formatDate } from "@/lib/formats";
 
-export function RoomsColumn(): ColumnDef<IRoom>[] {
+export function AirColumn(): ColumnDef<IAir>[] {
   const isMediumScreen = useMediaQuery("md");
 
   return [
@@ -18,7 +19,7 @@ export function RoomsColumn(): ColumnDef<IRoom>[] {
       header: ({ column }) => (
         <DataTableColumnHeader
           column={column}
-          title={ColumnRoomEnum.rm_id}
+          title={ColumnAirEnum.rm_id}
           className="flex items-center justify-center"
         />
       ),
@@ -29,77 +30,39 @@ export function RoomsColumn(): ColumnDef<IRoom>[] {
       ),
       enableSorting: false,
       enableHiding: false,
-      size: 15,
+      size: 10,
     },
     {
-      accessorKey: "bu_name",
+      accessorKey: "a_id",
       header: ({ column }) => (
         <DataTableColumnHeader
           column={column}
-          title={ColumnRoomEnum.bu_name}
+          title={ColumnAirEnum.a_id}
           className="flex items-center justify-center"
         />
       ),
       cell: ({ row }) => (
         <div className="flex items-center justify-center">
-          {row.getValue("bu_name")}
+          {row.getValue("a_id")}
         </div>
       ),
       enableSorting: isMediumScreen,
-      size: 25,
+      size: 15,
     },
 
     {
-      accessorKey: "type",
+      accessorKey: "brand_code",
       header: ({ column }) => (
         <DataTableColumnHeader
           column={column}
-          title={ColumnRoomEnum.type}
+          title={ColumnAirEnum.brand_code}
           className="flex items-center justify-center"
         />
       ),
       cell: ({ row }) => {
         return (
           <div className="flex items-center justify-center">
-            {row.getValue("type")}
-          </div>
-        );
-      },
-      enableSorting: isMediumScreen,
-      size: 15,
-    },
-    {
-      accessorKey: "rm_name",
-      header: ({ column }) => (
-        <DataTableColumnHeader
-          column={column}
-          title={ColumnRoomEnum.rm_name}
-          className="flex items-center justify-center"
-        />
-      ),
-      cell: ({ row }) => {
-        return (
-          <div className="flex items-center justify-center">
-            {row.getValue("rm_name") ? row.getValue("rm_name") : "-"}
-          </div>
-        );
-      },
-      enableSorting: isMediumScreen,
-      size: 15,
-    },
-    {
-      accessorKey: "air_amount",
-      header: ({ column }) => (
-        <DataTableColumnHeader
-          column={column}
-          title={ColumnRoomEnum.air_amount}
-          className="flex items-center justify-center"
-        />
-      ),
-      cell: ({ row }) => {
-        return (
-          <div className="flex items-center justify-center">
-            {row.getValue("air_amount")}
+            {row.getValue("brand_code")}
           </div>
         );
       },
@@ -107,23 +70,80 @@ export function RoomsColumn(): ColumnDef<IRoom>[] {
       size: 10,
     },
     {
-      accessorKey: "lamp_amount",
+      accessorKey: "a_code",
       header: ({ column }) => (
         <DataTableColumnHeader
           column={column}
-          title={ColumnRoomEnum.lamp_amount}
+          title={ColumnAirEnum.a_code}
           className="flex items-center justify-center"
         />
       ),
       cell: ({ row }) => {
         return (
           <div className="flex items-center justify-center">
-            {row.getValue("lamp_amount")}
+            {row.getValue("a_code")}
           </div>
         );
       },
       enableSorting: isMediumScreen,
       size: 10,
+    },
+    {
+      accessorKey: "a_install_date",
+      header: ({ column }) => (
+        <DataTableColumnHeader
+          column={column}
+          title={ColumnAirEnum.a_install_date}
+          className="flex items-center justify-center"
+        />
+      ),
+      cell: ({ row }) => {
+        return (
+          <div className="flex items-center justify-center">
+            {formatDate(row.getValue("a_install_date"))}
+          </div>
+        );
+      },
+      enableSorting: isMediumScreen,
+      size: 10,
+    },
+    {
+      accessorKey: "warranty_period",
+      header: ({ column }) => (
+        <DataTableColumnHeader
+          column={column}
+          title={ColumnAirEnum.warranty_period}
+          className="flex items-center justify-center"
+        />
+      ),
+      cell: ({ row }) => {
+        return (
+          <div className="flex items-center justify-center">
+            {formatDate(row.getValue("warranty_period"))}
+          </div>
+        );
+      },
+      enableSorting: isMediumScreen,
+      size: 10,
+    },
+    {
+      accessorKey: "a_installer",
+      header: ({ column }) => (
+        <DataTableColumnHeader
+          column={column}
+          title={ColumnAirEnum.a_installer}
+          className="flex items-center justify-center"
+        />
+      ),
+      cell: ({ row }) => {
+        return (
+          <div className="flex items-center justify-center">
+            {row.getValue("a_installer")}
+          </div>
+        );
+      },
+      enableSorting: isMediumScreen,
+      size: 25,
     },
     {
       id: "actions",
@@ -132,10 +152,10 @@ export function RoomsColumn(): ColumnDef<IRoom>[] {
 
         return (
           <ActionColumn
-            title="ห้อง"
-            dataId={data.rm_id}
-            editPagePath={`/admin/management/rooms/${data.rm_id}/edit`}
-            apiDeletePath="deleteRoom"
+            title="เครื่องปรับอากาศ"
+            dataId={data.a_id}
+            editPagePath={`/admin/management/air-conditioners/${data.a_id}/edit`}
+            apiDeletePath="deleteAir"
           />
         );
       },
