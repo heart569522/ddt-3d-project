@@ -48,10 +48,10 @@ export default function RoomForm({
   } = useForm<IRoomSchema>({
     resolver: zodResolver(roomSchema),
     defaultValues: {
-      roomCode: isFormEdit ? initData?.rm_id : "",
-      building: isFormEdit ? initData?.bu_id : "",
-      roomType: isFormEdit ? initData?.type : "",
-      roomName: isFormEdit ? (initData?.rm_name as string) : "",
+      roomCode: isFormEdit ? initData?.rm_id : undefined,
+      building: isFormEdit ? initData?.bu_id : undefined,
+      roomType: isFormEdit ? initData?.type : undefined,
+      roomName: isFormEdit ? (initData?.rm_name as string) : undefined,
       airAmount: isFormEdit ? initData?.air_amount : 0,
       lampAmount: isFormEdit ? initData?.lamp_amount : 0,
       switchAmount: isFormEdit ? initData?.sensor_switch : 0,
@@ -60,11 +60,17 @@ export default function RoomForm({
   });
 
   const [showAlert, setShowAlert] = useState<AlertProps | null>(null);
-  const clearAlert = () => setShowAlert(null);
   const router = useRouter();
   const [triggerResetCombobox, setTriggerResetCombobox] =
-    useState<boolean>(false);
-
+  useState<boolean>(false);
+  
+  const clearAlert = () => {
+    setShowAlert(null);
+    if (isFormEdit) {
+      router.push("/admin/management/rooms");
+    }
+  };
+  
   const validateFormData = (data: IRoomSchema): boolean => {
     let isValid = true;
 
@@ -163,11 +169,6 @@ export default function RoomForm({
         });
         setTriggerResetCombobox(true);
         reset();
-        if (isFormEdit) {
-          setTimeout(() => {
-            router.push("/admin/management/rooms");
-          }, 2000);
-        }
       } else {
         setShowAlert({
           openModal: true,

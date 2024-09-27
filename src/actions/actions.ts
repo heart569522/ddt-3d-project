@@ -44,6 +44,19 @@ export async function getPmTempHmdData() {
   }
 }
 
+export async function getDashboardData(apiPath: string) {
+  try {
+    const res = await axios.get(`${process.env.API_URL}/${apiPath}`);
+
+    if (!res.data) {
+      return null;
+    }
+    return res.data;
+  } catch (error) {
+    console.log("🚀 ~ getDashboardData ~ error:", error);
+  }
+}
+
 export async function getData(apiPath: string, key?: string) {
   try {
     const headers = key ? { "x-api-key": key } : {};

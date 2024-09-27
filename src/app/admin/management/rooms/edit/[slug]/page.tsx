@@ -13,7 +13,7 @@ export async function generateMetadata({
   params: { slug: string };
 }): Promise<Metadata> {
   return {
-    title: `Editing Room: ${params.slug}`,
+    title: `แก้ไขข้อมูลห้อง: ${params.slug}`,
   };
 }
 
@@ -27,7 +27,7 @@ export default async function EditRoom({
 
   const breadcrumbItems = [
     { href: "/admin/management/rooms", label: "จัดการห้อง" },
-    { label: `แก้ไขห้อง: ${params.slug}` },
+    { label: `แก้ไขข้อมูลห้อง: ${params.slug}` },
   ];
   const buiding = await getData("getBu");
   const roomType = await getData("getRoomType");

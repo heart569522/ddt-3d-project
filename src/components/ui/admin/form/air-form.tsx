@@ -1,0 +1,534 @@
+"use client";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/shadcn-ui/card";
+import { Label } from "@/components/shadcn-ui/label";
+import { airSchema, IAirSchema, IRoomSchema, roomSchema } from "@/types/form";
+import {
+  IAir,
+  IAirBrands,
+  IAirTypes,
+  IBuilding,
+  IRoom,
+  IRoomTypes,
+  ISensorAir,
+  ISensorAirTypes,
+} from "@/types/model";
+import { zodResolver } from "@hookform/resolvers/zod";
+import React, { useEffect, useState } from "react";
+import { useForm } from "react-hook-form";
+import Combobox from "../../combobox";
+import ButtonLoading from "../../button-loading";
+import { Input } from "@/components/shadcn-ui/input";
+import { cn } from "@/lib/utils";
+import { AlertModal, AlertProps } from "../../alert-modal";
+import { Session } from "next-auth";
+import { createData, getData, updateData } from "@/actions/actions";
+import { useRouter } from "next/navigation";
+import { DateTimePicker } from "@/components/ui/datetime-picker";
+import { th } from "date-fns/locale";
+import { formatDatetoISOStringWithoutTime } from "@/lib/formats";
+
+interface Props {
+  airTypes: IAirTypes[];
+  airBrands: IAirBrands;
+  sensorAir: ISensorAir;
+  session: Session;
+  isFormEdit?: boolean;
+  initData?: IAir;
+}
+
+export default function AirForm({
+  airTypes,
+  airBrands,
+  sensorAir,
+  session,
+  isFormEdit = false,
+  initData,
+}: Props) {
+  const {
+    register,
+    getValues,
+    setValue,
+    handleSubmit,
+    formState: { errors, isSubmitting },
+    reset,
+    setError,
+  } = useForm<IAirSchema>({
+    resolver: zodResolver(airSchema),
+    defaultValues: {
+      roomCode: isFormEdit ? initData?.rm_id : undefined,
+      airId: isFormEdit ? initData?.a_id : undefined,
+      sensorId: isFormEdit ? initData?.u_srID : undefined,
+      air: isFormEdit ? initData?.a_code : undefined,
+      airBrand: isFormEdit ? initData?.brand_code : undefined,
+      airModel: isFormEdit ? initData?.gen : undefined,
+      orderId: isFormEdit ? initData?.order_id : undefined,
+      buyer: isFormEdit ? initData?.buyer : undefined,
+      orderDate:
+        isFormEdit && initData?.order_date
+          ? new Date(initData.order_date)
+          : undefined,
+      receivedDate:
+        isFormEdit && initData?.order_date
+          ? new Date(initData?.received_date)
+          : undefined,
+      warrantyPeriod:
+        isFormEdit && initData?.order_date
+          ? new Date(initData?.warranty_period)
+          : undefined,
+      installDate:
+        isFormEdit && initData?.order_date
+          ? new Date(initData?.a_install_date)
+          : undefined,
+      installer: isFormEdit ? initData?.a_installer : undefined,
+    },
+  });
+
+  const [showAlert, setShowAlert] = useState<AlertProps | null>(null);
+  const router = useRouter();
+  const [triggerResetCombobox, setTriggerResetCombobox] =
+    useState<boolean>(false);
+
+  const [selectOrderDate, setSelectOrderDate] = useState<Date | undefined>(
+    isFormEdit && initData?.order_date
+      ? new Date(initData.order_date)
+      : undefined
+  );
+  const [selectReceivedDate, setSelectReceivedDate] = useState<
+    Date | undefined
+  >(
+    isFormEdit && initData?.received_date
+      ? new Date(initData?.received_date)
+      : undefined
+  );
+  const [selectWarrantyPeriod, setSelectWarrantyPeriod] = useState<
+    Date | undefined
+  >(
+    isFormEdit && initData?.warranty_period
+      ? new Date(initData?.warranty_period)
+      : undefined
+  );
+  const [selectInstallDate, setSelectInstallDate] = useState<Date | undefined>(
+    isFormEdit && initData?.a_install_date
+      ? new Date(initData?.a_install_date)
+      : undefined
+  );
+
+  useEffect(() => {
+    if (isFormEdit) {
+      findSensorAirTypes(`getAirTypeById/${initData?.a_code}`);
+    }
+  }, [isFormEdit]);
+
+  const clearAlert = () => {
+    setShowAlert(null);
+    if (isFormEdit) {
+      router.push("/admin/management/air-conditioners");
+    }
+  };
+
+  const findSensorAirTypes = async (apiPath: string) => {
+    try {
+      const response = await getData(apiPath);
+      if (!response) {
+        setShowAlert({
+          type: "warning",
+          detail: "Search failed, please try again.",
+          onClose: clearAlert,
+        });
+        return;
+      }
+
+      setValue("airType", response.a_type.trim());
+      setValue("airBTU", response.BTU);
+      setValue("airInvater", response.invater);
+    } catch (error) {
+      setShowAlert({
+        type: "error",
+        detail: "Something went wrong, can not find merchant id",
+        onClose: clearAlert,
+      });
+    }
+  };
+
+  const validateFormData = (data: IAirSchema): boolean => {
+    let isValid = true;
+
+    if (!data.roomCode) {
+      setError("roomCode", {
+        type: "server",
+        message: "กรุณากรอกรหัสห้อง",
+      });
+      isValid = false;
+    }
+
+    if (!data.airId) {
+      setError("airId", {
+        type: "server",
+        message: "กรุณากรอกรหัสแอร์",
+      });
+      isValid = false;
+    }
+
+    if (!data.sensorId) {
+      setError("sensorId", {
+        type: "server",
+        message: "กรุณาเลือกเซ็นเซอร์",
+      });
+      isValid = false;
+    }
+
+    if (!data.air) {
+      setError("air", {
+        type: "server",
+        message: "กรุณาเลือกแอร์",
+      });
+      isValid = false;
+    }
+
+    return isValid;
+  };
+
+  const setFormData = async (data: IAirSchema) => {
+    let formData = {
+      rm_id: data.roomCode,
+      a_id: data.airId,
+      u_srID: data.sensorId,
+      a_code: data.air,
+      brand_code: data.airBrand,
+      gen: data.airModel,
+      order_id: data.orderId,
+      buyer: data.buyer,
+      order_date: formatDatetoISOStringWithoutTime(selectOrderDate),
+      received_date: formatDatetoISOStringWithoutTime(selectReceivedDate),
+      warranty_period: formatDatetoISOStringWithoutTime(selectWarrantyPeriod),
+      a_install_date: formatDatetoISOStringWithoutTime(selectInstallDate),
+      a_installer: data.installer,
+    };
+    return formData;
+  };
+
+  const onSubmit = async (data: IAirSchema) => {
+    if (!validateFormData(data)) {
+      return;
+    }
+
+    setShowAlert((el) => ({
+      ...el,
+      openModal: true,
+      loading: true,
+      onClose: clearAlert,
+    }));
+
+    const formData = await setFormData(data);
+    console.log("🚀 ~ onSubmit ~ formData:", formData);
+
+    try {
+      let response;
+      // const selectedRoomType = roomTypes.find((item) => item.type === roomType);
+
+      if (isFormEdit) {
+        response = await updateData(
+          "updateAir",
+          session.user.accessToken,
+          formData,
+          data.airId
+        );
+      } else {
+        response = await createData(
+          "addAir",
+          session.user.accessToken,
+          formData
+        );
+        console.log("🚀 ~ onSubmit ~ response:", response);
+      }
+      if (response && response.status === 200) {
+        setShowAlert({
+          openModal: true,
+          loading: false,
+          type: "success",
+          detail: isFormEdit
+            ? `Update air: ${initData?.a_id} success`
+            : "Create new air success",
+          onClose: clearAlert,
+        });
+        resetForm();
+      } else {
+        setShowAlert({
+          openModal: true,
+          loading: false,
+          type: "warning",
+          detail: isFormEdit
+            ? `Update faild, please try again.`
+            : "Create new air faild, please try again.",
+          onClose: clearAlert,
+        });
+      }
+    } catch (error) {
+      // console.error("🚀 ~ onSubmit ~ error:", error);
+      setShowAlert({
+        openModal: true,
+        loading: false,
+        type: "error",
+        detail: "เกิดข้อผิดพลาด, โปรดลองอีกครั้ง",
+        onClose: clearAlert,
+      });
+    }
+  };
+
+  const resetForm = () => {
+    setTriggerResetCombobox(true);
+    setSelectInstallDate(undefined);
+    setSelectOrderDate(undefined);
+    setSelectReceivedDate(undefined);
+    setSelectWarrantyPeriod(undefined);
+    reset();
+  };
+
+  return (
+    <div className="flex flex-1 items-start justify-start">
+      <div className="grid gap-4 grid-cols-12 w-full relative">
+        <div className="col-span-12 lg:col-span-6 xl:col-span-6"></div>
+        <div className="col-span-12 lg:col-span-6 xl:col-span-6">
+          <form onSubmit={handleSubmit(onSubmit)}>
+            <Card>
+              <CardHeader>
+                <CardTitle className="text-lg md:text-xl">
+                  {isFormEdit
+                    ? "แก้ไขข้อมูลเครื่องปรับอากาศ"
+                    : "เพิ่มเครื่องปรับอากาศ"}
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="flex flex-col gap-6">
+                  <div className="grid gap-3">
+                    <Label htmlFor="roomCode">รหัสห้อง</Label>
+                    <Input
+                      {...register("roomCode")}
+                      type="text"
+                      id="roomCode"
+                      placeholder="กรอกรหัสห้อง"
+                      disabled={isFormEdit}
+                    />
+                    {errors.roomCode && (
+                      <p className="text-sm text-red-500">
+                        {errors.roomCode.message}
+                      </p>
+                    )}
+                  </div>
+                  <div className="grid gap-3">
+                    <Label htmlFor="airId">รหัสแอร์</Label>
+                    <Input
+                      {...register("airId")}
+                      type="text"
+                      id="airId"
+                      placeholder="กรอกรหัสแอร์"
+                      disabled={isFormEdit}
+                    />
+                    {errors.airId && (
+                      <p className="text-sm text-red-500">
+                        {errors.airId.message}
+                      </p>
+                    )}
+                  </div>
+                  <div className="grid gap-3">
+                    <Label htmlFor="sensorId">Sensor ID</Label>
+                    <Combobox
+                      title="Sensor ID"
+                      listData={sensorAir}
+                      defaultValue={getValues("sensorId")}
+                      valueKey="u_srID"
+                      nameKey="u_srID"
+                      showValueWithName={false}
+                      showResetButton={true}
+                      triggerReset={triggerResetCombobox}
+                      onValueChange={(selectedValue) => {
+                        setValue("sensorId", selectedValue);
+                      }}
+                    />
+                    {errors.sensorId && (
+                      <p className="text-sm text-red-500">
+                        {errors.sensorId.message}
+                      </p>
+                    )}
+                  </div>
+                  <div className="grid gap-3">
+                    <Label htmlFor="air">แอร์</Label>
+                    <Combobox
+                      title="แอร์"
+                      listData={airTypes}
+                      defaultValue={getValues("air")}
+                      valueKey="a_code"
+                      nameKey="a_code"
+                      showValueWithName={false}
+                      showResetButton={true}
+                      triggerReset={triggerResetCombobox}
+                      onValueChange={(selectedValue) => {
+                        setValue("air", selectedValue);
+                        findSensorAirTypes(`getAirTypeById/${selectedValue}`);
+                      }}
+                    />
+                    {errors.air && (
+                      <p className="text-sm text-red-500">
+                        {errors.air.message}
+                      </p>
+                    )}
+                  </div>
+                  <div className="grid gap-3">
+                    <div className="flex flex-col sm:flex-row gap-3 sm:items-center">
+                      <Label className=" text-nowrap">ชนิดแอร์</Label>
+                      <Input
+                        {...register("airType")}
+                        type="text"
+                        id="airType"
+                        disabled
+                      />
+                      <Label>BTU</Label>
+                      <Input
+                        {...register("airBTU")}
+                        type="number"
+                        id="airBTU"
+                        disabled
+                      />
+                      <Label>Invater</Label>
+                      <Input
+                        {...register("airInvater")}
+                        type="number"
+                        id="airInvater"
+                        disabled
+                      />
+                    </div>
+                  </div>
+                  <div className="grid gap-3">
+                    <Label htmlFor="airBrand">ยี่ห้อแอร์</Label>
+                    <Combobox
+                      title="ยี่ห้อแอร์"
+                      listData={airBrands}
+                      defaultValue={getValues("airBrand")}
+                      valueKey="brand_code"
+                      nameKey="brand"
+                      showValueWithName={false}
+                      showResetButton={true}
+                      triggerReset={triggerResetCombobox}
+                      onValueChange={(selectedValue) => {
+                        setValue("airBrand", selectedValue);
+                      }}
+                    />
+                    {errors.airBrand && (
+                      <p className="text-sm text-red-500">
+                        {errors.airBrand.message}
+                      </p>
+                    )}
+                  </div>
+                  <div className="grid gap-3">
+                    <Label htmlFor="airModel">รุ่น</Label>
+                    <Input
+                      {...register("airModel")}
+                      type="text"
+                      id="airModel"
+                      placeholder="กรอกรุ่น"
+                    />
+                  </div>
+                  <div className="grid gap-3">
+                    <Label htmlFor="orderId">รหัสสั่งซื้อ</Label>
+                    <Input
+                      {...register("orderId")}
+                      type="text"
+                      id="orderId"
+                      placeholder="กรอกรหัสสั่งซื้อ"
+                    />
+                  </div>
+                  <div className="grid gap-3">
+                    <Label htmlFor="buyer">ผู้สั่งซื้อ</Label>
+                    <Input
+                      {...register("buyer")}
+                      type="text"
+                      id="buyer"
+                      placeholder="กรอกผู้สั่งซื้อ"
+                    />
+                  </div>
+                  <div className="grid gap-3">
+                    <Label htmlFor="orderDate">วันที่สั่งซื้อ</Label>
+                    <DateTimePicker
+                      displayFormat={{ hour24: "dd/MM/yyyy" }}
+                      granularity="day"
+                      value={selectOrderDate}
+                      onChange={setSelectOrderDate}
+                      locale={th}
+                      placeholder="เลือกวันที่สั่งซื้อ"
+                    />
+                  </div>
+                  <div className="grid gap-3">
+                    <Label htmlFor="receivedDate">วันที่รับเข้า</Label>
+                    <DateTimePicker
+                      displayFormat={{ hour24: "dd/MM/yyyy" }}
+                      granularity="day"
+                      value={selectReceivedDate}
+                      onChange={setSelectReceivedDate}
+                      locale={th}
+                      placeholder="เลือกวันที่รับเข้า"
+                    />
+                  </div>
+                  <div className="grid gap-3">
+                    <Label htmlFor="warrantyPeriod">วันที่หมดประกัน</Label>
+                    <DateTimePicker
+                      displayFormat={{ hour24: "dd/MM/yyyy" }}
+                      granularity="day"
+                      value={selectWarrantyPeriod}
+                      onChange={setSelectWarrantyPeriod}
+                      locale={th}
+                      placeholder="เลือกวันที่หมดประกัน"
+                    />
+                  </div>
+                  <div className="grid gap-3">
+                    <Label htmlFor="installDate">วันที่ติดตั้ง</Label>
+                    <DateTimePicker
+                      displayFormat={{ hour24: "dd/MM/yyyy" }}
+                      granularity="day"
+                      value={selectInstallDate}
+                      onChange={setSelectInstallDate}
+                      locale={th}
+                      placeholder="เลือกวันที่ติดตั้ง"
+                    />
+                  </div>
+                  <div className="grid gap-3">
+                    <Label htmlFor="installer">ช่างติดตั้ง</Label>
+                    <Input
+                      {...register("installer")}
+                      type="text"
+                      id="installer"
+                      placeholder="กรอกช่างติดตั้ง"
+                    />
+                  </div>
+                </div>
+              </CardContent>
+              <CardFooter className="gap-2 justify-center">
+                <ButtonLoading
+                  type="submit"
+                  text="ตกลง"
+                  textLoading="ตรวจสอบ..."
+                  isLoading={isSubmitting}
+                />
+              </CardFooter>
+            </Card>
+          </form>
+        </div>
+      </div>
+      {showAlert && (
+        <AlertModal
+          openModal={showAlert.openModal}
+          loading={showAlert.loading}
+          type={showAlert.type}
+          detail={showAlert.detail}
+          onClose={clearAlert}
+        />
+      )}
+    </div>
+  );
+}

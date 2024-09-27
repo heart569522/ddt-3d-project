@@ -28,4 +28,17 @@ export enum ColumnAirEnum {
   order_date = "วันที่สั่งซื้อ",
   received_date = "วันที่ได้รับ",
   warranty_period = "วันหมดประกัน",
+  TotalMinutes = 'ชั่วโมงใช้งานโดยเซ็นเซอร์'
+}
+
+export enum ColumnLampEnum {
+  rm_id = "รหัสห้อง",
+  l_id = "รหัสโคมไฟ",
+  l_code = "รหัสชนิด",
+  brand_code = "รหัสยี่ห้อ",
+  u_srID = "u_srID",
+  l_installer = "ผู้ติดตั้ง",
+  l_install_date = "วันที่ติดตั้ง",
+  lb_code = "lb_code",
+  brand_code_lb = "brand_code_lb"
 }

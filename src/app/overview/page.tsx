@@ -2,9 +2,7 @@ import {
   getAverageElectricityUsage,
   getAverageEnvironment,
   getData,
-  getPmTempHmdData,
 } from "@/actions/actions";
-import TurtleStuff from "@/components/models/turttle-stuff";
 import { Button } from "@/components/shadcn-ui/button";
 import CardInfo from "@/components/ui/dashboard/card-info";
 import {
@@ -13,22 +11,12 @@ import {
 } from "@/components/ui/dashboard/electric-chart";
 import {
   EnvironmentAverage,
-  EnvironmentPMChart,
 } from "@/components/ui/dashboard/environment-chart";
-import HumidityChart from "@/components/ui/dashboard/humidity-chart";
-import TemperatureChart from "@/components/ui/dashboard/temperature-chart";
 import Navigation from "@/components/ui/navigation";
 import { formatElectricTodayUsage } from "@/lib/formats";
-import { monthNames } from "@/lib/utils";
-import {
-  IElectricTodayUsage,
-  IEnvironmentLineChart,
-  IPmTempHmd,
-} from "@/types/model";
 import { Droplets, LoaderCircle, MapPin, Thermometer } from "lucide-react";
 import { IconFaceMask } from "@tabler/icons-react";
 import TooltipHover from "@/components/ui/tooltip-hover";
-import { configs } from "@/lib/configs";
 import Link from "next/link";
 import EnvironmentInfoChart from "@/components/ui/dashboard/environment-info-chart";
 import CanvasScreen from "@/components/ui/canvas-screen/canvas";

@@ -97,3 +97,24 @@
   background: #555;
   cursor: pointer;
 }
+
+.content-model {
+  padding-top: 10px;
+  transform: translate3d(calc(30%), 0, 0);
+  text-align: left;
+  background: #202035;
+  color: white;
+  padding: 10px 15px;
+  border-radius: 5px;
+  width: 150px;
+}
+
+.content-model::before {
+  content: "";
+  position: absolute;
+  top: 25px;
+  left: -40px;
+  height: 1px;
+  width: 40px;
+  background: black;
+}

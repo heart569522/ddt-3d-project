@@ -96,20 +96,32 @@ export interface IRoom {
 
 export interface IAir {
   a_id: string
-  rm_id: string
   a_code: string
   brand_code: string
-  gen: string
   u_srID: string
   a_installer: string
-  order_id: string
-  buyer: string
   a_install_date: string
+  rm_id: string
+  order_id: string
   order_date: string
+  buyer: string
   received_date: string
   warranty_period: string
+  gen: string
+  TotalMinutes: number
 }
 
+export interface ILamp {
+  rm_id: string
+  l_id: string
+  l_code: string
+  brand_code: string
+  u_srID: string
+  l_installer: string
+  l_install_date: string
+  lb_code: string
+  brand_code_lb: string
+}
 
 export interface IBuilding {
   bu_id: string;
@@ -123,3 +135,51 @@ export interface IRoomTypes {
   rm_type: string;
   type: string;
 }
+
+export interface IAirBrands {
+  brand_code: string
+  equipment: string
+  brand: string
+}
+
+export interface IAirTypes {
+  a_code: string
+}
+
+export interface ISensorAir {
+  u_srID: string
+}
+
+export interface ISensorAirTypes {
+  a_code: string
+  a_type: string
+  BTU: number
+  invater: number
+}
+
+export interface ISensorSwitch {
+  u_srID: string
+}
+
+export interface ILampTypes {
+  l_code: string
+}
+
+export interface IBulbTypes {
+  lb_code: string
+}
+
+export interface IBulbBrands {
+  brand_code: string
+  equipment: string
+  brand: string
+}
+
+export interface ILampBrands {
+  brand_code: string
+  equipment: string
+  brand: string
+}
+
+
+

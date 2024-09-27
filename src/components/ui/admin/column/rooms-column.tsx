@@ -18,6 +18,7 @@ export function RoomsColumn(): ColumnDef<IRoom>[] {
       header: ({ column }) => (
         <DataTableColumnHeader
           column={column}
+          columnType="textEN"
           title={ColumnRoomEnum.rm_id}
           className="flex items-center justify-center"
         />
@@ -36,6 +37,7 @@ export function RoomsColumn(): ColumnDef<IRoom>[] {
       header: ({ column }) => (
         <DataTableColumnHeader
           column={column}
+          columnType="textTH"
           title={ColumnRoomEnum.bu_name}
           className="flex items-center justify-center"
         />
@@ -54,6 +56,7 @@ export function RoomsColumn(): ColumnDef<IRoom>[] {
       header: ({ column }) => (
         <DataTableColumnHeader
           column={column}
+          columnType="textTH"
           title={ColumnRoomEnum.type}
           className="flex items-center justify-center"
         />
@@ -73,6 +76,7 @@ export function RoomsColumn(): ColumnDef<IRoom>[] {
       header: ({ column }) => (
         <DataTableColumnHeader
           column={column}
+          columnType="textTH"
           title={ColumnRoomEnum.rm_name}
           className="flex items-center justify-center"
         />
@@ -92,6 +96,7 @@ export function RoomsColumn(): ColumnDef<IRoom>[] {
       header: ({ column }) => (
         <DataTableColumnHeader
           column={column}
+          columnType="number"
           title={ColumnRoomEnum.air_amount}
           className="flex items-center justify-center"
         />
@@ -111,6 +116,7 @@ export function RoomsColumn(): ColumnDef<IRoom>[] {
       header: ({ column }) => (
         <DataTableColumnHeader
           column={column}
+          columnType="number"
           title={ColumnRoomEnum.lamp_amount}
           className="flex items-center justify-center"
         />
@@ -134,7 +140,7 @@ export function RoomsColumn(): ColumnDef<IRoom>[] {
           <ActionColumn
             title="ห้อง"
             dataId={data.rm_id}
-            editPagePath={`/admin/management/rooms/${data.rm_id}/edit`}
+            editPagePath={`/admin/management/rooms/edit/${data.rm_id}`}
             apiDeletePath="deleteRoom"
           />
         );

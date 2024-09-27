@@ -38,13 +38,13 @@ export function AlertModal({
   detail,
   onClose,
 }: AlertProps) {
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      onClose();
-    }, 5000);
+  // useEffect(() => {
+  //   const timer = setTimeout(() => {
+  //     onClose();
+  //   }, 5000);
 
-    return () => clearTimeout(timer);
-  }, [onClose]);
+  //   return () => clearTimeout(timer);
+  // }, [onClose]);
 
   return (
     <AlertDialog open={openModal}>

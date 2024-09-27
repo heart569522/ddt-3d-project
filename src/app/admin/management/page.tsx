@@ -1,12 +1,5 @@
-import CanvasPanel from "@/components/ui/canvas-screen/canvas-panel";
-import TitleHeader from "@/components/ui/title-header";
-import React from "react";
+import { redirect } from "next/navigation";
 
-export default function Management() {
-  return (
-    <>
-      <TitleHeader title="Engineering CMU" type="static" />
-      <CanvasPanel />
-    </>
-  );
+export default function page() {
+  redirect("/admin/management/home");
 }

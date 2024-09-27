@@ -26,7 +26,7 @@ type NavAdminMenuItem = {
 export const navAdminMenu: NavAdminMenuItem[] = [
   {
     name: "หน้าแรก",
-    href: "/admin/management",
+    href: "/admin/management/home",
     icon: Home,
     sub_menu: [],
   },

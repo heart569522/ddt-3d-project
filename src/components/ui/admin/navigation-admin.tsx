@@ -79,8 +79,8 @@ export default function AdminNavigation({
         <div className="flex h-full max-h-screen flex-col gap-2 w-[290px] fixed">
           <div className="flex h-14 items-center border-b px-4 md:h-[60px] md:px-6">
             <Link
-              href="/admin/management"
-              className="flex items-center gap-3 font-semibold"
+              href="#"
+              className="flex cursor-default items-center gap-3 font-semibold"
             >
               <Image
                 src={"/avatar/cmu-egn.jpg"}
@@ -98,6 +98,7 @@ export default function AdminNavigation({
               {navAdminMenu.map((item, i) => {
                 const Icon = item.icon;
                 const hasSubMenu = item.sub_menu && item.sub_menu.length > 0;
+                const isMenuActive = pathname.startsWith(item.href);
 
                 return (
                   <div key={i}>
@@ -107,7 +108,7 @@ export default function AdminNavigation({
                         href={item.href}
                         className={cn(
                           "flex items-center text-base uppercase gap-3 rounded-lg px-3 py-2 transition-all hover:bg-primary/30",
-                          item.href == pathname
+                          isMenuActive
                             ? "bg-primary hover:bg-primary text-primary-foreground"
                             : ""
                         )}
@@ -119,7 +120,7 @@ export default function AdminNavigation({
                       <div
                         className={cn(
                           "flex justify-between items-center uppercase text-base gap-3 rounded-lg px-3 py-2 text-muted-foreground transition-all dark:text-primary-foreground dark:hover:text-primary hover:text-primary cursor-pointer",
-                          item.href === pathname
+                          isMenuActive
                             ? "text-primary bg-muted"
                             : "text-muted-foreground"
                         )}
@@ -196,6 +197,7 @@ export default function AdminNavigation({
                 {navAdminMenu.map((item, i) => {
                   const Icon = item.icon;
                   const hasSubMenu = item.sub_menu && item.sub_menu.length > 0;
+                  const isMenuActive = pathname.startsWith(item.href);
 
                   return (
                     <div key={i}>
@@ -205,7 +207,7 @@ export default function AdminNavigation({
                           onClick={handleMenuItemClick}
                           className={cn(
                             "mx-[-0.65rem] uppercase flex items-center gap-3 rounded-xl px-3 py-2 hover:bg-primary/30",
-                            item.href == pathname
+                            isMenuActive
                               ? "bg-primary hover:bg-primary text-primary-foreground"
                               : ""
                           )}
@@ -217,7 +219,7 @@ export default function AdminNavigation({
                         <div
                           className={cn(
                             "mx-[-0.65rem] uppercase justify-between flex items-center gap-4 rounded-xl px-3 py-2 text-muted-foreground dark:text-primary-foreground dark:hover:text-primary hover:text-primary",
-                            item.href == pathname
+                            isMenuActive
                               ? "text-primary bg-muted"
                               : "text-muted-foreground"
                           )}

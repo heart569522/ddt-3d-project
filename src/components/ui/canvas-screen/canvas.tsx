@@ -17,8 +17,10 @@ import {
   EffectComposer,
   Outline,
   SSAO,
+  SMAA,
 } from "@react-three/postprocessing";
 import { Color } from "three";
+import { BlendFunction } from 'postprocessing'
 import EN124Building from "@/components/models/en124/building/en124-building";
 
 interface Props {
@@ -41,7 +43,7 @@ export default function CanvasScreen({
   onObjectClick,
 }: Props) {
   const [selectedObject, setSelectedObject] = useState<string | null>(null);
-  console.log("🚀 ~ selectedObject:", selectedObject)
+  console.log("🚀 ~ selectedObject:", selectedObject);
 
   const handleObjectHover = (object: string | null) => {
     if (onObjectHover) {
@@ -84,22 +86,17 @@ export default function CanvasScreen({
 
         {/* Render the JSX model directly */}
         <Selection>
-          <EffectComposer multisampling={8} autoClear={false}>
+          <EffectComposer multisampling={0} autoClear={false}>
             <Outline
+              selectionLayer={10}
+              blendFunction={BlendFunction.SCREEN}
+              xRay
               blur
-              visibleEdgeColor={
-                selectedObject
-                  ? Color.NAMES.greenyellow
-                  : Color.NAMES.greenyellow
-              }
-              hiddenEdgeColor={
-                selectedObject
-                  ? Color.NAMES.greenyellow
-                  : Color.NAMES.greenyellow
-              }
-              edgeStrength={0}
-              width={1}
+              visibleEdgeColor={selectedObject ? Color.NAMES.yellow : Color.NAMES.yellow}
+              hiddenEdgeColor={selectedObject ? Color.NAMES.yellow : Color.NAMES.yellow}
+              edgeStrength={100}
             />
+            <SMAA />
           </EffectComposer>
           {React.cloneElement(model as React.ReactElement, {
             onObjectHover: handleObjectHover,

@@ -4,13 +4,13 @@ import { Button } from "@/components/shadcn-ui/button";
 import { Checkbox } from "@/components/shadcn-ui/checkbox";
 import { ColumnDef } from "@tanstack/react-table";
 import { DataTableColumnHeader } from "../table/column-header";
-import { IAir } from "@/types/model";
-import { ColumnAirEnum } from "@/lib/enum";
+import { ILamp } from "@/types/model";
+import { ColumnLampEnum } from "@/lib/enum";
 import { useMediaQuery } from "@/hooks/useMediaQuery";
 import ActionColumn from "./action-column";
-import { formatDate, formatMinutesToHours } from "@/lib/formats";
+import { formatDate } from "@/lib/formats";
 
-export function AirColumn(): ColumnDef<IAir>[] {
+export function LampColumn(): ColumnDef<ILamp>[] {
   const isMediumScreen = useMediaQuery("md");
 
   return [
@@ -20,7 +20,7 @@ export function AirColumn(): ColumnDef<IAir>[] {
         <DataTableColumnHeader
           column={column}
           columnType="textEN"
-          title={ColumnAirEnum.rm_id}
+          title={ColumnLampEnum.rm_id}
           className="flex items-center justify-center"
         />
       ),
@@ -34,18 +34,18 @@ export function AirColumn(): ColumnDef<IAir>[] {
       size: 10,
     },
     {
-      accessorKey: "a_id",
+      accessorKey: "l_id",
       header: ({ column }) => (
         <DataTableColumnHeader
           column={column}
           columnType="textEN"
-          title={ColumnAirEnum.a_id}
+          title={ColumnLampEnum.l_id}
           className="flex items-center justify-center"
         />
       ),
       cell: ({ row }) => (
         <div className="flex items-center justify-center">
-          {row.getValue("a_id")}
+          {row.getValue("l_id")}
         </div>
       ),
       enableSorting: isMediumScreen,
@@ -58,7 +58,7 @@ export function AirColumn(): ColumnDef<IAir>[] {
         <DataTableColumnHeader
           column={column}
           columnType="textEN"
-          title={ColumnAirEnum.brand_code}
+          title={ColumnLampEnum.brand_code}
           className="flex items-center justify-center"
         />
       ),
@@ -73,19 +73,19 @@ export function AirColumn(): ColumnDef<IAir>[] {
       size: 10,
     },
     {
-      accessorKey: "a_code",
+      accessorKey: "l_code",
       header: ({ column }) => (
         <DataTableColumnHeader
           column={column}
           columnType="textEN"
-          title={ColumnAirEnum.a_code}
+          title={ColumnLampEnum.l_code}
           className="flex items-center justify-center"
         />
       ),
       cell: ({ row }) => {
         return (
           <div className="flex items-center justify-center">
-            {row.getValue("a_code")}
+            {row.getValue("l_code")}
           </div>
         );
       },
@@ -93,84 +93,44 @@ export function AirColumn(): ColumnDef<IAir>[] {
       size: 10,
     },
     {
-      accessorKey: "TotalMinutes",
-      header: ({ column }) => (
-        <DataTableColumnHeader
-          column={column}
-          columnType="number"
-          title={ColumnAirEnum.TotalMinutes}
-          className="flex items-center justify-center"
-        />
-      ),
-      cell: ({ row }) => {
-        return (
-          <div className="flex items-center justify-center">
-            {formatMinutesToHours(row.getValue("TotalMinutes"))}
-          </div>
-        );
-      },
-      enableSorting: isMediumScreen,
-      size: 20,
-    },
-    {
-      accessorKey: "a_install_date",
-      header: ({ column }) => (
-        <DataTableColumnHeader
-          column={column}
-          columnType="date"
-          title={ColumnAirEnum.a_install_date}
-          className="flex items-center justify-center"
-        />
-      ),
-      cell: ({ row }) => {
-        return (
-          <div className="flex items-center justify-center">
-            {formatDate(row.getValue("a_install_date"))}
-          </div>
-        );
-      },
-      enableSorting: isMediumScreen,
-      size: 10,
-    },
-    {
-      accessorKey: "warranty_period",
-      header: ({ column }) => (
-        <DataTableColumnHeader
-          column={column}
-          columnType="date"
-          title={ColumnAirEnum.warranty_period}
-          className="flex items-center justify-center"
-        />
-      ),
-      cell: ({ row }) => {
-        return (
-          <div className="flex items-center justify-center">
-            {formatDate(row.getValue("warranty_period"))}
-          </div>
-        );
-      },
-      enableSorting: isMediumScreen,
-      size: 10,
-    },
-    {
-      accessorKey: "a_installer",
+      accessorKey: "l_installer",
       header: ({ column }) => (
         <DataTableColumnHeader
           column={column}
           columnType="textTH"
-          title={ColumnAirEnum.a_installer}
+          title={ColumnLampEnum.l_installer}
           className="flex items-center justify-center"
         />
       ),
       cell: ({ row }) => {
         return (
           <div className="flex items-center justify-center">
-            {row.getValue("a_installer")}
+            {row.getValue("l_installer") || "-"}
           </div>
         );
       },
       enableSorting: isMediumScreen,
-      size: 10,
+      size: 25,
+    },
+    {
+      accessorKey: "l_install_date",
+      header: ({ column }) => (
+        <DataTableColumnHeader
+          column={column}
+          columnType="date"
+          title={ColumnLampEnum.l_install_date}
+          className="flex items-center justify-center"
+        />
+      ),
+      cell: ({ row }) => {
+        return (
+          <div className="flex items-center justify-center">
+            {formatDate(row.getValue("l_install_date"))}
+          </div>
+        );
+      },
+      enableSorting: isMediumScreen,
+      size: 15,
     },
     {
       id: "actions",
@@ -179,15 +139,15 @@ export function AirColumn(): ColumnDef<IAir>[] {
 
         return (
           <ActionColumn
-            title="เครื่องปรับอากาศ"
-            dataId={data.a_id}
-            editPagePath={`/admin/management/air-conditioners/edit/${data.rm_id}/${data.a_id}`}
-            apiDeletePath="deleteAir"
+            title="โคม/สวิตซ์ไฟ"
+            dataId={data.l_id}
+            editPagePath={`/admin/management/lamp-plug/edit/${data.rm_id}/${data.l_id}`}
+            apiDeletePath="deleteLamp"
           />
         );
       },
       enableSorting: isMediumScreen,
-      size: 10,
+      size: 15,
     },
   ];
 }
