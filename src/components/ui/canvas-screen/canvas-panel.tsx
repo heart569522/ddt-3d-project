@@ -2,7 +2,7 @@
 import React from "react";
 import CanvasScreen from "./canvas";
 import { EN117Building } from "@/components/models/en117/building/En117Building";
-import RoomFloor8 from "@/components/models/en124/room/Room_floor_8";
+import EN12408Floor from "@/components/models/en124/floor-room/en12408-floor";
 import EN124Building from "@/components/models/en124/building/en124-building";
 
 export default function CanvasPanel() {
@@ -22,7 +22,7 @@ export default function CanvasPanel() {
       </div>
       <div className="h-full">
         <CanvasScreen
-          model={<EN124Building castShadow receiveShadow />}
+          model={<EN124Building castShadow receiveShadow isManage={true}/>}
           cameraPosition={[0, 30, 45]}
           controlSettings={{
             minPolarAngle: 0,
@@ -36,7 +36,7 @@ export default function CanvasPanel() {
       <div className="h-full">
         <CanvasScreen
           model={
-            <RoomFloor8
+            <EN12408Floor
               isShowLamp={false}
               isShowAir={false}
               castShadow
@@ -56,7 +56,7 @@ export default function CanvasPanel() {
       <div className="h-full">
         <CanvasScreen
           model={
-            <RoomFloor8
+            <EN12408Floor
               isShowLamp={true}
               isShowAir={true}
               castShadow

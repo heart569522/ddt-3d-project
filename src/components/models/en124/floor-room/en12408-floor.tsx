@@ -891,14 +891,14 @@ type GLTFResult = GLTF & {
   };
 };
 
-type RoomFloor8Props = JSX.IntrinsicElements["group"] & {
+type EN12408FloorProps = JSX.IntrinsicElements["group"] & {
   isShowLamp?: boolean;
   isShowAir?: boolean;
   onObjectHover?: (object: string | null) => void;
   onObjectClick?: (object: string) => void;
 };
 
-type Floor8Room =
+type Floor8 =
   | "EN1240801"
   | "EN1240802"
   | "EN1240803"
@@ -934,7 +934,7 @@ type Floor8Room =
   | "EN1240833"
   | "EN1240899";
 
-const initialClickState: Record<Floor8Room, boolean> = {
+const initialClickState: Record<Floor8, boolean> = {
   EN1240801: false,
   EN1240802: false,
   EN1240803: false,
@@ -971,31 +971,28 @@ const initialClickState: Record<Floor8Room, boolean> = {
   EN1240899: false,
 };
 
-export default function RoomFloor8(props: RoomFloor8Props) {
+export default function EN12408Floor(props: EN12408FloorProps) {
   const { nodes, materials } = useGLTF(
     "/models/building/en124/floor_8/room_floor_8.glb"
   ) as GLTFResult;
 
-  const [hover, setHover] = useState<Floor8Room | null>(null);
+  const [hover, setHover] = useState<Floor8 | null>(null);
   const [click, setClick] =
-    useState<Record<Floor8Room, boolean>>(initialClickState);
+    useState<Record<Floor8, boolean>>(initialClickState);
 
-  const handleObjectHover = (object: Floor8Room | null) => {
-    console.log(`Hovered object: ${object}`);
+  const handleObjectHover = (object: Floor8 | null) => {
     setHover(object);
     if (props.onObjectHover) {
       props.onObjectHover(object);
     }
   };
 
-  const handleObjectClick = (object: Floor8Room) => {
-    console.log(`Clicked object: ${object}`);
+  const handleObjectClick = (object: Floor8) => {
     setClick((prev) => {
       const updatedState = {
         ...prev,
         [object]: !prev[object],
       };
-      console.log(`Updated click state:`, updatedState);
       return updatedState;
     });
     if (props.onObjectClick) {
@@ -1007,8 +1004,6 @@ export default function RoomFloor8(props: RoomFloor8Props) {
     <group
       {...props}
       dispose={null}
-      onPointerOver={(e) => setHover(e.object.parent?.name as any)}
-      onPointerOut={(e) => setHover(null)}
     >
       {/* Air */}
       {props.isShowAir && (

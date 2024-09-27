@@ -100,13 +100,11 @@
 
 .content-model {
   padding-top: 10px;
-  transform: translate3d(calc(30%), 0, 0);
+  transform: translate3d(calc(80%), 0, 0);
   text-align: left;
-  background: #202035;
-  color: white;
   padding: 10px 15px;
   border-radius: 5px;
-  width: 150px;
+  width: 250px;
 }
 
 .content-model::before {
@@ -114,7 +112,6 @@
   position: absolute;
   top: 25px;
   left: -40px;
-  height: 1px;
+  height: 2px;
   width: 40px;
-  background: black;
 }

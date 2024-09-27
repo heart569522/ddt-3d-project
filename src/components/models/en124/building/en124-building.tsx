@@ -9,6 +9,9 @@ import React, { useState } from "react";
 import { Html, useGLTF } from "@react-three/drei";
 import { Select } from "@react-three/postprocessing";
 import { GLTF } from "three-stdlib";
+import { Button } from "@/components/shadcn-ui/button";
+import { ExternalLink } from "lucide-react";
+import Link from "next/link";
 
 type GLTFResult = GLTF & {
   nodes: {
@@ -547,11 +550,6 @@ type GLTFResult = GLTF & {
   };
 };
 
-type EN124BuildingProps = JSX.IntrinsicElements["group"] & {
-  onObjectHover?: (object: string | null) => void;
-  onObjectClick?: (object: string) => void;
-};
-
 type EN124Floor =
   | "EN12401"
   | "EN124M1"
@@ -562,6 +560,12 @@ type EN124Floor =
   | "EN12406"
   | "EN12407"
   | "EN12408";
+
+type EN124BuildingProps = JSX.IntrinsicElements["group"] & {
+  onObjectHover?: (object: string | null) => void;
+  onObjectClick?: (object: string) => void;
+  isManage: boolean;
+};
 
 export default function EN124Building(props: EN124BuildingProps) {
   const { nodes, materials } = useGLTF(
@@ -582,7 +586,6 @@ export default function EN124Building(props: EN124BuildingProps) {
   });
 
   const handleObjectHover = (object: EN124Floor | null) => {
-    console.log(`Hovered object: ${object}`);
     setHover(object);
     if (props.onObjectHover) {
       props.onObjectHover(object);
@@ -590,13 +593,11 @@ export default function EN124Building(props: EN124BuildingProps) {
   };
 
   const handleObjectClick = (object: EN124Floor) => {
-    console.log(`Clicked object: ${object}`);
     setClick((prev) => {
       const updatedState = {
         ...prev,
         [object]: !prev[object],
       };
-      console.log(`Updated click state:`, updatedState);
       return updatedState;
     });
     if (props.onObjectClick) {
@@ -621,237 +622,230 @@ export default function EN124Building(props: EN124BuildingProps) {
         rotation={[-Math.PI / 2, 0, 0]}
         scale={0.305}
       >
-        <group
-          name="EN12401"
-          position={[-2.579, 1.022, -8.738]}
-          rotation={[-Math.PI / 2, 0, 0]}
-          scale={0.305}
-        >
-          <mesh
-            castShadow
-            receiveShadow
-            name="1100mm001"
-            geometry={nodes["1100mm001"].geometry}
-            material={materials["ผิวคอนกรีต ขัดมัน.010"]}
-          />
-          <mesh
-            castShadow
-            receiveShadow
-            name="1100mm001_1"
-            geometry={nodes["1100mm001_1"].geometry}
-            material={materials["ผนังทดลอง.010"]}
-          />
-          <mesh
-            castShadow
-            receiveShadow
-            name="1100mm001_2"
-            geometry={nodes["1100mm001_2"].geometry}
-            material={materials["Default Wall.010"]}
-          />
-          <mesh
-            castShadow
-            receiveShadow
-            name="1100mm001_3"
-            geometry={nodes["1100mm001_3"].geometry}
-            material={materials["ผนังก่ออิฐ ทาสี.010"]}
-          />
-          <mesh
-            castShadow
-            receiveShadow
-            name="1100mm001_4"
-            geometry={nodes["1100mm001_4"].geometry}
-            material={materials["กระจกใสหนา 2 หุน.010"]}
-          />
-          <mesh
-            castShadow
-            receiveShadow
-            name="1100mm001_5"
-            geometry={nodes["1100mm001_5"].geometry}
-            material={materials["กระเบื้องห้องน้ำ.009"]}
-          />
-          <mesh
-            castShadow
-            receiveShadow
-            name="1100mm001_6"
-            geometry={nodes["1100mm001_6"].geometry}
-            material={materials["พื้นคอนกรีตขัดมัน ด้.007"]}
-          />
-          <mesh
-            castShadow
-            receiveShadow
-            name="1100mm001_7"
-            geometry={nodes["1100mm001_7"].geometry}
-            material={materials["กระจกใสหนา 1 1/2 หุน.009"]}
-          />
-          <mesh
-            castShadow
-            receiveShadow
-            name="1100mm001_8"
-            geometry={nodes["1100mm001_8"].geometry}
-            material={materials["กรอบประตูหน้าต่าง ตา.008"]}
-          />
-          <mesh
-            castShadow
-            receiveShadow
-            name="1100mm001_9"
-            geometry={nodes["1100mm001_9"].geometry}
-            material={materials["เหล็ก บานม้วนทาสีน้ำ"]}
-          />
-          <mesh
-            castShadow
-            receiveShadow
-            name="1100mm001_10"
-            geometry={nodes["1100mm001_10"].geometry}
-            material={materials["Aluminum.010"]}
-          />
-          <mesh
-            castShadow
-            receiveShadow
-            name="1100mm001_11"
-            geometry={nodes["1100mm001_11"].geometry}
-            material={materials["เหล็ก ตามมาตราฐาน Decoradoo.027"]}
-          />
-          <mesh
-            castShadow
-            receiveShadow
-            name="1100mm001_12"
-            geometry={nodes["1100mm001_12"].geometry}
-            material={materials["เหล็ก ตามมาตราฐาน Decoradoo.028"]}
-          />
-          <mesh
-            castShadow
-            receiveShadow
-            name="1100mm001_13"
-            geometry={nodes["1100mm001_13"].geometry}
-            material={materials["ไม้อัดยางทาสี.009"]}
-          />
-          <mesh
-            castShadow
-            receiveShadow
-            name="1100mm001_14"
-            geometry={nodes["1100mm001_14"].geometry}
-            material={materials['ไม้เนื้อแข็ง 2" x 4" ทาสี.009']}
-          />
-          <mesh
-            castShadow
-            receiveShadow
-            name="1100mm001_15"
-            geometry={nodes["1100mm001_15"].geometry}
-            material={materials["เหล็ก ตามมาตราฐาน Decoradoo.029"]}
-          />
-          <mesh
-            castShadow
-            receiveShadow
-            name="1100mm001_16"
-            geometry={nodes["1100mm001_16"].geometry}
-            material={materials["ไม้อัดยาง ทาสี.009"]}
-          />
-          <mesh
-            castShadow
-            receiveShadow
-            name="1100mm001_17"
-            geometry={nodes["1100mm001_17"].geometry}
-            material={materials['ไม้เนื้อแข็ง 2"x4" ทาสี.009']}
-          />
-          <mesh
-            castShadow
-            receiveShadow
-            name="1100mm001_18"
-            geometry={nodes["1100mm001_18"].geometry}
-            material={materials["Render Material 128-128-128.009"]}
-          />
-          <mesh
-            castShadow
-            receiveShadow
-            name="1100mm001_19"
-            geometry={nodes["1100mm001_19"].geometry}
-            material={materials["Plastic - Nystrom - Black.001"]}
-          />
-          <mesh
-            castShadow
-            receiveShadow
-            name="1100mm001_20"
-            geometry={nodes["1100mm001_20"].geometry}
-            material={materials["Metal - Nystrom - Stainless Steel.001"]}
-          />
-          <mesh
-            castShadow
-            receiveShadow
-            name="1100mm001_21"
-            geometry={nodes["1100mm001_21"].geometry}
-            material={materials["Polyester - Nystrom - Glossy Red Coated.001"]}
-          />
-          <mesh
-            castShadow
-            receiveShadow
-            name="1100mm001_22"
-            geometry={nodes["1100mm001_22"].geometry}
-            material={materials["AB_Fire Glass.009"]}
-          />
-          <mesh
-            castShadow
-            receiveShadow
-            name="1100mm001_23"
-            geometry={nodes["1100mm001_23"].geometry}
-            material={materials["AB_RAL9011_Graphite black.009"]}
-          />
-          <mesh
-            castShadow
-            receiveShadow
-            name="1100mm001_24"
-            geometry={nodes["1100mm001_24"].geometry}
-            material={materials["AB_RAL3000_Red.009"]}
-          />
-          <mesh
-            castShadow
-            receiveShadow
-            name="1100mm001_25"
-            geometry={nodes["1100mm001_25"].geometry}
-            material={materials["AB_Steel.009"]}
-          />
-          <mesh
-            castShadow
-            receiveShadow
-            name="1100mm001_26"
-            geometry={nodes["1100mm001_26"].geometry}
-            material={materials["AB_Hose White.009"]}
-          />
-          <mesh
-            castShadow
-            receiveShadow
-            name="1100mm001_27"
-            geometry={nodes["1100mm001_27"].geometry}
-            material={materials["Default.007"]}
-          />
-          <mesh
-            castShadow
-            receiveShadow
-            name="1100mm001_28"
-            geometry={nodes["1100mm001_28"].geometry}
-            material={materials["Assa Abloy - Silver Anodized.001"]}
-          />
-          <mesh
-            castShadow
-            receiveShadow
-            name="1100mm001_29"
-            geometry={nodes["1100mm001_29"].geometry}
-            material={materials["Assa Abloy Plastic.001"]}
-          />
-          <mesh
-            castShadow
-            receiveShadow
-            name="1100mm001_30"
-            geometry={nodes["1100mm001_30"].geometry}
-            material={materials["Silver Anodized.001"]}
-          />
-          <mesh
-            castShadow
-            receiveShadow
-            name="1100mm001_31"
-            geometry={nodes["1100mm001_31"].geometry}
-            material={materials["Glass.009"]}
-          />
-        </group>
+        <mesh
+          castShadow
+          receiveShadow
+          name="1100mm001"
+          geometry={nodes["1100mm001"].geometry}
+          material={materials["ผิวคอนกรีต ขัดมัน.010"]}
+        />
+        <mesh
+          castShadow
+          receiveShadow
+          name="1100mm001_1"
+          geometry={nodes["1100mm001_1"].geometry}
+          material={materials["ผนังทดลอง.010"]}
+        />
+        <mesh
+          castShadow
+          receiveShadow
+          name="1100mm001_2"
+          geometry={nodes["1100mm001_2"].geometry}
+          material={materials["Default Wall.010"]}
+        />
+        <mesh
+          castShadow
+          receiveShadow
+          name="1100mm001_3"
+          geometry={nodes["1100mm001_3"].geometry}
+          material={materials["ผนังก่ออิฐ ทาสี.010"]}
+        />
+        <mesh
+          castShadow
+          receiveShadow
+          name="1100mm001_4"
+          geometry={nodes["1100mm001_4"].geometry}
+          material={materials["กระจกใสหนา 2 หุน.010"]}
+        />
+        <mesh
+          castShadow
+          receiveShadow
+          name="1100mm001_5"
+          geometry={nodes["1100mm001_5"].geometry}
+          material={materials["กระเบื้องห้องน้ำ.009"]}
+        />
+        <mesh
+          castShadow
+          receiveShadow
+          name="1100mm001_6"
+          geometry={nodes["1100mm001_6"].geometry}
+          material={materials["พื้นคอนกรีตขัดมัน ด้.007"]}
+        />
+        <mesh
+          castShadow
+          receiveShadow
+          name="1100mm001_7"
+          geometry={nodes["1100mm001_7"].geometry}
+          material={materials["กระจกใสหนา 1 1/2 หุน.009"]}
+        />
+        <mesh
+          castShadow
+          receiveShadow
+          name="1100mm001_8"
+          geometry={nodes["1100mm001_8"].geometry}
+          material={materials["กรอบประตูหน้าต่าง ตา.008"]}
+        />
+        <mesh
+          castShadow
+          receiveShadow
+          name="1100mm001_9"
+          geometry={nodes["1100mm001_9"].geometry}
+          material={materials["เหล็ก บานม้วนทาสีน้ำ"]}
+        />
+        <mesh
+          castShadow
+          receiveShadow
+          name="1100mm001_10"
+          geometry={nodes["1100mm001_10"].geometry}
+          material={materials["Aluminum.010"]}
+        />
+        <mesh
+          castShadow
+          receiveShadow
+          name="1100mm001_11"
+          geometry={nodes["1100mm001_11"].geometry}
+          material={materials["เหล็ก ตามมาตราฐาน Decoradoo.027"]}
+        />
+        <mesh
+          castShadow
+          receiveShadow
+          name="1100mm001_12"
+          geometry={nodes["1100mm001_12"].geometry}
+          material={materials["เหล็ก ตามมาตราฐาน Decoradoo.028"]}
+        />
+        <mesh
+          castShadow
+          receiveShadow
+          name="1100mm001_13"
+          geometry={nodes["1100mm001_13"].geometry}
+          material={materials["ไม้อัดยางทาสี.009"]}
+        />
+        <mesh
+          castShadow
+          receiveShadow
+          name="1100mm001_14"
+          geometry={nodes["1100mm001_14"].geometry}
+          material={materials['ไม้เนื้อแข็ง 2" x 4" ทาสี.009']}
+        />
+        <mesh
+          castShadow
+          receiveShadow
+          name="1100mm001_15"
+          geometry={nodes["1100mm001_15"].geometry}
+          material={materials["เหล็ก ตามมาตราฐาน Decoradoo.029"]}
+        />
+        <mesh
+          castShadow
+          receiveShadow
+          name="1100mm001_16"
+          geometry={nodes["1100mm001_16"].geometry}
+          material={materials["ไม้อัดยาง ทาสี.009"]}
+        />
+        <mesh
+          castShadow
+          receiveShadow
+          name="1100mm001_17"
+          geometry={nodes["1100mm001_17"].geometry}
+          material={materials['ไม้เนื้อแข็ง 2"x4" ทาสี.009']}
+        />
+        <mesh
+          castShadow
+          receiveShadow
+          name="1100mm001_18"
+          geometry={nodes["1100mm001_18"].geometry}
+          material={materials["Render Material 128-128-128.009"]}
+        />
+        <mesh
+          castShadow
+          receiveShadow
+          name="1100mm001_19"
+          geometry={nodes["1100mm001_19"].geometry}
+          material={materials["Plastic - Nystrom - Black.001"]}
+        />
+        <mesh
+          castShadow
+          receiveShadow
+          name="1100mm001_20"
+          geometry={nodes["1100mm001_20"].geometry}
+          material={materials["Metal - Nystrom - Stainless Steel.001"]}
+        />
+        <mesh
+          castShadow
+          receiveShadow
+          name="1100mm001_21"
+          geometry={nodes["1100mm001_21"].geometry}
+          material={materials["Polyester - Nystrom - Glossy Red Coated.001"]}
+        />
+        <mesh
+          castShadow
+          receiveShadow
+          name="1100mm001_22"
+          geometry={nodes["1100mm001_22"].geometry}
+          material={materials["AB_Fire Glass.009"]}
+        />
+        <mesh
+          castShadow
+          receiveShadow
+          name="1100mm001_23"
+          geometry={nodes["1100mm001_23"].geometry}
+          material={materials["AB_RAL9011_Graphite black.009"]}
+        />
+        <mesh
+          castShadow
+          receiveShadow
+          name="1100mm001_24"
+          geometry={nodes["1100mm001_24"].geometry}
+          material={materials["AB_RAL3000_Red.009"]}
+        />
+        <mesh
+          castShadow
+          receiveShadow
+          name="1100mm001_25"
+          geometry={nodes["1100mm001_25"].geometry}
+          material={materials["AB_Steel.009"]}
+        />
+        <mesh
+          castShadow
+          receiveShadow
+          name="1100mm001_26"
+          geometry={nodes["1100mm001_26"].geometry}
+          material={materials["AB_Hose White.009"]}
+        />
+        <mesh
+          castShadow
+          receiveShadow
+          name="1100mm001_27"
+          geometry={nodes["1100mm001_27"].geometry}
+          material={materials["Default.007"]}
+        />
+        <mesh
+          castShadow
+          receiveShadow
+          name="1100mm001_28"
+          geometry={nodes["1100mm001_28"].geometry}
+          material={materials["Assa Abloy - Silver Anodized.001"]}
+        />
+        <mesh
+          castShadow
+          receiveShadow
+          name="1100mm001_29"
+          geometry={nodes["1100mm001_29"].geometry}
+          material={materials["Assa Abloy Plastic.001"]}
+        />
+        <mesh
+          castShadow
+          receiveShadow
+          name="1100mm001_30"
+          geometry={nodes["1100mm001_30"].geometry}
+          material={materials["Silver Anodized.001"]}
+        />
+        <mesh
+          castShadow
+          receiveShadow
+          name="1100mm001_31"
+          geometry={nodes["1100mm001_31"].geometry}
+          material={materials["Glass.009"]}
+        />
       </Select>
 
       <group
@@ -2216,10 +2210,17 @@ export default function EN124Building(props: EN124BuildingProps) {
         rotation={[-Math.PI / 2, 0, 0]}
         scale={0.305}
       >
-        {click.EN12408 && (
-          <Html distanceFactor={100} className="z-50">
-            <div className="content-model">
-              <label className="font-bold underline text-2xl">TEST</label>
+        {click.EN12408 && !props.isManage && (
+          <Html distanceFactor={100}>
+            <div className="pt-[10px] transform translate-x-[80%] bg-secondary text-left p-[10px_15px] rounded-md w-[250px] relative before:content-[''] before:absolute before:top-[25px] before:-left-10 before:h-[2px] before:w-[40px] before:bg-secondary">
+              <div className="flex justify-between items-center">
+                <label className="font-bold text-xl">ชั้น 8 - EN12408</label>
+                <Link href={"/floor/EN12408"} target="_blank">
+                  <Button variant={"ghost"} size={"icon"}>
+                    <ExternalLink className="size-5" />
+                  </Button>
+                </Link>
+              </div>
             </div>
           </Html>
         )}

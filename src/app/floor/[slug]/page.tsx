@@ -19,8 +19,6 @@ import TooltipHover from "@/components/ui/tooltip-hover";
 import Link from "next/link";
 import EnvironmentInfoChart from "@/components/ui/dashboard/environment-info-chart";
 import CanvasScreen from "@/components/ui/canvas-screen/canvas";
-import { EN117Building } from "@/components/models/en117/building/En117Building";
-import EN124Building from "@/components/models/en124/building/en124-building";
 import { Metadata } from "next/types";
 import { notFound } from "next/navigation";
 
@@ -34,29 +32,35 @@ export async function generateMetadata({
   };
 }
 
-export default async function Building({
-  params,
-}: {
-  params: { slug: string };
-}) {
+export default async function Floor({ params }: { params: { slug: string } }) {
+  const buildingId = params.slug.toLowerCase().substring(0, 5);
+  const floorId = params.slug.toLowerCase();
+
   const renderCanvas = async () => {
     try {
-      const BuildingComponent = (
+      const FloorComponent = (
         await import(
-          `../../../components/models/${params.slug.toLowerCase()}/building/${params.slug.toLowerCase()}-building`
+          `../../../components/models/${buildingId}/floor-room/${floorId}-floor`
         )
       ).default;
 
       return (
         <CanvasScreen
-          model={<BuildingComponent castShadow receiveShadow isManage={false}/>}
-          cameraPosition={[0, 30, 45]}
+          model={
+            <FloorComponent
+              castShadow
+              receiveShadow
+              isShowLamp={false}
+              isShowAir={false}
+            />
+          }
+          cameraPosition={[-5, 6, 12]}
           controlSettings={{
             minPolarAngle: 0,
             maxPolarAngle: Math.PI / 2.25,
-            minDistance: 30,
-            maxDistance: 130,
-            enablePan: true,
+            minDistance: 20,
+            maxDistance: 65,
+            enablePan: false,
           }}
         />
       );

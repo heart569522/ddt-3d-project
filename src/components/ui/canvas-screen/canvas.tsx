@@ -43,7 +43,6 @@ export default function CanvasScreen({
   onObjectClick,
 }: Props) {
   const [selectedObject, setSelectedObject] = useState<string | null>(null);
-  console.log("🚀 ~ selectedObject:", selectedObject);
 
   const handleObjectHover = (object: string | null) => {
     if (onObjectHover) {
@@ -88,13 +87,13 @@ export default function CanvasScreen({
         <Selection>
           <EffectComposer multisampling={0} autoClear={false}>
             <Outline
-              selectionLayer={10}
+              selectionLayer={5}
               blendFunction={BlendFunction.SCREEN}
               xRay
               blur
-              visibleEdgeColor={selectedObject ? Color.NAMES.yellow : Color.NAMES.yellow}
-              hiddenEdgeColor={selectedObject ? Color.NAMES.yellow : Color.NAMES.yellow}
-              edgeStrength={100}
+              visibleEdgeColor={Color.NAMES.yellow}
+              hiddenEdgeColor={Color.NAMES.yellow}
+              edgeStrength={25}
             />
             <SMAA />
           </EffectComposer>
@@ -112,19 +111,12 @@ export default function CanvasScreen({
           position={[0, 0, 0]}
           receiveShadow
         >
-          <meshStandardMaterial color="#777777" />
+          <meshStandardMaterial color={Color.NAMES.seagreen} />
         </Plane>
 
         <OrbitControls {...controlSettings} />
         <Environment preset="city" blur={1} />
-        <Sky inclination={0.6} />
-
-        <GizmoHelper alignment="bottom-right" margin={[80, 80]}>
-          <GizmoViewport
-            axisColors={["red", "green", "blue"]}
-            labelColor="black"
-          />
-        </GizmoHelper>
+        {/* <Sky inclination={0.6} /> */}
       </Suspense>
     </Canvas>
   );

@@ -19,7 +19,7 @@ import Link from "next/link";
 import EnvironmentInfoChart from "@/components/ui/dashboard/environment-info-chart";
 import CanvasScreen from "@/components/ui/canvas-screen/canvas";
 import { EN117Building } from "@/components/models/en117/building/En117Building";
-import RoomFloor8 from "@/components/models/en124/room/Room_floor_8";
+import EN12408Floor from "@/components/models/en124/floor-room/en12408-floor";
 
 export default async function Overview() {
   const avgEnvironment = await getAverageEnvironment();
@@ -103,7 +103,7 @@ export default async function Overview() {
       <div className="w-full h-dvh relative">
         <CanvasScreen
           model={
-            <RoomFloor8
+            <EN12408Floor
               isShowLamp={false}
               isShowAir={false}
               castShadow
