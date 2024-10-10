@@ -17,13 +17,22 @@ interface Props {
   apiDeletePath: string;
 }
 
-export default function ActionColumn({ title, dataId, editPagePath, apiDeletePath }: Props) {
+export default function ActionColumn({
+  title,
+  dataId,
+  editPagePath,
+  apiDeletePath,
+}: Props) {
   const { data: session } = useSession();
   const isMediumScreen = useMediaQuery("md");
   const router = useRouter();
   const [isConfirmOpen, setIsConfirmOpen] = useState(false);
   const [showAlert, setShowAlert] = useState<AlertProps | null>(null);
-  const clearAlert = () => setShowAlert(null);
+  
+  const clearAlert = () => {
+    setShowAlert(null);
+    router.refresh();
+  };
 
   const handleCloseConfirm = () => {
     setIsConfirmOpen(false);
@@ -52,7 +61,6 @@ export default function ActionColumn({ title, dataId, editPagePath, apiDeletePat
           detail: `ลบข้อมูล${title}สำเร็จ`,
           onClose: clearAlert,
         });
-        router.refresh();
       }
     } catch {
       setShowAlert({

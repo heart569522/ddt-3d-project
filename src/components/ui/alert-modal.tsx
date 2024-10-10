@@ -22,6 +22,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "../shadcn-ui/alert-dialog";
+import React from "react";
 
 export type AlertProps = {
   openModal?: boolean;

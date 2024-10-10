@@ -9,9 +9,7 @@ import {
   AverageElectricUsage,
   ElectricChart,
 } from "@/components/ui/dashboard/electric-chart";
-import {
-  EnvironmentAverage,
-} from "@/components/ui/dashboard/environment-chart";
+import { EnvironmentAverage } from "@/components/ui/dashboard/environment-chart";
 import Navigation from "@/components/ui/navigation";
 import { formatElectricTodayUsage } from "@/lib/formats";
 import { Droplets, LoaderCircle, MapPin, Thermometer } from "lucide-react";
@@ -21,6 +19,8 @@ import Link from "next/link";
 import EnvironmentInfoChart from "@/components/ui/dashboard/environment-info-chart";
 import CanvasScreen from "@/components/ui/canvas-screen/canvas";
 import { Suspense } from "react";
+import React from "react";
+import FacultyAllBuilding from "@/components/models/faculty/faculty-all-building";
 
 export default async function Overview() {
   const avgEnvironment = await getAverageEnvironment();
@@ -110,7 +110,19 @@ export default async function Overview() {
         </>
       }
     >
-      <div className="w-full h-dvh">{/* <CanvasScreen /> */}</div>
+      <div className="w-full h-dvh">
+        <CanvasScreen
+          model={<FacultyAllBuilding isManage={false} />}
+          cameraPosition={[-5, 6, 12]}
+          controlSettings={{
+            // minPolarAngle: 0,
+            // maxPolarAngle: Math.PI / 2.25,
+            // minDistance: 40,
+            // maxDistance: 100,
+            enablePan: false,
+          }}
+        />
+      </div>
     </Navigation>
   );
 }

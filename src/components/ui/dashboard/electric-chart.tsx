@@ -44,6 +44,7 @@ import { useEffect, useState } from "react";
 import { getData } from "@/actions/actions";
 import { formatElectric24Usage, formatElectricTodayUsage } from "@/lib/formats";
 import { configs } from "@/lib/configs";
+import React from "react";
 
 interface ElectricProps {
   data: IElectricUsageChart[];

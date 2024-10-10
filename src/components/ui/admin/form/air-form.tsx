@@ -7,7 +7,6 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/shadcn-ui/card";
-import { Label } from "@/components/shadcn-ui/label";
 import { airSchema, IAirSchema, IRoomSchema, roomSchema } from "@/types/form";
 import {
   IAir,
@@ -33,6 +32,7 @@ import { useRouter } from "next/navigation";
 import { DateTimePicker } from "@/components/ui/datetime-picker";
 import { th } from "date-fns/locale";
 import { formatDatetoISOStringWithoutTime } from "@/lib/formats";
+import FormLabel from "../../form-label";
 
 interface Props {
   airTypes: IAirTypes[];
@@ -89,6 +89,9 @@ export default function AirForm({
       installer: isFormEdit ? initData?.a_installer : undefined,
     },
   });
+
+  console.log(getValues());
+  console.log(errors);
 
   const [showAlert, setShowAlert] = useState<AlertProps | null>(null);
   const router = useRouter();
@@ -176,18 +179,66 @@ export default function AirForm({
       isValid = false;
     }
 
-    if (!data.sensorId) {
-      setError("sensorId", {
+    if (!data.airModel) {
+      setError("airModel", {
         type: "server",
-        message: "กรุณาเลือกเซ็นเซอร์",
+        message: "กรุณากรอกรุ่นของแอร์",
       });
       isValid = false;
     }
 
-    if (!data.air) {
-      setError("air", {
+    if (!data.orderId) {
+      setError("orderId", {
         type: "server",
-        message: "กรุณาเลือกแอร์",
+        message: "กรุณากรอกรหัสสั่งซื้อ",
+      });
+      isValid = false;
+    }
+
+    if (!data.buyer) {
+      setError("buyer", {
+        type: "server",
+        message: "กรุณากรอกรหัสสั่งซื้อ",
+      });
+      isValid = false;
+    }
+
+    if (!data.orderDate) {
+      setError("orderDate", {
+        type: "server",
+        message: "กรุณาเลือกวันที่สั่งซื้อ",
+      });
+      isValid = false;
+    }
+
+    if (!data.receivedDate) {
+      setError("receivedDate", {
+        type: "server",
+        message: "กรุณาเลือกวันที่รับเข้า",
+      });
+      isValid = false;
+    }
+
+    if (!data.warrantyPeriod) {
+      setError("warrantyPeriod", {
+        type: "server",
+        message: "กรุณาเลือกวันที่หมดประกัน",
+      });
+      isValid = false;
+    }
+
+    if (!data.installDate) {
+      setError("installDate", {
+        type: "server",
+        message: "กรุณาเลือกวันที่ติดตั้ง",
+      });
+      isValid = false;
+    }
+
+    if (!data.installer) {
+      setError("installer", {
+        type: "server",
+        message: "กรุณากรอกชื่อผู้ติดตั้ง",
       });
       isValid = false;
     }
@@ -308,7 +359,7 @@ export default function AirForm({
               <CardContent>
                 <div className="flex flex-col gap-6">
                   <div className="grid gap-3">
-                    <Label htmlFor="roomCode">รหัสห้อง</Label>
+                    <FormLabel htmlFor="roomCode">รหัสห้อง</FormLabel>
                     <Input
                       {...register("roomCode")}
                       type="text"
@@ -323,7 +374,7 @@ export default function AirForm({
                     )}
                   </div>
                   <div className="grid gap-3">
-                    <Label htmlFor="airId">รหัสแอร์</Label>
+                    <FormLabel htmlFor="airId">รหัสแอร์</FormLabel>
                     <Input
                       {...register("airId")}
                       type="text"
@@ -338,7 +389,9 @@ export default function AirForm({
                     )}
                   </div>
                   <div className="grid gap-3">
-                    <Label htmlFor="sensorId">Sensor ID</Label>
+                    <FormLabel required htmlFor="sensorId">
+                      Sensor ID
+                    </FormLabel>
                     <Combobox
                       title="Sensor ID"
                       listData={sensorAir}
@@ -359,7 +412,9 @@ export default function AirForm({
                     )}
                   </div>
                   <div className="grid gap-3">
-                    <Label htmlFor="air">แอร์</Label>
+                    <FormLabel required htmlFor="air">
+                      แอร์
+                    </FormLabel>
                     <Combobox
                       title="แอร์"
                       listData={airTypes}
@@ -382,21 +437,21 @@ export default function AirForm({
                   </div>
                   <div className="grid gap-3">
                     <div className="flex flex-col sm:flex-row gap-3 sm:items-center">
-                      <Label className=" text-nowrap">ชนิดแอร์</Label>
+                      <FormLabel className=" text-nowrap">ชนิดแอร์</FormLabel>
                       <Input
                         {...register("airType")}
                         type="text"
                         id="airType"
                         disabled
                       />
-                      <Label>BTU</Label>
+                      <FormLabel>BTU</FormLabel>
                       <Input
                         {...register("airBTU")}
                         type="number"
                         id="airBTU"
                         disabled
                       />
-                      <Label>Invater</Label>
+                      <FormLabel>Invater</FormLabel>
                       <Input
                         {...register("airInvater")}
                         type="number"
@@ -406,7 +461,9 @@ export default function AirForm({
                     </div>
                   </div>
                   <div className="grid gap-3">
-                    <Label htmlFor="airBrand">ยี่ห้อแอร์</Label>
+                    <FormLabel required htmlFor="airBrand">
+                      ยี่ห้อแอร์
+                    </FormLabel>
                     <Combobox
                       title="ยี่ห้อแอร์"
                       listData={airBrands}
@@ -427,35 +484,59 @@ export default function AirForm({
                     )}
                   </div>
                   <div className="grid gap-3">
-                    <Label htmlFor="airModel">รุ่น</Label>
+                    <FormLabel required htmlFor="airModel">
+                      รุ่น
+                    </FormLabel>
                     <Input
                       {...register("airModel")}
                       type="text"
                       id="airModel"
                       placeholder="กรอกรุ่น"
                     />
+                    {errors.airModel && (
+                      <p className="text-sm text-red-500">
+                        {errors.airModel.message}
+                      </p>
+                    )}
                   </div>
                   <div className="grid gap-3">
-                    <Label htmlFor="orderId">รหัสสั่งซื้อ</Label>
+                    <FormLabel required htmlFor="orderId">
+                      รหัสสั่งซื้อ
+                    </FormLabel>
                     <Input
                       {...register("orderId")}
                       type="text"
                       id="orderId"
                       placeholder="กรอกรหัสสั่งซื้อ"
                     />
+                    {errors.orderId && (
+                      <p className="text-sm text-red-500">
+                        {errors.orderId.message}
+                      </p>
+                    )}
                   </div>
                   <div className="grid gap-3">
-                    <Label htmlFor="buyer">ผู้สั่งซื้อ</Label>
+                    <FormLabel required htmlFor="buyer">
+                      ผู้สั่งซื้อ
+                    </FormLabel>
                     <Input
                       {...register("buyer")}
                       type="text"
                       id="buyer"
                       placeholder="กรอกผู้สั่งซื้อ"
                     />
+                    {errors.buyer && (
+                      <p className="text-sm text-red-500">
+                        {errors.buyer.message}
+                      </p>
+                    )}
                   </div>
                   <div className="grid gap-3">
-                    <Label htmlFor="orderDate">วันที่สั่งซื้อ</Label>
+                    <FormLabel required htmlFor="orderDate">
+                      วันที่สั่งซื้อ
+                    </FormLabel>
                     <DateTimePicker
+                      {...register("orderDate")}
                       displayFormat={{ hour24: "dd/MM/yyyy" }}
                       granularity="day"
                       value={selectOrderDate}
@@ -463,10 +544,18 @@ export default function AirForm({
                       locale={th}
                       placeholder="เลือกวันที่สั่งซื้อ"
                     />
+                    {errors.orderDate && (
+                      <p className="text-sm text-red-500">
+                        {errors.orderDate.message}
+                      </p>
+                    )}
                   </div>
                   <div className="grid gap-3">
-                    <Label htmlFor="receivedDate">วันที่รับเข้า</Label>
+                    <FormLabel required htmlFor="receivedDate">
+                      วันที่รับเข้า
+                    </FormLabel>
                     <DateTimePicker
+                      {...register("receivedDate")}
                       displayFormat={{ hour24: "dd/MM/yyyy" }}
                       granularity="day"
                       value={selectReceivedDate}
@@ -474,10 +563,18 @@ export default function AirForm({
                       locale={th}
                       placeholder="เลือกวันที่รับเข้า"
                     />
+                    {errors.receivedDate && (
+                      <p className="text-sm text-red-500">
+                        {errors.receivedDate.message}
+                      </p>
+                    )}
                   </div>
                   <div className="grid gap-3">
-                    <Label htmlFor="warrantyPeriod">วันที่หมดประกัน</Label>
+                    <FormLabel required htmlFor="warrantyPeriod">
+                      วันที่หมดประกัน
+                    </FormLabel>
                     <DateTimePicker
+                      {...register("warrantyPeriod")}
                       displayFormat={{ hour24: "dd/MM/yyyy" }}
                       granularity="day"
                       value={selectWarrantyPeriod}
@@ -485,10 +582,18 @@ export default function AirForm({
                       locale={th}
                       placeholder="เลือกวันที่หมดประกัน"
                     />
+                    {errors.warrantyPeriod && (
+                      <p className="text-sm text-red-500">
+                        {errors.warrantyPeriod.message}
+                      </p>
+                    )}
                   </div>
                   <div className="grid gap-3">
-                    <Label htmlFor="installDate">วันที่ติดตั้ง</Label>
+                    <FormLabel required htmlFor="installDate">
+                      วันที่ติดตั้ง
+                    </FormLabel>
                     <DateTimePicker
+                      {...register("installDate")}
                       displayFormat={{ hour24: "dd/MM/yyyy" }}
                       granularity="day"
                       value={selectInstallDate}
@@ -496,15 +601,27 @@ export default function AirForm({
                       locale={th}
                       placeholder="เลือกวันที่ติดตั้ง"
                     />
+                    {errors.installDate && (
+                      <p className="text-sm text-red-500">
+                        {errors.installDate.message}
+                      </p>
+                    )}
                   </div>
                   <div className="grid gap-3">
-                    <Label htmlFor="installer">ช่างติดตั้ง</Label>
+                    <FormLabel required htmlFor="installer">
+                      ช่างติดตั้ง
+                    </FormLabel>
                     <Input
                       {...register("installer")}
                       type="text"
                       id="installer"
                       placeholder="กรอกช่างติดตั้ง"
                     />
+                    {errors.installer && (
+                      <p className="text-sm text-red-500">
+                        {errors.installer.message}
+                      </p>
+                    )}
                   </div>
                 </div>
               </CardContent>

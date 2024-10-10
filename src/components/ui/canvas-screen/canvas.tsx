@@ -21,7 +21,6 @@ import {
 } from "@react-three/postprocessing";
 import { Color } from "three";
 import { BlendFunction } from 'postprocessing'
-import EN124Building from "@/components/models/en124/building/en124-building";
 
 interface Props {
   model: React.ReactNode;
@@ -87,15 +86,14 @@ export default function CanvasScreen({
         <Selection>
           <EffectComposer multisampling={0} autoClear={false}>
             <Outline
-              selectionLayer={5}
+              // selectionLayer={5}
               blendFunction={BlendFunction.SCREEN}
               xRay
               blur
               visibleEdgeColor={Color.NAMES.yellow}
               hiddenEdgeColor={Color.NAMES.yellow}
-              edgeStrength={25}
+              edgeStrength={5}
             />
-            <SMAA />
           </EffectComposer>
           {React.cloneElement(model as React.ReactElement, {
             onObjectHover: handleObjectHover,

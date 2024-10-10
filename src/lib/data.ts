@@ -37,7 +37,7 @@ export const navAdminMenu: NavAdminMenuItem[] = [
     sub_menu: [],
   },
   {
-    name: "จัดการแอร์",
+    name: "จัดการเครื่องปรับอากาศ",
     href: "/admin/management/air-conditioners",
     icon: AirVent,
     sub_menu: [],

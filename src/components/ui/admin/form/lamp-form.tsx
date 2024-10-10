@@ -7,7 +7,6 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/shadcn-ui/card";
-import { Label } from "@/components/shadcn-ui/label";
 import { airSchema, ILampSchema, lampSchema } from "@/types/form";
 import {
   IBulbBrands,
@@ -31,10 +30,11 @@ import { useRouter } from "next/navigation";
 import { DateTimePicker } from "@/components/ui/datetime-picker";
 import { th } from "date-fns/locale";
 import { formatDatetoISOStringWithoutTime } from "@/lib/formats";
+import FormLabel from "../../form-label";
 
 interface Props {
-  lampTypes: ILampTypes;
-  bulbTypes: IBulbTypes;
+  lampTypes: ILampTypes[];
+  bulbTypes: IBulbTypes[];
   lampBrands: ILampBrands;
   bulbBrands: IBulbBrands;
   sensorSwitch: ISensorSwitch;
@@ -53,9 +53,9 @@ export default function LampForm({
   isFormEdit = false,
   initData,
 }: Props) {
-  console.log("🚀 ~ lampTypes:", lampTypes)
-  console.log("🚀 ~ sensorSwitch:", sensorSwitch)
-  console.log("🚀 ~ initData:", initData)
+  // console.log("🚀 ~ lampTypes:", lampTypes)
+  // console.log("🚀 ~ sensorSwitch:", sensorSwitch)
+  // console.log("🚀 ~ initData:", initData)
   const {
     register,
     getValues,
@@ -82,6 +82,9 @@ export default function LampForm({
     },
   });
 
+  console.log(getValues());
+  console.log("Errors:", errors);
+  
   const [showAlert, setShowAlert] = useState<AlertProps | null>(null);
   const router = useRouter();
   const [triggerResetCombobox, setTriggerResetCombobox] =
@@ -177,42 +180,18 @@ export default function LampForm({
       isValid = false;
     }
 
-    if (!data.sensorId) {
-      setError("sensorId", {
+    if (!data.installDate) {
+      setError("installDate", {
         type: "server",
-        message: "กรุณาเลือกเซ็นเซอร์",
+        message: "กรุณาเลือกวันที่ติดตั้ง",
       });
       isValid = false;
     }
 
-    if (!data.lamp) {
-      setError("lamp", {
+    if (!data.installer) {
+      setError("installer", {
         type: "server",
-        message: "กรุณาเลือกโคมไฟ",
-      });
-      isValid = false;
-    }
-
-    if (!data.lampBrand) {
-      setError("lampBrand", {
-        type: "server",
-        message: "กรุณาเลือกยี่ห้อโคมไฟ",
-      });
-      isValid = false;
-    }
-
-    if (!data.bulb) {
-      setError("bulb", {
-        type: "server",
-        message: "กรุณาเลือกหลอดของโคมไฟ",
-      });
-      isValid = false;
-    }
-
-    if (!data.bulbBrand) {
-      setError("bulbBrand", {
-        type: "server",
-        message: "กรุณาเลือกยี่ห้อหลอดของโคมไฟ",
+        message: "กรุณากรอกชื่อผู้ติดตั้ง",
       });
       isValid = false;
     }
@@ -248,11 +227,10 @@ export default function LampForm({
     }));
 
     const formData = await setFormData(data);
-    console.log("🚀 ~ onSubmit ~ formData:", formData);
+    // console.log("🚀 ~ onSubmit ~ formData:", formData);
 
     try {
       let response;
-      // const selectedRoomType = roomTypes.find((item) => item.type === roomType);
 
       if (isFormEdit) {
         response = await updateData(
@@ -267,7 +245,7 @@ export default function LampForm({
           session.user.accessToken,
           formData
         );
-        console.log("🚀 ~ onSubmit ~ response:", response);
+        // console.log("🚀 ~ onSubmit ~ response:", response);
       }
       if (response && response.status === 200) {
         setShowAlert({
@@ -324,12 +302,13 @@ export default function LampForm({
               <CardContent>
                 <div className="flex flex-col gap-6">
                   <div className="grid gap-3">
-                    <Label htmlFor="roomCode">รหัสห้อง</Label>
+                    <FormLabel htmlFor="roomCode">รหัสห้อง</FormLabel>
                     <Input
                       {...register("roomCode")}
                       type="text"
                       id="roomCode"
                       placeholder="กรอกรหัสห้อง"
+                      value={getValues("roomCode")}
                       disabled={isFormEdit}
                     />
                     {errors.roomCode && (
@@ -339,7 +318,7 @@ export default function LampForm({
                     )}
                   </div>
                   <div className="grid gap-3">
-                    <Label htmlFor="lampId">รหัสโคมไฟ</Label>
+                    <FormLabel htmlFor="lampId">รหัสโคมไฟ</FormLabel>
                     <Input
                       {...register("lampId")}
                       type="text"
@@ -354,7 +333,7 @@ export default function LampForm({
                     )}
                   </div>
                   <div className="grid gap-3">
-                    <Label htmlFor="sensorId">Sensor ID</Label>
+                    <FormLabel required htmlFor="sensorId">Sensor ID</FormLabel>
                     <Combobox
                       title="Sensor ID"
                       listData={sensorSwitch}
@@ -375,7 +354,7 @@ export default function LampForm({
                     )}
                   </div>
                   <div className="grid gap-3">
-                    <Label htmlFor="lamp">โคมไฟ</Label>
+                    <FormLabel required htmlFor="lamp">โคมไฟ</FormLabel>
                     <Combobox
                       title="โคมไฟ"
                       listData={lampTypes}
@@ -386,7 +365,7 @@ export default function LampForm({
                       showResetButton={true}
                       triggerReset={triggerResetCombobox}
                       onValueChange={(selectedValue) => {
-                        setValue("lamp", selectedValue);
+                        setValue("lamp", selectedValue),
                         findSensorLampTypes(`getLampTypeById/${selectedValue}`);
                       }}
                     />
@@ -398,14 +377,14 @@ export default function LampForm({
                   </div>
                   <div className="grid gap-3">
                     <div className="flex flex-col sm:flex-row gap-3 sm:items-center">
-                      <Label className="text-nowrap">ชนิดโคม</Label>
+                      <FormLabel className="text-nowrap">ชนิดโคม</FormLabel>
                       <Input
                         {...register("lampType")}
                         type="text"
                         id="lampType"
                         disabled
                       />
-                      <Label className="text-nowrap">รูปทรงโคม</Label>
+                      <FormLabel className="text-nowrap">รูปทรงโคม</FormLabel>
                       <Input
                         {...register("lampShape")}
                         type="text"
@@ -414,14 +393,14 @@ export default function LampForm({
                       />
                     </div>
                     <div className="flex flex-col sm:flex-row gap-3 sm:items-center">
-                      <Label className="text-nowrap">ขั้ว</Label>
+                      <FormLabel className="text-nowrap">ขั้ว</FormLabel>
                       <Input
                         {...register("lampBulbSocket")}
                         type="text"
                         id="lampBulbSocket"
                         disabled
                       />
-                      <Label className="text-nowrap">จำนวนหลอด</Label>
+                      <FormLabel className="text-nowrap">จำนวนหลอด</FormLabel>
                       <Input
                         {...register("lampBulbAmount")}
                         type="number"
@@ -431,7 +410,7 @@ export default function LampForm({
                     </div>
                   </div>
                   <div className="grid gap-3">
-                    <Label htmlFor="lampBrand">ยี่ห้อโคมไฟ</Label>
+                    <FormLabel required htmlFor="lampBrand">ยี่ห้อโคมไฟ</FormLabel>
                     <Combobox
                       title="ยี่ห้อโคมไฟ"
                       listData={lampBrands}
@@ -452,7 +431,7 @@ export default function LampForm({
                     )}
                   </div>
                   <div className="grid gap-3">
-                    <Label htmlFor="lamp">หลอด</Label>
+                    <FormLabel required htmlFor="lamp">หลอด</FormLabel>
                     <Combobox
                       title="หลอด"
                       listData={bulbTypes}
@@ -463,7 +442,7 @@ export default function LampForm({
                       showResetButton={true}
                       triggerReset={triggerResetCombobox}
                       onValueChange={(selectedValue) => {
-                        setValue("bulb", selectedValue);
+                        setValue("bulb", selectedValue),
                         findBulbTypes(`getBulbTypeById/${selectedValue}`);
                       }}
                     />
@@ -475,14 +454,14 @@ export default function LampForm({
                   </div>
                   <div className="grid gap-3">
                     <div className="flex flex-col sm:flex-row gap-3 sm:items-center">
-                      <Label className="text-nowrap">ชนิดหลอด</Label>
+                      <FormLabel className="text-nowrap">ชนิดหลอด</FormLabel>
                       <Input
                         {...register("bulbType")}
                         type="text"
                         id="bulbType"
                         disabled
                       />
-                      <Label className="text-nowrap">รูปทรงหลอด</Label>
+                      <FormLabel className="text-nowrap">รูปทรงหลอด</FormLabel>
                       <Input
                         {...register("bulbShape")}
                         type="text"
@@ -491,23 +470,23 @@ export default function LampForm({
                       />
                     </div>
                     <div className="flex flex-col sm:flex-row gap-3 sm:items-center">
-                      <Label className="text-nowrap">วัตต์</Label>
+                      <FormLabel className="text-nowrap">วัตต์</FormLabel>
                       <Input
                         {...register("bulbWatt")}
                         type="text"
                         id="bulbWatt"
                         disabled
                       />
-                      <Label className="text-nowrap">ความยาว (ซม.)</Label>
+                      <FormLabel className="text-nowrap">ความยาว (ซม.)</FormLabel>
                       <Input
                         {...register("bulbLength")}
-                        type="number"
+                        type="string"
                         id="bulbLength"
                         disabled
                       />
                     </div>
                     <div className="flex flex-col sm:flex-row gap-3 sm:items-center">
-                      <Label className="text-nowrap">รหัสสี</Label>
+                      <FormLabel className="text-nowrap">รหัสสี</FormLabel>
                       <Input
                         {...register("bulbColor")}
                         type="text"
@@ -517,7 +496,7 @@ export default function LampForm({
                     </div>
                   </div>
                   <div className="grid gap-3">
-                    <Label htmlFor="bulbBrand">ยี่ห้อหลอด</Label>
+                    <FormLabel required htmlFor="bulbBrand">ยี่ห้อหลอด</FormLabel>
                     <Combobox
                       title="ยี่ห้อหลอด"
                       listData={bulbBrands}
@@ -538,8 +517,9 @@ export default function LampForm({
                     )}
                   </div>
                   <div className="grid gap-3">
-                    <Label htmlFor="installDate">วันที่ติดตั้ง</Label>
+                    <FormLabel required htmlFor="installDate">วันที่ติดตั้ง</FormLabel>
                     <DateTimePicker
+                      {...register("installDate")}
                       displayFormat={{ hour24: "dd/MM/yyyy" }}
                       granularity="day"
                       value={selectInstallDate}
@@ -547,15 +527,25 @@ export default function LampForm({
                       locale={th}
                       placeholder="เลือกวันที่ติดตั้ง"
                     />
+                    {errors.installDate && (
+                      <p className="text-sm text-red-500">
+                        {errors.installDate.message}
+                      </p>
+                    )}
                   </div>
                   <div className="grid gap-3">
-                    <Label htmlFor="installer">ช่างติดตั้ง</Label>
+                    <FormLabel required htmlFor="installer">ช่างติดตั้ง</FormLabel>
                     <Input
                       {...register("installer")}
                       type="text"
                       id="installer"
                       placeholder="กรอกช่างติดตั้ง"
                     />
+                    {errors.installer && (
+                      <p className="text-sm text-red-500">
+                        {errors.installer.message}
+                      </p>
+                    )}
                   </div>
                 </div>
               </CardContent>

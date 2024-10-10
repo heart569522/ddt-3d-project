@@ -21,6 +21,7 @@ import EnvironmentInfoChart from "@/components/ui/dashboard/environment-info-cha
 import CanvasScreen from "@/components/ui/canvas-screen/canvas";
 import { Metadata } from "next/types";
 import { notFound } from "next/navigation";
+import React from "react";
 
 export async function generateMetadata({
   params,
