@@ -6,13 +6,15 @@ Command: npx gltfjsx@6.5.2 ./public/models/faculty/all.glb -t -k -E -R -f
 "use client"
 
 import * as THREE from 'three'
-import React, { useState } from 'react'
+import React, { useCallback, useState } from 'react'
 import { Html, useGLTF } from '@react-three/drei'
 import { GLTF } from 'three-stdlib'
 import { Select } from '@react-three/postprocessing'
 import Link from 'next/link'
 import { Button } from '@/components/shadcn-ui/button'
 import { ExternalLink } from 'lucide-react'
+import { FacultyBuilding } from '@/stores/create-faculty-store'
+import { useFacultyStore } from '@/stores/faculty-provider'
 
 type GLTFResult = GLTF & {
   nodes: {
@@ -2139,80 +2141,22 @@ type GLTFResult = GLTF & {
   }
 }
 
-type FacutyBuilding =
-  | "EN_Activity_Areas"
-  | "EN001"
-  | "EN101"
-  | "EN104"
-  | "EN105"
-  | "EN106"
-  | "EN107"
-  | "EN108"
-  | "EN110"
-  | "EN113"
-  | "EN115"
-  | "EN116"
-  | "EN117"
-  | "EN120"
-  | "EN124"
-  | "EN126"
-  | "EN161"
-  | "EN202";
-
-
 type FacultyAllBuildingProps = JSX.IntrinsicElements["group"] & {
-  onObjectHover?: (object: string | null) => void;
-  onObjectClick?: (object: string) => void;
   isManage: boolean;
 };
 
 export default function FacultyAllBuilding(props: FacultyAllBuildingProps) {
   const { nodes, materials } = useGLTF('/models/faculty/all.glb') as GLTFResult
+  const [hover, setHover] = useState<FacultyBuilding | null>(null);
+  const { click, setClick } = useFacultyStore(state => (state));
 
-  const [hover, setHover] = useState<FacutyBuilding | null>(null);
-  const [click, setClick] = useState<Record<FacutyBuilding, boolean>>({
-    EN_Activity_Areas: false,
-    EN001: false,
-    EN101: false,
-    EN104: false,
-    EN105: false,
-    EN106: false,
-    EN107: false,
-    EN108: false,
-    EN110: false,
-    EN113: false,
-    EN115: false,
-    EN116: false,
-    EN117: false,
-    EN120: false,
-    EN124: false,
-    EN126: false,
-    EN161: false,
-    EN202: false,
-  });
-
-  const handleObjectHover = (object: FacutyBuilding | null) => {
+  const handleObjectHover = useCallback((object: FacultyBuilding | null) => {
     setHover(object);
-    if (props.onObjectHover) {
-      props.onObjectHover(object);
-    }
-  };
+  }, []);
 
-  const handleObjectClick = (object: FacutyBuilding) => {
-    setClick((prev) => {
-      const updatedState = {
-        ...prev,
-        [object]: !prev[object],
-      };
-      console.log("🚀 ~ setClick ~ updatedState before returning:", updatedState)
-      return updatedState;
-    });
-  
-    // ตรวจสอบว่ามีการเรียก prop.onObjectClick หลายครั้งหรือไม่
-    if (props.onObjectClick) {
-      props.onObjectClick(object);
-    }
-  };
+  const handleObjectClick = useCallback((object: FacultyBuilding) => {
+    setClick(object);
+  }, [setClick]);
   
   return (
     <group {...props} position={[0, 2.7, 0]} dispose={null}>
@@ -2234,7 +2178,17 @@ export default function FacultyAllBuilding(props: FacultyAllBuildingProps) {
         <mesh name="Basketball-Backboard_14" geometry={nodes['Basketball-Backboard_14'].geometry} material={materials['Concrete, Lightweight(5) WHITE no pattern']} />
         <mesh name="Basketball-Backboard_15" geometry={nodes['Basketball-Backboard_15'].geometry} material={materials['gray-light']} />
       </group>
-      <group name="EN202" position={[-40.731, 3.429, 98.229]} rotation={[-Math.PI / 2, 0, 0]} scale={0.305}>
+
+      <Select 
+        name="EN202" 
+        enabled={hover === "EN202" || click === "EN202"}
+        onPointerOver={() => handleObjectHover("EN202")}
+        onPointerOut={() => handleObjectHover(null)}
+        onClick={() => handleObjectClick("EN202")}
+        position={[-40.731, 3.429, 98.229]}
+        rotation={[-Math.PI / 2, 0, 0]}
+        scale={0.305}
+      >
         <mesh name="ระดับวางฐานเสากิ่งรับ" geometry={nodes.ระดับวางฐานเสากิ่งรับ.geometry} material={materials['สีขาว 247 (White 247)']} />
         <mesh name="ระดับวางฐานเสากิ่งรับ_1" geometry={nodes.ระดับวางฐานเสากิ่งรับ_1.geometry} material={materials['สีเทา 128 (White 128)']} />
         <mesh name="ระดับวางฐานเสากิ่งรับ_2" geometry={nodes.ระดับวางฐานเสากิ่งรับ_2.geometry} material={materials['Concrete, Cast-in-Place gray']} />
@@ -2260,8 +2214,18 @@ export default function FacultyAllBuilding(props: FacultyAllBuildingProps) {
         <mesh name="ระดับวางฐานเสากิ่งรับ_22" geometry={nodes.ระดับวางฐานเสากิ่งรับ_22.geometry} material={materials['โชว์หิน.001']} />
         <mesh name="ระดับวางฐานเสากิ่งรับ_23" geometry={nodes.ระดับวางฐานเสากิ่งรับ_23.geometry} material={materials['สีขาว 247 (White 247).004']} />
         <mesh name="ระดับวางฐานเสากิ่งรับ_24" geometry={nodes.ระดับวางฐานเสากิ่งรับ_24.geometry} material={materials['Concrete White.001']} />
-      </group>
-      <group name="EN104" position={[-72.484, 1.401, 49.909]} rotation={[-Math.PI / 2, 0, 0]} scale={0.305}>
+      </Select>
+
+      <Select 
+        name="EN104" 
+        enabled={hover === "EN104" || click === "EN104"}
+        onPointerOver={() => handleObjectHover("EN104")}
+        onPointerOut={() => handleObjectHover(null)}
+        onClick={() => handleObjectClick("EN104")}
+        position={[-72.484, 1.401, 49.909]}
+        rotation={[-Math.PI / 2, 0, 0]}
+        scale={0.305}
+      >
         <mesh name="50x250" geometry={nodes['50x250'].geometry} material={materials['Softwood, Lumber']} />
         <mesh name="50x250_1" geometry={nodes['50x250_1'].geometry} material={materials['Concrete, Cast-in-Place gray.002']} />
         <mesh name="50x250_2" geometry={nodes['50x250_2'].geometry} material={materials['Wisawa-ruamjai-Crimson-red.001']} />
@@ -2300,8 +2264,21 @@ export default function FacultyAllBuilding(props: FacultyAllBuildingProps) {
         <mesh name="50x250_35" geometry={nodes['50x250_35'].geometry} material={materials['Color RGB 040-040-040.001']} />
         <mesh name="50x250_36" geometry={nodes['50x250_36'].geometry} material={materials['Clear Toughened Glass.002']} />
         <mesh name="50x250_37" geometry={nodes['50x250_37'].geometry} material={materials['Die-cast aluminium - Powder Coated in Black.002']} />
-      </group>
-      <group name="EN107" position={[56.16, 2.086, 109.475]} rotation={[-Math.PI / 2, 0, 0]} scale={0.305}>
+      </Select>
+
+      <Select 
+        name="EN107" 
+        enabled={hover === "EN107" || click === "EN107"}
+        onPointerOver={() => handleObjectHover("EN107")}
+        onPointerOut={() => handleObjectHover(null)}
+        onClick={(e) => {
+
+          handleObjectClick("EN107");
+        }}
+        position={[56.16, 2.086, 109.475]}
+        rotation={[-Math.PI / 2, 0, 0]}
+        scale={0.305}
+      >
         <mesh name="C3_025_x_050_m_steel_plate022" geometry={nodes.C3_025_x_050_m_steel_plate022.geometry} material={materials['Steel.001']} />
         <mesh name="C3_025_x_050_m_steel_plate022_1" geometry={nodes.C3_025_x_050_m_steel_plate022_1.geometry} material={materials['Steel, 45-345']} />
         <mesh name="C3_025_x_050_m_steel_plate022_2" geometry={nodes.C3_025_x_050_m_steel_plate022_2.geometry} material={materials['Steel ASTM A992']} />
@@ -2331,8 +2308,21 @@ export default function FacultyAllBuilding(props: FacultyAllBuildingProps) {
         <mesh name="C3_025_x_050_m_steel_plate022_26" geometry={nodes.C3_025_x_050_m_steel_plate022_26.geometry} material={materials['Metal - Stainless Steel.001']} />
         <mesh name="C3_025_x_050_m_steel_plate022_27" geometry={nodes.C3_025_x_050_m_steel_plate022_27.geometry} material={materials['Door-wood-01.001']} />
         <mesh name="C3_025_x_050_m_steel_plate022_28" geometry={nodes.C3_025_x_050_m_steel_plate022_28.geometry} material={materials['Aluminum.002']} />
-      </group>
-      <group name="EN105" position={[57.405, 3.913, 77.082]} rotation={[-Math.PI / 2, 0, 0]} scale={0.305}>
+      </Select>
+
+      <Select 
+        name="EN105" 
+        enabled={hover === "EN105" || click === "EN105"}
+        onPointerOver={() => handleObjectHover("EN105")}
+        onPointerOut={() => handleObjectHover(null)}
+        onClick={(e) => {
+
+          handleObjectClick("EN105");
+        }}
+        position={[57.405, 3.913, 77.082]}
+        rotation={[-Math.PI / 2, 0, 0]}
+        scale={0.305}
+      >
         <mesh name="ระดับหลัง_Truss-A" geometry={nodes['ระดับหลัง_Truss-A'].geometry} material={materials['Roofs(1).002']} />
         <mesh name="ระดับหลัง_Truss-A_1" geometry={nodes['ระดับหลัง_Truss-A_1'].geometry} material={materials['Gypsum Wall Board.003']} />
         <mesh name="ระดับหลัง_Truss-A_2" geometry={nodes['ระดับหลัง_Truss-A_2'].geometry} material={materials['Steel.002']} />
@@ -2366,8 +2356,21 @@ export default function FacultyAllBuilding(props: FacultyAllBuildingProps) {
         <mesh name="ระดับหลัง_Truss-A_30" geometry={nodes['ระดับหลัง_Truss-A_30'].geometry} material={materials['Wood.002']} />
         <mesh name="ระดับหลัง_Truss-A_31" geometry={nodes['ระดับหลัง_Truss-A_31'].geometry} material={materials['Stainless steel Matt.003']} />
         <mesh name="ระดับหลัง_Truss-A_32" geometry={nodes['ระดับหลัง_Truss-A_32'].geometry} material={materials['Aluminium.002']} />
-      </group>
-      <group name="EN101" position={[-4.669, 4.519, 60.624]} rotation={[-Math.PI / 2, 0, 0]} scale={0.305}>
+      </Select>
+
+      <Select
+        name="EN101" 
+        enabled={hover === "EN101" || click === "EN101"}
+        onPointerOver={() => handleObjectHover("EN101")}
+        onPointerOut={() => handleObjectHover(null)}
+        onClick={(e) => {
+
+          handleObjectClick("EN101");
+        }}
+        position={[-4.669, 4.519, 60.624]}
+        rotation={[-Math.PI / 2, 0, 0]}
+        scale={0.305}
+      >
         <mesh name="B4" geometry={nodes.B4.geometry} material={materials['Concrete, Cast-in-Place gray.008']} />
         <mesh name="B4_1" geometry={nodes.B4_1.geometry} material={materials.ปูนรอง} />
         <mesh name="B4_2" geometry={nodes.B4_2.geometry} material={materials.กระเบื้อง} />
@@ -2435,8 +2438,21 @@ export default function FacultyAllBuilding(props: FacultyAllBuildingProps) {
         <mesh name="B4_64" geometry={nodes.B4_64.geometry} material={materials['ทราย.003']} />
         <mesh name="B4_65" geometry={nodes.B4_65.geometry} material={materials['Concrete, Cast-in-Place gray.012']} />
         <mesh name="B4_66" geometry={nodes.B4_66.geometry} material={materials['Concrete, Normal Weight - 4 ksi.003']} />
-      </group>
-      <group name="EN116" position={[-24.386, 6.583, 31.229]} rotation={[-Math.PI / 2, 0, 0]} scale={0.305}>
+      </Select>
+
+      <Select
+        name="EN116" 
+        enabled={hover === "EN116" || click === "EN116"}
+        onPointerOver={() => handleObjectHover("EN116")}
+        onPointerOut={() => handleObjectHover(null)}
+        onClick={(e) => {
+
+          handleObjectClick("EN116");
+        }}
+        position={[-24.386, 6.583, 31.229]}
+        rotation={[-Math.PI / 2, 0, 0]}
+        scale={0.305}
+      >
         <mesh name="900mm008" geometry={nodes['900mm008'].geometry} material={materials['Concrete, Cast-in-Place gray.013']} />
         <mesh name="900mm008_1" geometry={nodes['900mm008_1'].geometry} material={materials['Brick, Common.008']} />
         <mesh name="900mm008_2" geometry={nodes['900mm008_2'].geometry} material={materials['ปูนฉาบปิดผิว ทาสีเลื.006']} />
@@ -2536,8 +2552,21 @@ export default function FacultyAllBuilding(props: FacultyAllBuildingProps) {
         <mesh name="900mm008_96" geometry={nodes['900mm008_96'].geometry} material={materials['กระเบื้องลอนคู่ ขาว.001']} />
         <mesh name="900mm008_97" geometry={nodes['900mm008_97'].geometry} material={materials['Steel, 45-345.004']} />
         <mesh name="900mm008_98" geometry={nodes['900mm008_98'].geometry} material={materials['Concrete.009']} />
-      </group>
-      <group name="EN117" position={[59.016, 3.965, 44.372]} rotation={[-Math.PI / 2, 0, -Math.PI]} scale={0.305}>
+      </Select>
+
+      <Select 
+        name="EN117" 
+        enabled={hover === "EN117" || click === "EN117"}
+        onPointerOver={() => handleObjectHover("EN117")}
+        onPointerOut={() => handleObjectHover(null)}
+        onClick={(e) => {
+
+          handleObjectClick("EN117");
+        }}
+        position={[59.016, 3.965, 44.372]}
+        rotation={[-Math.PI / 2, 0, -Math.PI]}
+        scale={0.305}
+      >
         <mesh name="Floors_1" geometry={nodes.Floors_1.geometry} material={materials['Roofing, Tile']} />
         <mesh name="Floors_1_1" geometry={nodes.Floors_1_1.geometry} material={materials['ปูนฉาบสีขาว.004']} />
         <mesh name="Floors_1_2" geometry={nodes.Floors_1_2.geometry} material={materials['Default Wall.007']} />
@@ -2708,8 +2737,21 @@ export default function FacultyAllBuilding(props: FacultyAllBuildingProps) {
         <mesh name="Floors_1_167" geometry={nodes.Floors_1_167.geometry} material={materials['Steel, 45-345.008']} />
         <mesh name="Floors_1_168" geometry={nodes.Floors_1_168.geometry} material={materials['สีเทา.003']} />
         <mesh name="Floors_1_169" geometry={nodes.Floors_1_169.geometry} material={materials['กระจกใส 5 mm..003']} />
-      </group>
-      <group name="EN108" position={[129.805, 0.894, 14.513]} rotation={[-Math.PI / 2, 0, 0]} scale={0.305}>
+      </Select>
+
+      <Select 
+        name="EN108" 
+        enabled={hover === "EN108" || click === "EN108"}
+        onPointerOver={() => handleObjectHover("EN108")}
+        onPointerOut={() => handleObjectHover(null)}
+        onClick={(e) => {
+
+          handleObjectClick("EN108");
+        }}
+        position={[129.805, 0.894, 14.513]}
+        rotation={[-Math.PI / 2, 0, 0]}
+        scale={0.305}
+      >
         <mesh name="ราวบันไดชั้นดาดฟ้า" geometry={nodes.ราวบันไดชั้นดาดฟ้า.geometry} material={materials['Red steel.002']} />
         <mesh name="ราวบันไดชั้นดาดฟ้า_1" geometry={nodes.ราวบันไดชั้นดาดฟ้า_1.geometry} material={materials['wall white.003']} />
         <mesh name="ราวบันไดชั้นดาดฟ้า_2" geometry={nodes.ราวบันไดชั้นดาดฟ้า_2.geometry} material={materials['Default Roof.002']} />
@@ -2757,59 +2799,21 @@ export default function FacultyAllBuilding(props: FacultyAllBuildingProps) {
         <mesh name="ราวบันไดชั้นดาดฟ้า_44" geometry={nodes.ราวบันไดชั้นดาดฟ้า_44.geometry} material={materials['ไม้สัก.003']} />
         <mesh name="ราวบันไดชั้นดาดฟ้า_45" geometry={nodes.ราวบันไดชั้นดาดฟ้า_45.geometry} material={materials['ไม้วงกบ.003']} />
         <mesh name="ราวบันไดชั้นดาดฟ้า_46" geometry={nodes.ราวบันไดชั้นดาดฟ้า_46.geometry} material={materials['Alluminum.003']} />
-      </group>
+      </Select>
 
       <Select 
         name="EN124" 
-        enabled={hover === "EN124" || click.EN124}
+        enabled={hover === "EN124" || click === "EN124"}
         onPointerOver={() => handleObjectHover("EN124")}
         onPointerOut={() => handleObjectHover(null)}
         onClick={(e) => {
-          const group = e.object.parent as THREE.Group;
-          group.traverse((child) => {
-            if ((child as THREE.Mesh).isMesh) {
-              const mesh = child as THREE.Mesh;
-              if (mesh.material) {
-                const material = mesh.material as THREE.MeshStandardMaterial;
-                // Toggle the color state on click
-                if (material.userData.isActive) {
-                  // Revert to original color if already active (clicked once)
-                  const originalColor = material.userData.originalColor;
-                  if (originalColor) {
-                    material.color.copy(originalColor);
-                  }
-                  material.userData.isActive = false;
-                } else {
-                  // Set the color to a new value and mark as active (clicked once)
-                  if (!material.userData.originalColor) {
-                    material.userData.originalColor = material.color.clone();
-                  }
-                  material.color.set(0xf9ff79); // Set click color
-                  material.userData.isActive = true;
-                }
-              }
-            }
-          });
+
           handleObjectClick("EN124");
         }}
         position={[129.965, 19.642, -24.97]} 
         rotation={[-Math.PI / 2, 0, Math.PI / 2]} 
         scale={0.305}
       >
-        {click.EN124 && !props.isManage && (
-          <Html distanceFactor={100}>
-            <div className="pt-[10px] transform translate-x-[80%] bg-secondary text-left p-[10px_15px] rounded-md w-[250px] relative before:content-[''] before:absolute before:top-[25px] before:-left-10 before:h-[2px] before:w-[40px] before:bg-secondary">
-              <div className="flex justify-between items-center">
-                <label className="font-bold text-xl">EN124</label>
-                <Link href={"/building/EN124"} target="_blank">
-                  <Button variant={"ghost"} size={"icon"}>
-                    <ExternalLink className="size-5" />
-                  </Button>
-                </Link>
-              </div>
-            </div>
-          </Html>
-        )}
         <mesh name="152mm_Diameter" geometry={nodes['152mm_Diameter'].geometry} material={materials['ผนังก่ออิฐ ทาสี.001']} />
         <mesh name="152mm_Diameter_1" geometry={nodes['152mm_Diameter_1'].geometry} material={materials['ผนังทดลอง.001']} />
         <mesh name="152mm_Diameter_2" geometry={nodes['152mm_Diameter_2'].geometry} material={materials['Default Wall.012']} />
@@ -2840,7 +2844,19 @@ export default function FacultyAllBuilding(props: FacultyAllBuildingProps) {
         <mesh name="152mm_Diameter_27" geometry={nodes['152mm_Diameter_27'].geometry} material={materials['Silver Anodized.001']} />
       </Select>
       
-      <group name="EN001" position={[114.691, 10.564, -85.516]} rotation={[-Math.PI / 2, 0, 0]} scale={0.305}>
+      <Select 
+        name="EN001" 
+        enabled={hover === "EN001" || click === "EN001"}
+        onPointerOver={() => handleObjectHover("EN001")}
+        onPointerOut={() => handleObjectHover(null)}
+        onClick={(e) => {
+
+          handleObjectClick("EN001");
+        }}
+        position={[114.691, 10.564, -85.516]}
+        rotation={[-Math.PI / 2, 0, 0]}
+        scale={0.305}
+      >
         <mesh name="เหล็กกล่อง_100*50*3134" geometry={nodes['เหล็กกล่อง_100*50*3134'].geometry} material={materials['Steel ASTM A500, Grade B, Rectangular and Square']} />
         <mesh name="เหล็กกล่อง_100*50*3134_1" geometry={nodes['เหล็กกล่อง_100*50*3134_1'].geometry} material={materials['Concrete, Cast-in-Place gray.021']} />
         <mesh name="เหล็กกล่อง_100*50*3134_2" geometry={nodes['เหล็กกล่อง_100*50*3134_2'].geometry} material={materials['Concrete - Cast-in-Place Concrete - 35 MPa.004']} />
@@ -2922,8 +2938,21 @@ export default function FacultyAllBuilding(props: FacultyAllBuildingProps) {
         <mesh name="เหล็กกล่อง_100*50*3134_78" geometry={nodes['เหล็กกล่อง_100*50*3134_78'].geometry} material={materials['Default Light Source.001']} />
         <mesh name="เหล็กกล่อง_100*50*3134_79" geometry={nodes['เหล็กกล่อง_100*50*3134_79'].geometry} material={materials['Acrylic Green']} />
         <mesh name="เหล็กกล่อง_100*50*3134_80" geometry={nodes['เหล็กกล่อง_100*50*3134_80'].geometry} material={materials['Mirror 26BF207.002']} />
-      </group>
-      <group name="EN115" position={[130.763, 2.76, -95.488]} rotation={[-Math.PI / 2, 0, 0]} scale={0.305}>
+      </Select>
+
+      <Select 
+        name="EN115" 
+        enabled={hover === "EN115" || click === "EN115"}
+        onPointerOver={() => handleObjectHover("EN115")}
+        onPointerOut={() => handleObjectHover(null)}
+        onClick={(e) => {
+
+          handleObjectClick("EN115");
+        }}
+        position={[130.763, 2.76, -95.488]}
+        rotation={[-Math.PI / 2, 0, 0]}
+        scale={0.305}
+      >
         <mesh name="Handrail_-_Rectangular001" geometry={nodes['Handrail_-_Rectangular001'].geometry} material={materials['Brick, Soldier Course.003']} />
         <mesh name="Handrail_-_Rectangular001_1" geometry={nodes['Handrail_-_Rectangular001_1'].geometry} material={materials['โอวัลติน.004']} />
         <mesh name="Handrail_-_Rectangular001_2" geometry={nodes['Handrail_-_Rectangular001_2'].geometry} material={materials['Default Wall.019']} />
@@ -3025,8 +3054,21 @@ export default function FacultyAllBuilding(props: FacultyAllBuildingProps) {
         <mesh name="Handrail_-_Rectangular001_98" geometry={nodes['Handrail_-_Rectangular001_98'].geometry} material={materials['บานประตู.007']} />
         <mesh name="Handrail_-_Rectangular001_99" geometry={nodes['Handrail_-_Rectangular001_99'].geometry} material={materials['stainless.007']} />
         <mesh name="Handrail_-_Rectangular001_100" geometry={nodes['Handrail_-_Rectangular001_100'].geometry} material={materials['เหล็ก.007']} />
-      </group>
-      <group name="EN126" position={[60.984, 5.888, -57.581]} rotation={[-Math.PI / 2, 0, 0]} scale={0.305}>
+      </Select>
+
+      <Select 
+        name="EN126" 
+        enabled={hover === "EN126" || click === "EN126"}
+        onPointerOver={() => handleObjectHover("EN126")}
+        onPointerOut={() => handleObjectHover(null)}
+        onClick={(e) => {
+
+          handleObjectClick("EN126");
+        }}
+        position={[60.984, 5.888, -57.581]}
+        rotation={[-Math.PI / 2, 0, 0]}
+        scale={0.305}
+      >
         <mesh name="BSP_25_THK_325_mm_WT_580_kgm" geometry={nodes.BSP_25_THK_325_mm_WT_580_kgm.geometry} material={materials['Skylight.001']} />
         <mesh name="BSP_25_THK_325_mm_WT_580_kgm_1" geometry={nodes.BSP_25_THK_325_mm_WT_580_kgm_1.geometry} material={materials['ตาข่าย ปิด.001']} />
         <mesh name="BSP_25_THK_325_mm_WT_580_kgm_2" geometry={nodes.BSP_25_THK_325_mm_WT_580_kgm_2.geometry} material={materials['หลังคา.001']} />
@@ -3100,8 +3142,22 @@ export default function FacultyAllBuilding(props: FacultyAllBuildingProps) {
         <mesh name="BSP_25_THK_325_mm_WT_580_kgm_70" geometry={nodes.BSP_25_THK_325_mm_WT_580_kgm_70.geometry} material={materials['พื้นขัดมัน.006']} />
         <mesh name="BSP_25_THK_325_mm_WT_580_kgm_71" geometry={nodes.BSP_25_THK_325_mm_WT_580_kgm_71.geometry} material={materials['ราวบันได.004']} />
         <mesh name="BSP_25_THK_325_mm_WT_580_kgm_72" geometry={nodes.BSP_25_THK_325_mm_WT_580_kgm_72.geometry} material={materials['พื้นขาว.002']} />
-      </group>
-      <group name="EN113" position={[-4.97, 5.325, -86.553]} rotation={[-Math.PI / 2, 0, -Math.PI]} scale={0.305}>
+
+      </Select>
+
+      <Select 
+        name="EN113" 
+        enabled={hover === "EN113" || click === "EN113"}
+        onPointerOver={() => handleObjectHover("EN113")}
+        onPointerOut={() => handleObjectHover(null)}
+        onClick={(e) => {
+
+          handleObjectClick("EN113");
+        }}
+        position={[-4.97, 5.325, -86.553]}
+        rotation={[-Math.PI / 2, 0, -Math.PI]}
+        scale={0.305}
+      >
         <mesh name="หลังคา003" geometry={nodes.หลังคา003.geometry} material={materials['Default Roof.005']} />
         <mesh name="หลังคา003_1" geometry={nodes.หลังคา003_1.geometry} material={materials['ปูนฉาบ.008']} />
         <mesh name="หลังคา003_2" geometry={nodes.หลังคา003_2.geometry} material={materials['Default Wall.026']} />
@@ -3168,8 +3224,21 @@ export default function FacultyAllBuilding(props: FacultyAllBuildingProps) {
         <mesh name="หลังคา003_63" geometry={nodes.หลังคา003_63.geometry} material={materials['กระเบื้องพื้น 2.003']} />
         <mesh name="หลังคา003_64" geometry={nodes.หลังคา003_64.geometry} material={materials['หินอ่อน.003']} />
         <mesh name="หลังคา003_65" geometry={nodes.หลังคา003_65.geometry} material={materials['Concrete - Cast-in-Place Concrete - Concr_240 ksc.004']} />
-      </group>
-      <group name="EN106" position={[0.992, 1.196, -118.37]} rotation={[-Math.PI / 2, 0, 0]} scale={0.305}>
+      </Select>
+
+      <Select 
+        name="EN106" 
+        enabled={hover === "EN106" || click === "EN106"}
+        onPointerOver={() => handleObjectHover("EN106")}
+        onPointerOut={() => handleObjectHover(null)}
+        onClick={(e) => {
+
+          handleObjectClick("EN106");
+        }}
+        position={[0.992, 1.196, -118.37]}
+        rotation={[-Math.PI / 2, 0, 0]}
+        scale={0.305}
+      >
         <mesh name="ระดับขอบบนหลังคา002" geometry={nodes.ระดับขอบบนหลังคา002.geometry} material={materials['สีขาว 247.001']} />
         <mesh name="ระดับขอบบนหลังคา002_1" geometry={nodes.ระดับขอบบนหลังคา002_1.geometry} material={materials['Wisawa-ruamjai-Crimson-red.002']} />
         <mesh name="ระดับขอบบนหลังคา002_2" geometry={nodes.ระดับขอบบนหลังคา002_2.geometry} material={materials['Metal Stud Layer.005']} />
@@ -3203,8 +3272,22 @@ export default function FacultyAllBuilding(props: FacultyAllBuildingProps) {
         <mesh name="ระดับขอบบนหลังคา002_30" geometry={nodes.ระดับขอบบนหลังคา002_30.geometry} material={materials['Aluminum.023']} />
         <mesh name="ระดับขอบบนหลังคา002_31" geometry={nodes.ระดับขอบบนหลังคา002_31.geometry} material={materials['Glass(1).001']} />
         <mesh name="ระดับขอบบนหลังคา002_32" geometry={nodes.ระดับขอบบนหลังคา002_32.geometry} material={materials['Wood.008']} />
-      </group>
-      <group name="EN120" position={[-74.027, 4.556, -59.036]} rotation={[-Math.PI / 2, 0, Math.PI / 2]} scale={0.305}>
+
+      </Select>
+
+      <Select 
+        name="EN120" 
+        enabled={hover === "EN120" || click === "EN120"}
+        onPointerOver={() => handleObjectHover("EN120")}
+        onPointerOut={() => handleObjectHover(null)}
+        onClick={(e) => {
+
+          handleObjectClick("EN120");
+        }}
+        position={[-74.027, 4.556, -59.036]} 
+        rotation={[-Math.PI / 2, 0, Math.PI / 2]}
+        scale={0.305}
+      >
         <mesh name="C1054" geometry={nodes.C1054.geometry} material={materials['Default Wall.033']} />
         <mesh name="C1054_1" geometry={nodes.C1054_1.geometry} material={materials['ปูนฉาบ.013']} />
         <mesh name="C1054_2" geometry={nodes.C1054_2.geometry} material={materials['กระเบื้องดินเผา.003']} />
@@ -3298,8 +3381,22 @@ export default function FacultyAllBuilding(props: FacultyAllBuildingProps) {
         <mesh name="C1054_90" geometry={nodes.C1054_90.geometry} material={materials['Steel, 45-345.013']} />
         <mesh name="C1054_91" geometry={nodes.C1054_91.geometry} material={materials.หลังคากระเบื้องแบบป} />
         <mesh name="C1054_92" geometry={nodes.C1054_92.geometry} material={materials['Metal - Steel - 345 MPa.002']} />
-      </group>
-      <group name="EN110" position={[-103.595, 0.841, -3.454]} rotation={[-Math.PI / 2, 0, 0]} scale={0.305}>
+
+      </Select>
+
+      <Select 
+        name="EN110" 
+        enabled={hover === "EN110" || click === "EN110"}
+        onPointerOver={() => handleObjectHover("EN110")}
+        onPointerOut={() => handleObjectHover(null)}
+        onClick={(e) => {
+
+          handleObjectClick("EN110");
+        }}
+        position={[-103.595, 0.841, -3.454]}
+        rotation={[-Math.PI / 2, 0, 0]}
+        scale={0.305}
+      >
         <mesh name="เก้าอี้_3" geometry={nodes.เก้าอี้_3.geometry} material={materials['concrete cream']} />
         <mesh name="เก้าอี้_3_1" geometry={nodes.เก้าอี้_3_1.geometry} material={materials['Roofing, Tile.001']} />
         <mesh name="เก้าอี้_3_2" geometry={nodes.เก้าอี้_3_2.geometry} material={materials.steel} />
@@ -3325,44 +3422,59 @@ export default function FacultyAllBuilding(props: FacultyAllBuildingProps) {
         <mesh name="เก้าอี้_3_22" geometry={nodes.เก้าอี้_3_22.geometry} material={materials['Glass.039']} />
         <mesh name="เก้าอี้_3_23" geometry={nodes.เก้าอี้_3_23.geometry} material={materials['steel.002']} />
         <mesh name="เก้าอี้_3_24" geometry={nodes.เก้าอี้_3_24.geometry} material={materials['wood.002']} />
-      </group>
-      <group name="EN161" position={[-196.641, 1.481, 10.907]} rotation={[-Math.PI / 2, 0, Math.PI / 8]} scale={0.305}>
-        <mesh name="รางระบายน้ำ3006" geometry={nodes.รางระบายน้ำ3006.geometry} material={materials['Steel, 45-345.016']} />
-        <mesh name="รางระบายน้ำ3006_1" geometry={nodes.รางระบายน้ำ3006_1.geometry} material={materials['Metal Deck.006']} />
-        <mesh name="รางระบายน้ำ3006_2" geometry={nodes.รางระบายน้ำ3006_2.geometry} material={materials.ฝ้าฉนวนกันความร้อน} />
-        <mesh name="รางระบายน้ำ3006_3" geometry={nodes.รางระบายน้ำ3006_3.geometry} material={materials['Metal Stud Layer.006']} />
-        <mesh name="รางระบายน้ำ3006_4" geometry={nodes.รางระบายน้ำ3006_4.geometry} material={materials['Concrete, Cast In Situ.016']} />
-        <mesh name="รางระบายน้ำ3006_5" geometry={nodes.รางระบายน้ำ3006_5.geometry} material={materials['Ceiling Tile 600 x 600']} />
-        <mesh name="รางระบายน้ำ3006_6" geometry={nodes.รางระบายน้ำ3006_6.geometry} material={materials['เหล็ก.017']} />
-        <mesh name="รางระบายน้ำ3006_7" geometry={nodes.รางระบายน้ำ3006_7.geometry} material={materials.ตะแกรง} />
-        <mesh name="รางระบายน้ำ3006_8" geometry={nodes.รางระบายน้ำ3006_8.geometry} material={materials['Metal - Steel 43-275.002']} />
-        <mesh name="รางระบายน้ำ3006_9" geometry={nodes.รางระบายน้ำ3006_9.geometry} material={materials['Concrete, Cast-in-Place gray.044']} />
-        <mesh name="รางระบายน้ำ3006_10" geometry={nodes.รางระบายน้ำ3006_10.geometry} material={materials['Concrete, Cast In Situ.017']} />
-        <mesh name="รางระบายน้ำ3006_11" geometry={nodes.รางระบายน้ำ3006_11.geometry} material={materials['Default Wall.037']} />
-        <mesh name="รางระบายน้ำ3006_12" geometry={nodes.รางระบายน้ำ3006_12.geometry} material={materials['Floor Hardener']} />
-        <mesh name="รางระบายน้ำ3006_13" geometry={nodes.รางระบายน้ำ3006_13.geometry} material={materials['Floor Hardener(สีเขียว)']} />
-        <mesh name="รางระบายน้ำ3006_14" geometry={nodes.รางระบายน้ำ3006_14.geometry} material={materials['Concrete, Cast In Situ ขัดหยาบ']} />
-        <mesh name="รางระบายน้ำ3006_15" geometry={nodes.รางระบายน้ำ3006_15.geometry} material={materials['กระเบือง 40x40 cm']} />
-        <mesh name="รางระบายน้ำ3006_16" geometry={nodes.รางระบายน้ำ3006_16.geometry} material={materials['กระเบืองเซรามิก 30x30 cm']} />
-        <mesh name="รางระบายน้ำ3006_17" geometry={nodes.รางระบายน้ำ3006_17.geometry} material={materials.ฝ้าโฟมกันเสียง} />
-        <mesh name="รางระบายน้ำ3006_18" geometry={nodes.รางระบายน้ำ3006_18.geometry} material={materials.บานม้วน} />
-        <mesh name="รางระบายน้ำ3006_19" geometry={nodes.รางระบายน้ำ3006_19.geometry} material={materials['Steel.013']} />
-        <mesh name="รางระบายน้ำ3006_20" geometry={nodes.รางระบายน้ำ3006_20.geometry} material={materials.สวิตช์} />
-        <mesh name="รางระบายน้ำ3006_21" geometry={nodes.รางระบายน้ำ3006_21.geometry} material={materials.กล่องเหล็กบนบาน} />
-        <mesh name="รางระบายน้ำ3006_22" geometry={nodes.รางระบายน้ำ3006_22.geometry} material={materials.ตะแกรงเหล็ก} />
-        <mesh name="รางระบายน้ำ3006_23" geometry={nodes.รางระบายน้ำ3006_23.geometry} material={materials.เหล็กกล่อง} />
-        <mesh name="รางระบายน้ำ3006_24" geometry={nodes.รางระบายน้ำ3006_24.geometry} material={materials.บานประตู} />
-        <mesh name="รางระบายน้ำ3006_25" geometry={nodes.รางระบายน้ำ3006_25.geometry} material={materials.วงกบ} />
-        <mesh name="รางระบายน้ำ3006_26" geometry={nodes.รางระบายน้ำ3006_26.geometry} material={materials['Glass.040']} />
-        <mesh name="รางระบายน้ำ3006_27" geometry={nodes.รางระบายน้ำ3006_27.geometry} material={materials['Aluminium.019']} />
-        <mesh name="รางระบายน้ำ3006_28" geometry={nodes.รางระบายน้ำ3006_28.geometry} material={materials.ลายฉลุ} />
-        <mesh name="รางระบายน้ำ3006_29" geometry={nodes.รางระบายน้ำ3006_29.geometry} material={materials.ล้อ} />
-        <mesh name="รางระบายน้ำ3006_30" geometry={nodes.รางระบายน้ำ3006_30.geometry} material={materials['Porcelain, Ivory']} />
-        <mesh name="รางระบายน้ำ3006_31" geometry={nodes.รางระบายน้ำ3006_31.geometry} material={materials['Porcelain, Linen.003']} />
-        <mesh name="รางระบายน้ำ3006_32" geometry={nodes.รางระบายน้ำ3006_32.geometry} material={materials['Laminate, Linen, Matte.003']} />
-        <mesh name="รางระบายน้ำ3006_33" geometry={nodes.รางระบายน้ำ3006_33.geometry} material={materials['Steel, Polished']} />
-        <mesh name="รางระบายน้ำ3006_34" geometry={nodes.รางระบายน้ำ3006_34.geometry} material={materials['Metal - Steel 43-275']} />
-      </group>
+
+      </Select>
+
+      <Select 
+        name="EN161" 
+        enabled={hover === "EN161" || click === "EN161"}
+        onPointerOver={() => handleObjectHover("EN161")}
+        onPointerOut={() => handleObjectHover(null)}
+        onClick={(e) => {
+
+          handleObjectClick("EN161");
+        }}
+        position={[-196.641, 1.481, 10.907]}
+        rotation={[-Math.PI / 2, 0, Math.PI / 8]}
+        scale={0.305}
+      >
+          <mesh name="รางระบายน้ำ3006" geometry={nodes.รางระบายน้ำ3006.geometry} material={materials['Steel, 45-345.016']} />
+          <mesh name="รางระบายน้ำ3006_1" geometry={nodes.รางระบายน้ำ3006_1.geometry} material={materials['Metal Deck.006']} />
+          <mesh name="รางระบายน้ำ3006_2" geometry={nodes.รางระบายน้ำ3006_2.geometry} material={materials.ฝ้าฉนวนกันความร้อน} />
+          <mesh name="รางระบายน้ำ3006_3" geometry={nodes.รางระบายน้ำ3006_3.geometry} material={materials['Metal Stud Layer.006']} />
+          <mesh name="รางระบายน้ำ3006_4" geometry={nodes.รางระบายน้ำ3006_4.geometry} material={materials['Concrete, Cast In Situ.016']} />
+          <mesh name="รางระบายน้ำ3006_5" geometry={nodes.รางระบายน้ำ3006_5.geometry} material={materials['Ceiling Tile 600 x 600']} />
+          <mesh name="รางระบายน้ำ3006_6" geometry={nodes.รางระบายน้ำ3006_6.geometry} material={materials['เหล็ก.017']} />
+          <mesh name="รางระบายน้ำ3006_7" geometry={nodes.รางระบายน้ำ3006_7.geometry} material={materials.ตะแกรง} />
+          <mesh name="รางระบายน้ำ3006_8" geometry={nodes.รางระบายน้ำ3006_8.geometry} material={materials['Metal - Steel 43-275.002']} />
+          <mesh name="รางระบายน้ำ3006_9" geometry={nodes.รางระบายน้ำ3006_9.geometry} material={materials['Concrete, Cast-in-Place gray.044']} />
+          <mesh name="รางระบายน้ำ3006_10" geometry={nodes.รางระบายน้ำ3006_10.geometry} material={materials['Concrete, Cast In Situ.017']} />
+          <mesh name="รางระบายน้ำ3006_11" geometry={nodes.รางระบายน้ำ3006_11.geometry} material={materials['Default Wall.037']} />
+          <mesh name="รางระบายน้ำ3006_12" geometry={nodes.รางระบายน้ำ3006_12.geometry} material={materials['Floor Hardener']} />
+          <mesh name="รางระบายน้ำ3006_13" geometry={nodes.รางระบายน้ำ3006_13.geometry} material={materials['Floor Hardener(สีเขียว)']} />
+          <mesh name="รางระบายน้ำ3006_14" geometry={nodes.รางระบายน้ำ3006_14.geometry} material={materials['Concrete, Cast In Situ ขัดหยาบ']} />
+          <mesh name="รางระบายน้ำ3006_15" geometry={nodes.รางระบายน้ำ3006_15.geometry} material={materials['กระเบือง 40x40 cm']} />
+          <mesh name="รางระบายน้ำ3006_16" geometry={nodes.รางระบายน้ำ3006_16.geometry} material={materials['กระเบืองเซรามิก 30x30 cm']} />
+          <mesh name="รางระบายน้ำ3006_17" geometry={nodes.รางระบายน้ำ3006_17.geometry} material={materials.ฝ้าโฟมกันเสียง} />
+          <mesh name="รางระบายน้ำ3006_18" geometry={nodes.รางระบายน้ำ3006_18.geometry} material={materials.บานม้วน} />
+          <mesh name="รางระบายน้ำ3006_19" geometry={nodes.รางระบายน้ำ3006_19.geometry} material={materials['Steel.013']} />
+          <mesh name="รางระบายน้ำ3006_20" geometry={nodes.รางระบายน้ำ3006_20.geometry} material={materials.สวิตช์} />
+          <mesh name="รางระบายน้ำ3006_21" geometry={nodes.รางระบายน้ำ3006_21.geometry} material={materials.กล่องเหล็กบนบาน} />
+          <mesh name="รางระบายน้ำ3006_22" geometry={nodes.รางระบายน้ำ3006_22.geometry} material={materials.ตะแกรงเหล็ก} />
+          <mesh name="รางระบายน้ำ3006_23" geometry={nodes.รางระบายน้ำ3006_23.geometry} material={materials.เหล็กกล่อง} />
+          <mesh name="รางระบายน้ำ3006_24" geometry={nodes.รางระบายน้ำ3006_24.geometry} material={materials.บานประตู} />
+          <mesh name="รางระบายน้ำ3006_25" geometry={nodes.รางระบายน้ำ3006_25.geometry} material={materials.วงกบ} />
+          <mesh name="รางระบายน้ำ3006_26" geometry={nodes.รางระบายน้ำ3006_26.geometry} material={materials['Glass.040']} />
+          <mesh name="รางระบายน้ำ3006_27" geometry={nodes.รางระบายน้ำ3006_27.geometry} material={materials['Aluminium.019']} />
+          <mesh name="รางระบายน้ำ3006_28" geometry={nodes.รางระบายน้ำ3006_28.geometry} material={materials.ลายฉลุ} />
+          <mesh name="รางระบายน้ำ3006_29" geometry={nodes.รางระบายน้ำ3006_29.geometry} material={materials.ล้อ} />
+          <mesh name="รางระบายน้ำ3006_30" geometry={nodes.รางระบายน้ำ3006_30.geometry} material={materials['Porcelain, Ivory']} />
+          <mesh name="รางระบายน้ำ3006_31" geometry={nodes.รางระบายน้ำ3006_31.geometry} material={materials['Porcelain, Linen.003']} />
+          <mesh name="รางระบายน้ำ3006_32" geometry={nodes.รางระบายน้ำ3006_32.geometry} material={materials['Laminate, Linen, Matte.003']} />
+          <mesh name="รางระบายน้ำ3006_33" geometry={nodes.รางระบายน้ำ3006_33.geometry} material={materials['Steel, Polished']} />
+          <mesh name="รางระบายน้ำ3006_34" geometry={nodes.รางระบายน้ำ3006_34.geometry} material={materials['Metal - Steel 43-275']} />
+      </Select>
+
     </group>
   )
 }

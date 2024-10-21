@@ -3,6 +3,7 @@ import {
   getAverageEnvironment,
   getDashboardData,
   getData,
+  getPmTempHmdData,
 } from "@/actions/actions";
 import { Button } from "@/components/shadcn-ui/button";
 import CardInfo from "@/components/ui/dashboard/card-info";
@@ -12,7 +13,10 @@ import {
 } from "@/components/ui/dashboard/electric-chart";
 import { EnvironmentAverage } from "@/components/ui/dashboard/environment-chart";
 import Navigation from "@/components/ui/navigation";
-import { formatElectricTodayUsage } from "@/lib/formats";
+import {
+  formatBuildingElectricTodayUsage,
+  formatFacultyElectricTodayUsage,
+} from "@/lib/formats";
 import { Droplets, MapPin, Thermometer } from "lucide-react";
 import { IconFaceMask } from "@tabler/icons-react";
 import TooltipHover from "@/components/ui/tooltip-hover";
@@ -49,7 +53,9 @@ export default async function Building({
 
       return (
         <CanvasScreen
-          model={<BuildingComponent castShadow receiveShadow isManage={false}/>}
+          model={
+            <BuildingComponent castShadow receiveShadow isManage={false} />
+          }
           cameraPosition={[0, 30, 45]}
           controlSettings={{
             minPolarAngle: 0,
@@ -65,12 +71,20 @@ export default async function Building({
     }
   };
 
-  const avgEnvironment = await getAverageEnvironment();
+  const avgEnvironment = await getData(
+    `gaugeBuilding/${params.slug.toUpperCase()}`
+  );
   const avgElectricUsage = await getDashboardData(
     `UseRateBuildingPerMonth/${params.slug.toLowerCase()}`
   );
   const electricUsage = await getData("UseRateToday");
-  const electricUsageData = formatElectricTodayUsage(electricUsage);
+  const electricUsageData = formatBuildingElectricTodayUsage(
+    electricUsage,
+    params.slug.toUpperCase()
+  );
+  const pmTempHmdData = await getData(
+    `BhtpmPerMonth/${params.slug.toLowerCase()}`
+  );
 
   return (
     <Navigation
@@ -80,13 +94,18 @@ export default async function Building({
             title="General Information"
             detail={`Building: ${params.slug.toUpperCase()} Information`}
           />
-          <EnvironmentAverage data={avgEnvironment} />
-          <EnvironmentInfoChart />
+          <EnvironmentAverage
+            data={avgEnvironment[params.slug.toUpperCase()]}
+          />
+          <EnvironmentInfoChart data={pmTempHmdData} />
         </>
       }
       rightDashbaord={
         <div className="flex flex-col gap-2">
-          <ElectricChart data={electricUsageData} />
+          <ElectricChart
+            data={electricUsageData}
+            buildingId={params.slug.toUpperCase()}
+          />
           <AverageElectricUsage data={avgElectricUsage} />
         </div>
       }

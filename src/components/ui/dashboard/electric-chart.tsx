@@ -42,15 +42,21 @@ import { IAverageElectricityUsage, IElectricUsageChart } from "@/types/model";
 import { monthNames, suffixesNumber } from "@/lib/utils";
 import { useEffect, useState } from "react";
 import { getData } from "@/actions/actions";
-import { formatElectric24Usage, formatElectricTodayUsage } from "@/lib/formats";
+import {
+  formatBuildingElectric24Usage,
+  formatBuildingElectricTodayUsage,
+  formatFacultyElectric24Usage,
+  formatFacultyElectricTodayUsage,
+} from "@/lib/formats";
 import { configs } from "@/lib/configs";
 import React from "react";
 
 interface ElectricProps {
   data: IElectricUsageChart[];
+  buildingId?: string;
 }
 
-export function ElectricChart({ data }: ElectricProps) {
+export function ElectricChart({ data, buildingId }: ElectricProps) {
   const [chartData, setChartData] = useState<IElectricUsageChart[]>(data);
   const [selectedTimeRange, setSelectedTimeRange] = useState("today");
 
@@ -60,29 +66,28 @@ export function ElectricChart({ data }: ElectricProps) {
 
       switch (selectedTimeRange) {
         case "24hr":
-          const response = await getData("UseRate24");
-          newData = formatElectric24Usage(response);
-
+          if (buildingId) {
+            const response = await getData("UseRate24");
+            newData = formatBuildingElectric24Usage(response, buildingId);
+          } else {
+            const response = await getData("UseRate24");
+            newData = formatFacultyElectric24Usage(response);
+          }
           break;
-        // case "month":
-        //   // Fetch last month data
-        //   newData = data;
-        //   // newData = await fetchDataForLastMonth();
-        //   break;
-        // case "6month":
-        //   // Fetch last 6 months data
-        //   newData = data;
-        //   // newData = await fetchDataForLast6Months();
-        //   break;
+
         case "today":
         default:
           if (data.length === 0) {
-            const response = await getData("UseRateToday");
-            newData = formatElectricTodayUsage(response);
+            if (buildingId) {
+              const response = await getData("UseRateToday");
+              newData = formatBuildingElectricTodayUsage(response, buildingId);
+            } else {
+              const response = await getData("UseRateToday");
+              newData = formatFacultyElectricTodayUsage(response);
+            }
           } else {
             newData = data;
           }
-
           break;
       }
       setChartData(newData as any);
@@ -98,7 +103,7 @@ export function ElectricChart({ data }: ElectricProps) {
     };
     return config;
   }, {} as ChartConfig);
-
+  
   const pieChartData = chartData?.map((item) => ({
     ...item,
     percent: parseFloat(
@@ -117,6 +122,15 @@ export function ElectricChart({ data }: ElectricProps) {
     }
 
     return null;
+  };
+
+  const totalUsageRate = () => {
+    if (buildingId) {
+      const total = chartData.reduce((sum, item) => sum + item.value, 0);
+      return total.toLocaleString();
+    } else {
+      return chartData[0]?.total.toLocaleString();
+    }
   };
 
   return (
@@ -156,7 +170,7 @@ export function ElectricChart({ data }: ElectricProps) {
             <CardTitle className="text-3xl sm:text-4xl text-center">
               {chartData && (
                 <>
-                  {chartData[0]?.total.toLocaleString()}&nbsp;
+                  {totalUsageRate()}&nbsp;
                   <span className="text-sm sm:text-base opacity-70">
                     kW/Hour
                   </span>
@@ -198,7 +212,8 @@ export function ElectricChart({ data }: ElectricProps) {
             </Bar>
           </BarChart>
         </ChartContainer>
-        <p className="text-sm text-center italic mt-1">(Building Number)</p>
+        {!buildingId && (<p className="text-sm text-center italic mt-1">(Building Number)</p>)}
+        
         {/* Pie Chart */}
         <h3 className="text-base md:text-lg font-semibold mt-6 text-left">
           {selectedTimeRange === "today" ? "Today" : "24 Hour"} Usage (%)

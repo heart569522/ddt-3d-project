@@ -17,6 +17,9 @@ import Toolbar from "./toolbar";
 import { avatar } from "@/lib/data";
 import AvatarCircles from "./avatar-circle";
 import { cn } from "@/lib/utils";
+import { useFacultyStore } from "@/stores/faculty-provider";
+import CardDetail from "./dashboard/card-detail";
+import { IBuilding, IElectricTodayUsage } from "@/types/model";
 
 type Props = {
   children: React.ReactNode;
@@ -25,6 +28,9 @@ type Props = {
   toolbar?: React.ReactNode;
   isHideDashbaord?: boolean;
   isHideToolbar?: boolean;
+  useCardBuildingDetail?: boolean;
+  buildingData?: IBuilding[];
+  electricUsageData?: IElectricTodayUsage[];
 };
 
 export default function Navigation({
@@ -34,11 +40,16 @@ export default function Navigation({
   toolbar,
   isHideDashbaord = false,
   isHideToolbar = false,
+  useCardBuildingDetail = false,
+  buildingData,
+  electricUsageData,
 }: Props) {
   const pathname = usePathname();
   const router = useRouter();
   const [isNavOpen, setIsNavOpen] = useState(false);
   const [isShowDashboard, setIsShowDashboard] = useState(true);
+
+  const { click } = useFacultyStore((state) => state);
 
   const toggleShowHideDashboard = () => {
     setIsShowDashboard(!isShowDashboard);
@@ -91,6 +102,15 @@ export default function Navigation({
         </Toolbar>
       )}
 
+      {useCardBuildingDetail && click && (
+        <div className="-right-6 md:right-3 hidden max-xl:block xl:right-[350px] gap-2 items-center absolute top-8 md:top-[4.25rem] z-50 scale-[0.8] md:scale-100">
+          <CardDetail
+            electricUsageData={electricUsageData}
+            buildingData={buildingData}
+          />
+        </div>
+      )}
+
       <div className="flex flex-col">
         <header className="flex h-14 bg-card justify-between items-center gap-2 px-2 sm:px-4 md:h-[60px] w-full fixed md:px-6 z-50 shadow-sm">
           {!isHideDashbaord && (
@@ -132,7 +152,7 @@ export default function Navigation({
               <span className="sr-only">Toggle Back</span>
             </Button>
           )}
-          <Link href={"/overview"}>
+          <Link href={"#"}>
             <h2
               className={cn(
                 "text-base md:text-lg lg:text-xl font-semibold tracking-wide"

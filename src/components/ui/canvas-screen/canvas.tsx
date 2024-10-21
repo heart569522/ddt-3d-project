@@ -28,6 +28,7 @@ interface Props {
   antialias?: boolean;
   dpr?: [number, number];
   controlSettings?: OrbitControlsProps;
+  planeSize?: [number, number];
   onObjectHover?: (object: string | null) => void;
   onObjectClick?: (object: string) => void;
 }
@@ -38,28 +39,14 @@ export default function CanvasScreen({
   antialias = false,
   dpr = [0.3, 0.95],
   controlSettings,
+  planeSize = [500, 500],
   onObjectHover,
   onObjectClick,
 }: Props) {
-  const [selectedObject, setSelectedObject] = useState<string | null>(null);
-
-  const handleObjectHover = (object: string | null) => {
-    if (onObjectHover) {
-      onObjectHover(object);
-    }
-    setSelectedObject(object);
-  };
-
-  const handleObjectClick = (object: string) => {
-    if (onObjectClick) {
-      onObjectClick(object);
-    }
-    setSelectedObject(object);
-  };
 
   return (
     <Canvas
-      className=" absolute"
+      className="absolute"
       camera={{ position: cameraPosition, far: 800 }}
       gl={{
         antialias: antialias,
@@ -69,7 +56,7 @@ export default function CanvasScreen({
     >
       <Suspense fallback={<ModelLoader />}>
         {/* Add directional light to cast shadows */}
-        <directionalLight
+        {/* <directionalLight
           intensity={0}
           position={[-15, 10, -15]}
           castShadow
@@ -80,31 +67,27 @@ export default function CanvasScreen({
           shadow-camera-right={20}
           shadow-camera-top={20}
           shadow-camera-bottom={-20}
-        />
+        /> */}
 
         {/* Render the JSX model directly */}
         <Selection>
-          <EffectComposer multisampling={0} autoClear={false}>
+          <EffectComposer resolutionScale={0.1} autoClear={false}>
             <Outline
-              // selectionLayer={5}
               blendFunction={BlendFunction.SCREEN}
-              xRay
-              blur
+              xRay={true}
+              blur={false}
               visibleEdgeColor={Color.NAMES.yellow}
               hiddenEdgeColor={Color.NAMES.yellow}
-              edgeStrength={5}
+              edgeStrength={3}
             />
           </EffectComposer>
-          {React.cloneElement(model as React.ReactElement, {
-            onObjectHover: handleObjectHover,
-            onObjectClick: handleObjectClick,
-          })}
+          {model}
         </Selection>
 
-        <ambientLight intensity={-0.5} />
+        {/* <ambientLight intensity={-0.5} /> */}
         {/* Ground Plane to receive shadows */}
         <Plane
-          args={[500, 500]}
+          args={planeSize}
           rotation={[-Math.PI / 2, 0, 0]}
           position={[0, 0, 0]}
           receiveShadow

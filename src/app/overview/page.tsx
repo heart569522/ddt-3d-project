@@ -2,6 +2,7 @@ import {
   getAverageElectricityUsage,
   getAverageEnvironment,
   getData,
+  getPmTempHmdData,
 } from "@/actions/actions";
 import { Button } from "@/components/shadcn-ui/button";
 import CardInfo from "@/components/ui/dashboard/card-info";
@@ -11,22 +12,25 @@ import {
 } from "@/components/ui/dashboard/electric-chart";
 import { EnvironmentAverage } from "@/components/ui/dashboard/environment-chart";
 import Navigation from "@/components/ui/navigation";
-import { formatElectricTodayUsage } from "@/lib/formats";
+import { formatFacultyElectricTodayUsage } from "@/lib/formats";
 import { Droplets, LoaderCircle, MapPin, Thermometer } from "lucide-react";
 import { IconFaceMask } from "@tabler/icons-react";
 import TooltipHover from "@/components/ui/tooltip-hover";
 import Link from "next/link";
 import EnvironmentInfoChart from "@/components/ui/dashboard/environment-info-chart";
 import CanvasScreen from "@/components/ui/canvas-screen/canvas";
-import { Suspense } from "react";
 import React from "react";
 import FacultyAllBuilding from "@/components/models/faculty/faculty-all-building";
+import { useFacultyStore } from "@/stores/faculty-provider";
+import CardDetail from "@/components/ui/dashboard/card-detail";
 
 export default async function Overview() {
-  const avgEnvironment = await getAverageEnvironment();
+  const avgEnvironment = await getData("gaugeOutdoor");
   const avgElectricUsage = await getAverageElectricityUsage();
   const electricUsage = await getData("UseRateToday");
-  const electricUsageData = formatElectricTodayUsage(electricUsage);
+  const electricUsageData = formatFacultyElectricTodayUsage(electricUsage);
+  const pmTempHmdData = await getData("HTPMPerMonth");
+  const buildingData = await getData("getBU");
 
   return (
     <Navigation
@@ -37,7 +41,7 @@ export default async function Overview() {
             detail={
               <>
                 <p className="text-base text-card-foreground">
-                  Area: 1234 Square meters
+                  Area: 1,234 Square meters
                 </p>
                 <p className="text-base text-card-foreground">
                   Number of Buildings: 12 units
@@ -46,11 +50,17 @@ export default async function Overview() {
             }
           />
           <EnvironmentAverage data={avgEnvironment} />
-          <EnvironmentInfoChart />
+          <EnvironmentInfoChart data={pmTempHmdData} />
         </>
       }
       rightDashbaord={
         <div className="flex flex-col gap-2">
+          <div className="hidden xl:block">
+            <CardDetail
+              electricUsageData={electricUsage}
+              buildingData={buildingData}
+            />
+          </div>
           <ElectricChart data={electricUsageData} />
           <AverageElectricUsage data={avgElectricUsage} />
         </div>
@@ -109,16 +119,21 @@ export default async function Overview() {
           </TooltipHover>
         </>
       }
+      useCardBuildingDetail={true}
+      buildingData={buildingData}
+      electricUsageData={electricUsage}
     >
       <div className="w-full h-dvh">
         <CanvasScreen
           model={<FacultyAllBuilding isManage={false} />}
           cameraPosition={[-5, 6, 12]}
+          dpr={[0.2, 0.7]}
+          planeSize={[2000, 2000]}
           controlSettings={{
-            // minPolarAngle: 0,
-            // maxPolarAngle: Math.PI / 2.25,
+            minPolarAngle: 0,
+            maxPolarAngle: Math.PI / 2.25,
             // minDistance: 40,
-            // maxDistance: 100,
+            maxDistance: 350,
             enablePan: false,
           }}
         />

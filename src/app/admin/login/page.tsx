@@ -8,5 +8,13 @@ export default async function LogIn() {
   if (session) {
     redirect("./management");
   }
-  return <LoginForm />;
+
+  return (
+    <div className="flex justify-center items-center h-dvh w-full p-2">
+      <div className="absolute bg-login-image inset-0 bg-cover bg-center opacity-80 dark:opacity-50" />
+      <div className="relative z-10 shadow-xl">
+        <LoginForm />
+      </div>
+    </div>
+  );
 }

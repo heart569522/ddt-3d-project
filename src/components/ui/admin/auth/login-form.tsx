@@ -95,66 +95,62 @@ export default function LoginForm() {
   };
 
   return (
-    <div className="flex justify-center items-center h-dvh w-full p-2">
-      <form onSubmit={handleSubmit(onSubmit)}>
-        <Card className="w-full max-w-sm shadow-md">
-          <CardHeader>
-            <CardTitle className="text-2xl">Login</CardTitle>
-            <CardDescription>
-              Enter your username below to login to your account.
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="grid gap-4">
-            <div className="grid gap-2">
-              <Label htmlFor="username">Username</Label>
-              <Input
-                {...register("username")}
-                id="username"
-                type="username"
-                placeholder="digitaltwins"
-              />
-              {errors.username && (
-                <p className="text-sm text-red-500">
-                  {errors.username.message}
-                </p>
-              )}
-            </div>
-            <div className="grid gap-2">
-              <div className="flex w-full flex-col space-y-2">
-                <div className="flex items-center">
-                  <Label htmlFor="password">Password</Label>
-                  {/* <Link
+    <form onSubmit={handleSubmit(onSubmit)}>
+      <Card className="w-full max-w-sm shadow-md">
+        <CardHeader>
+          <CardTitle className="text-2xl">Login</CardTitle>
+          <CardDescription>
+            Enter your username below to login to your account.
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="grid gap-4">
+          <div className="grid gap-2">
+            <Label htmlFor="username">Username</Label>
+            <Input
+              {...register("username")}
+              id="username"
+              type="username"
+              placeholder="digitaltwins"
+            />
+            {errors.username && (
+              <p className="text-sm text-red-500">{errors.username.message}</p>
+            )}
+          </div>
+          <div className="grid gap-2">
+            <div className="flex w-full flex-col space-y-2">
+              <div className="flex items-center">
+                <Label htmlFor="password">Password</Label>
+                {/* <Link
                       href="/forgot-password"
                       className="ml-auto inline-block text-sm underline"
                     >
                       Forgot your password?
                     </Link> */}
-                </div>
-                <PasswordInput
-                  {...register("password")}
-                  id="password"
-                  name="password"
-                  placeholder="●●●●●●●●●●●"
-                />
-                {errors.password && (
-                  <p className="text-sm text-red-500">
-                    {errors.password.message}
-                  </p>
-                )}
               </div>
+              <PasswordInput
+                {...register("password")}
+                id="password"
+                name="password"
+                placeholder="●●●●●●●●●●●"
+              />
+              {errors.password && (
+                <p className="text-sm text-red-500">
+                  {errors.password.message}
+                </p>
+              )}
             </div>
-          </CardContent>
-          <CardFooter className="flex flex-col gap-2">
-            <ButtonLoading
-              type="submit"
-              isLoading={isSubmitting}
-              text={"Login"}
-              textLoading="Checking..."
-              icon={LogIn}
-            />
-          </CardFooter>
-        </Card>
-      </form>
+          </div>
+        </CardContent>
+        <CardFooter className="flex flex-col gap-2">
+          <ButtonLoading
+            type="submit"
+            isLoading={isSubmitting}
+            text={"Login"}
+            textLoading="Checking..."
+            icon={LogIn}
+          />
+        </CardFooter>
+      </Card>
       {showAlert && (
         <AlertModal
           openModal={showAlert.openModal}
@@ -163,6 +159,6 @@ export default function LoginForm() {
           onClose={clearAlert}
         />
       )}
-    </div>
+    </form>
   );
 }

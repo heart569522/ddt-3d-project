@@ -12,7 +12,7 @@ import {
 } from "@/components/ui/dashboard/electric-chart";
 import { EnvironmentAverage } from "@/components/ui/dashboard/environment-chart";
 import Navigation from "@/components/ui/navigation";
-import { formatElectricTodayUsage } from "@/lib/formats";
+import { formatFacultyElectricTodayUsage } from "@/lib/formats";
 import { Droplets, MapPin, Thermometer } from "lucide-react";
 import { IconFaceMask } from "@tabler/icons-react";
 import TooltipHover from "@/components/ui/tooltip-hover";
@@ -75,7 +75,8 @@ export default async function Floor({ params }: { params: { slug: string } }) {
     `UseRateBuildingPerMonth/${params.slug.toLowerCase()}`
   );
   const electricUsage = await getData("UseRateToday");
-  const electricUsageData = formatElectricTodayUsage(electricUsage);
+  const electricUsageData = formatFacultyElectricTodayUsage(electricUsage);
+  const pmTempHmdData = await getData("HTPMPerMonth");
 
   return (
     <Navigation
@@ -86,7 +87,7 @@ export default async function Floor({ params }: { params: { slug: string } }) {
             detail={`Building: ${params.slug.toUpperCase()} Information`}
           />
           <EnvironmentAverage data={avgEnvironment} />
-          <EnvironmentInfoChart />
+          <EnvironmentInfoChart data={pmTempHmdData}/>
         </>
       }
       rightDashbaord={

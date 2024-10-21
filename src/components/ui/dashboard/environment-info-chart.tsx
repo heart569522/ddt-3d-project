@@ -13,14 +13,16 @@ import { EnvironmentPMChart } from "./environment-chart";
 import TemperatureChart from "./temperature-chart";
 import HumidityChart from "./humidity-chart";
 
-export default async function EnvironmentInfoChart() {
-  const pmTempHmdData = await getPmTempHmdData();
+interface Props {
+  data: IPmTempHmd[];
+}
 
+export default async function EnvironmentInfoChart({ data }: Props) {
   let PMData: IEnvironmentLineChart[] = [];
   let TempData: IEnvironmentLineChart[] = [];
   let HumidityData: IEnvironmentLineChart[] = [];
 
-  pmTempHmdData?.forEach((item: IPmTempHmd) => {
+  data?.forEach((item: IPmTempHmd) => {
     const [, month] = item.Month.split("-").map(Number);
     const monthName = monthNames[month - 1];
 

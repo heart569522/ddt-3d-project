@@ -550,7 +550,7 @@ type GLTFResult = GLTF & {
   }
 }
 
-type EN124Floor =
+export type EN124Floor =
   | "EN12401"
   | "EN124M1"
   | "EN12402"
@@ -595,7 +595,6 @@ export default function EN124Building(props: EN124BuildingProps) {
         ...prev,
         [object]: !prev[object],
       };
-      console.log("🚀 ~ setClick ~ updatedState:", updatedState)
       return updatedState;
     });
     if (props.onObjectClick) {
@@ -610,7 +609,6 @@ export default function EN124Building(props: EN124BuildingProps) {
         if (mesh.material) {
           const material = mesh.material as THREE.MeshStandardMaterial;
   
-          // Toggle the color state on click
           if (material.userData.isActive) {
             // Revert to original color if already active (clicked once)
             const originalColor = material.userData.originalColor;
@@ -623,7 +621,7 @@ export default function EN124Building(props: EN124BuildingProps) {
             if (!material.userData.originalColor) {
               material.userData.originalColor = material.color.clone();
             }
-            material.color.set(0xf9ff79); // Set click color
+            material.color.set(0xf9ff79);
             material.userData.isActive = true;
           }
         }
