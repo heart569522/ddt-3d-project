@@ -21,7 +21,6 @@ import EnvironmentInfoChart from "@/components/ui/dashboard/environment-info-cha
 import CanvasScreen from "@/components/ui/canvas-screen/canvas";
 import React from "react";
 import FacultyAllBuilding from "@/components/models/faculty/faculty-all-building";
-import { useFacultyStore } from "@/stores/faculty-provider";
 import CardDetail from "@/components/ui/dashboard/card-detail";
 
 export default async function Overview() {

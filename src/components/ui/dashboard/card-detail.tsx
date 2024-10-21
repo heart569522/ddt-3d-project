@@ -13,7 +13,7 @@ import {
   TableFooter,
   TableRow,
 } from "@/components/shadcn-ui/table";
-import { useFacultyStore } from "@/stores/faculty-provider";
+import useFacultyStore from "@/stores/use-faculty-store";
 import { IBuilding, IElectricTodayUsage } from "@/types/model";
 import Link from "next/link";
 import React, { useEffect, useState } from "react";

@@ -13,8 +13,7 @@ import { Select } from '@react-three/postprocessing'
 import Link from 'next/link'
 import { Button } from '@/components/shadcn-ui/button'
 import { ExternalLink } from 'lucide-react'
-import { FacultyBuilding } from '@/stores/create-faculty-store'
-import { useFacultyStore } from '@/stores/faculty-provider'
+import useFacultyStore, { FacultyBuilding } from '@/stores/use-faculty-store'
 
 type GLTFResult = GLTF & {
   nodes: {

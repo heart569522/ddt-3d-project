@@ -23,7 +23,7 @@ import TooltipHover from "@/components/ui/tooltip-hover";
 import Link from "next/link";
 import EnvironmentInfoChart from "@/components/ui/dashboard/environment-info-chart";
 import CanvasScreen from "@/components/ui/canvas-screen/canvas";
-import { EN117Building } from "@/components/models/en117/building/En117Building";
+import { EN117Building } from "@/components/models/en117/building/en117-building";
 import { Metadata } from "next/types";
 import { notFound } from "next/navigation";
 import React from "react";

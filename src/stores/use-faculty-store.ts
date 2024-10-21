@@ -25,7 +25,7 @@ export interface ClickFacultyState {
   setClick: (building: FacultyBuilding | null) => void;
 }
 
-const createFacultyStore = create<ClickFacultyState>((set, get) => ({
+const useFacultyStore = create<ClickFacultyState>((set, get) => ({
   click: null, // เริ่มต้นเป็น null แสดงว่ายังไม่มีโมเดลไหนถูกคลิก
   setClick: (building) => {
     set((state) => ({
@@ -34,4 +34,4 @@ const createFacultyStore = create<ClickFacultyState>((set, get) => ({
   },
 }));
 
-export default createFacultyStore;
+export default useFacultyStore;

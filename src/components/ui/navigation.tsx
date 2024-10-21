@@ -17,9 +17,9 @@ import Toolbar from "./toolbar";
 import { avatar } from "@/lib/data";
 import AvatarCircles from "./avatar-circle";
 import { cn } from "@/lib/utils";
-import { useFacultyStore } from "@/stores/faculty-provider";
 import CardDetail from "./dashboard/card-detail";
 import { IBuilding, IElectricTodayUsage } from "@/types/model";
+import useFacultyStore from "@/stores/use-faculty-store";
 
 type Props = {
   children: React.ReactNode;

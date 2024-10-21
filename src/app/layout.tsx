@@ -4,7 +4,6 @@ import { ThemeProvider } from "@/components/themes/theme-provider";
 import { anuphan } from "@/lib/fonts";
 import { getServerSession } from "next-auth";
 import SessionProvider from "@/components/sessionProvider";
-import { FacultyStoreProvider } from "@/stores/faculty-provider";
 
 export const metadata: Metadata = {
   title: {
@@ -25,7 +24,7 @@ export default async function RootLayout({
     <html lang="en" suppressHydrationWarning>
       <body className={`${anuphan.className}`}>
         <SessionProvider session={session}>
-          <FacultyStoreProvider>
+          {/* <FacultyStoreProvider> */}
             <ThemeProvider
               attribute="class"
               defaultTheme="system"
@@ -36,7 +35,7 @@ export default async function RootLayout({
                 {children}
               </main>
             </ThemeProvider>
-          </FacultyStoreProvider>
+          {/* </FacultyStoreProvider> */}
         </SessionProvider>
       </body>
     </html>
