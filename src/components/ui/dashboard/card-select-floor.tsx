@@ -23,10 +23,10 @@ export default function CardSelectFloor({ building }: Props) {
   useEffect(() => {
     const loadFloors = async () => {
       try {
-        const module = await import(
+        const buildingModule = await import(
           `@/components/models/${building.toLowerCase()}/building/${building.toLowerCase()}-building`
         );
-        setFloors(module[`${building.toLowerCase()}Floors`]);
+        setFloors(buildingModule[`${building.toLowerCase()}Floors`]);
       } catch (error) {
         console.error("Error loading floors:", error);
         notFound();

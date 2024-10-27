@@ -762,21 +762,7 @@ export default function EN124Building(props: Props) {
         rotation={[-Math.PI / 2, 0, 0]}
         scale={0.305}
       >
-        {select === "EN124M1" && !props.isManage && (
-          <Html distanceFactor={100}>
-            <div className="pt-[10px] transform translate-x-[80%] bg-secondary text-left p-[10px_15px] rounded-md w-[320px] relative before:content-[''] before:absolute before:top-[25px] before:-left-10 before:h-[2px] before:w-[40px] before:bg-secondary">
-              <div className="flex justify-between items-center">
-                <label className="font-bold text-xl">ชั้น M1 - EN124M1</label>
-                <Link href={"/floor/EN124M1"} target="_blank">
-                  <Button variant={"ghost"} size={"icon"}>
-                    <ExternalLink className="size-5" />
-                  </Button>
-                </Link>
-              </div>
-              {renderFloorDetail()}
-            </div>
-          </Html>
-        )}
+        {renderModalDetail("EN124M1")}
         <mesh name="1100mm010" geometry={nodes['1100mm010'].geometry} material={materials['ผิวคอนกรีต ขัดมัน.011']} />
         <mesh name="1100mm010_1" geometry={nodes['1100mm010_1'].geometry} material={materials['ผนังก่ออิฐ ทาสี.011']} />
         <mesh name="1100mm010_2" geometry={nodes['1100mm010_2'].geometry} material={materials['ผนังทดลอง.011']} />
@@ -815,21 +801,7 @@ export default function EN124Building(props: Props) {
         rotation={[-Math.PI / 2, 0, 0]}
         scale={0.305}
       >
-        {select === "EN12402" && !props.isManage && (
-          <Html distanceFactor={100}>
-            <div className="pt-[10px] transform translate-x-[80%] bg-secondary text-left p-[10px_15px] rounded-md w-[320px] relative before:content-[''] before:absolute before:top-[25px] before:-left-10 before:h-[2px] before:w-[40px] before:bg-secondary">
-              <div className="flex justify-between items-center">
-                <label className="font-bold text-xl">ชั้น 2 - EN12402</label>
-                <Link href={"/floor/EN12402"} target="_blank">
-                  <Button variant={"ghost"} size={"icon"}>
-                    <ExternalLink className="size-5" />
-                  </Button>
-                </Link>
-              </div>
-              {renderFloorDetail()}
-            </div>
-          </Html>
-        )}
+        {renderModalDetail("EN12402")}
         <mesh name="1100mm019" geometry={nodes['1100mm019'].geometry} material={materials['ผิวคอนกรีต ขัดมัน.012']} />
         <mesh name="1100mm019_1" geometry={nodes['1100mm019_1'].geometry} material={materials['ผนังก่ออิฐ ทาสี.012']} />
         <mesh name="1100mm019_2" geometry={nodes['1100mm019_2'].geometry} material={materials['ผนังทดลอง.012']} />
@@ -873,21 +845,7 @@ export default function EN124Building(props: Props) {
         rotation={[-Math.PI / 2, 0, 0]}
         scale={0.305}
       >
-        {select === "EN12403" && !props.isManage && (
-          <Html distanceFactor={100}>
-            <div className="pt-[10px] transform translate-x-[80%] bg-secondary text-left p-[10px_15px] rounded-md w-[320px] relative before:content-[''] before:absolute before:top-[25px] before:-left-10 before:h-[2px] before:w-[40px] before:bg-secondary">
-              <div className="flex justify-between items-center">
-                <label className="font-bold text-xl">ชั้น 3 - EN12403</label>
-                <Link href={"/floor/EN12403"} target="_blank">
-                  <Button variant={"ghost"} size={"icon"}>
-                    <ExternalLink className="size-5" />
-                  </Button>
-                </Link>
-              </div>
-              {renderFloorDetail()}
-            </div>
-          </Html>
-        )}
+        {renderModalDetail("EN12403")}
         <mesh name="1100mm028" geometry={nodes['1100mm028'].geometry} material={materials['ผิวคอนกรีต ขัดมัน.013']} />
         <mesh name="1100mm028_1" geometry={nodes['1100mm028_1'].geometry} material={materials['ผนังก่ออิฐ ทาสี.013']} />
         <mesh name="1100mm028_2" geometry={nodes['1100mm028_2'].geometry} material={materials['ผนังทดลอง.013']} />
@@ -930,21 +888,7 @@ export default function EN124Building(props: Props) {
         rotation={[-Math.PI / 2, 0, 0]}
         scale={0.305}
       >
-        {select === "EN12404" && !props.isManage && (
-          <Html distanceFactor={100}>
-            <div className="pt-[10px] transform translate-x-[80%] bg-secondary text-left p-[10px_15px] rounded-md w-[320px] relative before:content-[''] before:absolute before:top-[25px] before:-left-10 before:h-[2px] before:w-[40px] before:bg-secondary">
-              <div className="flex justify-between items-center">
-                <label className="font-bold text-xl">ชั้น 4 - EN12404</label>
-                <Link href={"/floor/EN12404"} target="_blank">
-                  <Button variant={"ghost"} size={"icon"}>
-                    <ExternalLink className="size-5" />
-                  </Button>
-                </Link>
-              </div>
-              {renderFloorDetail()}
-            </div>
-          </Html>
-        )}
+        {renderModalDetail("EN12404")}
         <mesh name="1100mm037" geometry={nodes['1100mm037'].geometry} material={materials['ผิวคอนกรีต ขัดมัน.014']} />
         <mesh name="1100mm037_1" geometry={nodes['1100mm037_1'].geometry} material={materials['ผนังก่ออิฐ ทาสี.014']} />
         <mesh name="1100mm037_2" geometry={nodes['1100mm037_2'].geometry} material={materials['ผนังทดลอง.014']} />
@@ -986,21 +930,7 @@ export default function EN124Building(props: Props) {
         rotation={[-Math.PI / 2, 0, 0]}
         scale={0.305}
       >
-        {select === "EN12405" && !props.isManage && (
-          <Html distanceFactor={100}>
-            <div className="pt-[10px] transform translate-x-[80%] bg-secondary text-left p-[10px_15px] rounded-md w-[320px] relative before:content-[''] before:absolute before:top-[25px] before:-left-10 before:h-[2px] before:w-[40px] before:bg-secondary">
-              <div className="flex justify-between items-center">
-                <label className="font-bold text-xl">ชั้น 5 - EN12405</label>
-                <Link href={"/floor/EN12405"} target="_blank">
-                  <Button variant={"ghost"} size={"icon"}>
-                    <ExternalLink className="size-5" />
-                  </Button>
-                </Link>
-              </div>
-              {renderFloorDetail()}
-            </div>
-          </Html>
-        )}
+        {renderModalDetail("EN12405")}
         <mesh name="1100mm047" geometry={nodes['1100mm047'].geometry} material={materials['ผิวคอนกรีต ขัดมัน.015']} />
         <mesh name="1100mm047_1" geometry={nodes['1100mm047_1'].geometry} material={materials['ผนังก่ออิฐ ทาสี.015']} />
         <mesh name="1100mm047_2" geometry={nodes['1100mm047_2'].geometry} material={materials['ผนังทดลอง.015']} />
@@ -1042,21 +972,7 @@ export default function EN124Building(props: Props) {
         rotation={[-Math.PI / 2, 0, 0]}
         scale={0.305}
       >
-        {select === "EN12406" && !props.isManage && (
-          <Html distanceFactor={100}>
-            <div className="pt-[10px] transform translate-x-[80%] bg-secondary text-left p-[10px_15px] rounded-md w-[320px] relative before:content-[''] before:absolute before:top-[25px] before:-left-10 before:h-[2px] before:w-[40px] before:bg-secondary">
-              <div className="flex justify-between items-center">
-                <label className="font-bold text-xl">ชั้น 6 - EN12406</label>
-                <Link href={"/floor/EN12406"} target="_blank">
-                  <Button variant={"ghost"} size={"icon"}>
-                    <ExternalLink className="size-5" />
-                  </Button>
-                </Link>
-              </div>
-              {renderFloorDetail()}
-            </div>
-          </Html>
-        )}
+        {renderModalDetail("EN12406")}
         <mesh name="1100mm056" geometry={nodes['1100mm056'].geometry} material={materials['ผิวคอนกรีต ขัดมัน.016']} />
         <mesh name="1100mm056_1" geometry={nodes['1100mm056_1'].geometry} material={materials['ผนังก่ออิฐ ทาสี.016']} />
         <mesh name="1100mm056_2" geometry={nodes['1100mm056_2'].geometry} material={materials['ผนังทดลอง.016']} />
@@ -1096,21 +1012,7 @@ export default function EN124Building(props: Props) {
         rotation={[-Math.PI / 2, 0, 0]}
         scale={0.305}
       >
-        {select === "EN12407" && !props.isManage && (
-          <Html distanceFactor={100}>
-            <div className="pt-[10px] transform translate-x-[80%] bg-secondary text-left p-[10px_15px] rounded-md w-[320px] relative before:content-[''] before:absolute before:top-[25px] before:-left-10 before:h-[2px] before:w-[40px] before:bg-secondary">
-              <div className="flex justify-between items-center">
-                <label className="font-bold text-xl">ชั้น 7 - EN12407</label>
-                <Link href={"/floor/EN12407"} target="_blank">
-                  <Button variant={"ghost"} size={"icon"}>
-                    <ExternalLink className="size-5" />
-                  </Button>
-                </Link>
-              </div>
-              {renderFloorDetail()}
-            </div>
-          </Html>
-        )}
+        {renderModalDetail("EN12407")}
         <mesh name="1100mm066" geometry={nodes['1100mm066'].geometry} material={materials['ผิวคอนกรีต ขัดมัน.017']} />
         <mesh name="1100mm066_1" geometry={nodes['1100mm066_1'].geometry} material={materials['ผนังก่ออิฐ ทาสี.017']} />
         <mesh name="1100mm066_2" geometry={nodes['1100mm066_2'].geometry} material={materials['ผนังทดลอง.017']} />
@@ -1151,21 +1053,7 @@ export default function EN124Building(props: Props) {
         rotation={[-Math.PI / 2, 0, 0]}
         scale={0.305}
       >
-        {select === "EN12408" && !props.isManage && (
-          <Html distanceFactor={100}>
-            <div className="pt-[10px] transform translate-x-[80%] bg-secondary text-left p-[10px_15px] rounded-md w-[320px] relative before:content-[''] before:absolute before:top-[25px] before:-left-10 before:h-[2px] before:w-[40px] before:bg-secondary">
-              <div className="flex justify-between items-center">
-                <label className="font-bold text-xl">ชั้น 8 - EN12408</label>
-                <Link href={"/floor/EN12408"} target="_blank">
-                  <Button variant={"ghost"} size={"icon"}>
-                    <ExternalLink className="size-5" />
-                  </Button>
-                </Link>
-              </div>
-              {renderFloorDetail()}
-            </div>
-          </Html>
-        )}
+        {renderModalDetail("EN12408")}
         <mesh name="1100mm074" geometry={nodes['1100mm074'].geometry} material={materials['ผิวคอนกรีต ขัดมัน.018']} />
         <mesh name="1100mm074_1" geometry={nodes['1100mm074_1'].geometry} material={materials['ผนังก่ออิฐ ทาสี.018']} />
         <mesh name="1100mm074_2" geometry={nodes['1100mm074_2'].geometry} material={materials['ผนังทดลอง.018']} />
