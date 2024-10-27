@@ -73,7 +73,7 @@ export default function CardDetail({ buildingData, electricUsageData }: Props) {
       </CardHeader>
       <CardContent>
         {data ? (
-          <Table className=" border rounded-md">
+          <Table className="border rounded-md">
             <TableBody>
               <TableRow>
                 <TableCell className="p-2">Building Code</TableCell>

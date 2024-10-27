@@ -5,7 +5,7 @@ Command: npx gltfjsx@6.5.2 ./public/models/building/en124/en124-building-resize.
 "use client"
 
 import * as THREE from 'three'
-import React, { useCallback, useState } from 'react'
+import React, { useCallback, useEffect, useState } from 'react'
 import { Html, useGLTF } from "@react-three/drei";
 import { Select } from "@react-three/postprocessing";
 import { GLTF } from "three-stdlib";
@@ -13,6 +13,9 @@ import { Button } from "@/components/shadcn-ui/button";
 import { ExternalLink } from "lucide-react";
 import Link from "next/link";
 import { useEN124Store } from '@/stores/use-building-store';
+import { IElectricTodayUsage, IFloorDetails } from '@/types/model';
+import { Table, TableBody, TableCell, TableRow } from '@/components/shadcn-ui/table';
+import { getData } from '@/actions/actions';
 
 type GLTFResult = GLTF & {
   nodes: {
@@ -551,35 +554,121 @@ type GLTFResult = GLTF & {
   }
 }
 
-export type EN124Floor =
-  | "EN12401"
-  | "EN124M1"
-  | "EN12402"
-  | "EN12403"
-  | "EN12404"
-  | "EN12405"
-  | "EN12406"
-  | "EN12407"
-  | "EN12408";
+export const en124Floors = [
+  "EN12401",
+  "EN124M1",
+  "EN12402",
+  "EN12403",
+  "EN12404",
+  "EN12405",
+  "EN12406",
+  "EN12407",
+  "EN12408",
+] as const;
 
-type EN124BuildingProps = JSX.IntrinsicElements["group"] & {
-  // onObjectHover?: (object: string | null) => void;
-  // onObjectClick?: (object: string) => void;
+export type EN124Floor = typeof en124Floors[number];
+
+type Props = JSX.IntrinsicElements["group"] & {
   isManage: boolean;
 };
 
-export default function EN124Building(props: EN124BuildingProps) {
+export default function EN124Building(props: Props) {
   const { nodes, materials } = useGLTF('/models/building/en124/en124-building-resize.glb') as GLTFResult
   const [hover, setHover] = useState<EN124Floor | null>(null);
-  const { click, setClick } = useEN124Store(state => (state));
+  const { select, setSelect } = useEN124Store(state => (state));
+  const [floorDetail, setFloorDetail] = useState<IFloorDetails | null>(null);
 
   const handleObjectHover = useCallback((object: EN124Floor | null) => {
     setHover(object);
   }, []);
 
-  const handleObjectClick = useCallback((object: EN124Floor) => {
-    setClick(object);
-  }, [setClick]);
+  const handleObjectSelect = useCallback((object: EN124Floor) => {
+    setSelect(object);
+  }, [setSelect]);
+
+  useEffect(() => {
+    const fetchFloorDetail = async () => {
+      const data = await getData(`buildingFloorDetail/${select?.toUpperCase()}`);
+      setFloorDetail(data);
+    }
+
+    fetchFloorDetail();
+  }, [select]);
+
+  const renderModalDetail = (floorCode: string) => {
+    if (select === floorCode && !props.isManage) {
+      return (
+        <Html distanceFactor={100}>
+          <div className="pt-[10px] transform translate-x-[80%] bg-secondary text-left p-[10px_15px] rounded-md w-[320px] relative before:content-[''] before:absolute before:top-[25px] before:-left-10 before:h-[2px] before:w-[40px] before:bg-secondary">
+            <div className="flex justify-between items-center">
+              <label className="font-bold text-xl">
+                {`ชั้น ${floorCode.substring(5, 7)} - ${floorCode}`}
+              </label>
+              <Link href={`/floor/${floorCode.toUpperCase()}`} target="_blank">
+                <Button variant={"ghost"} size={"icon"}>
+                  <ExternalLink className="size-5" />
+                </Button>
+              </Link>
+            </div>
+            {renderFloorDetail()}
+          </div>
+        </Html>
+      )
+    }
+  }
+
+  const renderFloorDetail = () => {
+    if (floorDetail) {
+      return (
+        <Table className="border rounded-md">
+          <TableBody>
+            <TableRow>
+              <TableCell className="p-2">Building Code</TableCell>
+              <TableCell className="p-2">
+                {floorDetail?.buildingCode || "-"}
+              </TableCell>
+            </TableRow>
+            <TableRow>
+              <TableCell className="p-2">Floor</TableCell>
+              <TableCell className="p-2">
+                {floorDetail?.floorNumber || "-"}
+              </TableCell>
+            </TableRow>
+            <TableRow>
+              <TableCell className="p-2">Meter Energy</TableCell>
+              <TableCell className="p-2">
+                {floorDetail?.floorMeter || "-"}
+              </TableCell>
+            </TableRow>
+            <TableRow>
+              <TableCell className="p-2">Meter Power</TableCell>
+              <TableCell className="p-2">
+                {floorDetail?.floorPower || "-"}
+              </TableCell>
+            </TableRow>
+            <TableRow>
+              <TableCell className="p-2">Average PM 2.5</TableCell>
+              <TableCell className="p-2">
+                {floorDetail?.averagefloorPM25 || "-"}
+              </TableCell>
+            </TableRow>
+            <TableRow>
+              <TableCell className="p-2">Average Temperature</TableCell>
+              <TableCell className="p-2">
+                {floorDetail?.averagefloorTemp || "-"}
+              </TableCell>
+            </TableRow>
+            <TableRow>
+              <TableCell className="p-2">Average Humidity</TableCell>
+              <TableCell className="p-2">
+                {floorDetail?.averagefloorHumidity || "-"}
+              </TableCell>
+            </TableRow>
+          </TableBody>
+        </Table>
+      )
+    }
+  }
 
   // const handleMeshClick = (group: THREE.Group) => {
   //   group.traverse((child) => {
@@ -612,7 +701,7 @@ export default function EN124Building(props: EN124BuildingProps) {
     <group {...props} dispose={null}>
       <Select
         name="EN12401"
-        enabled={hover === "EN12401" || click === "EN12401"}
+        enabled={hover === "EN12401" || select === "EN12401"}
         onPointerOver={() => {
           handleObjectHover("EN12401");
         }}
@@ -620,12 +709,13 @@ export default function EN124Building(props: EN124BuildingProps) {
           handleObjectHover(null);
         }}
         onClick={() => {
-          handleObjectClick("EN12401");
+          handleObjectSelect("EN12401");
         }}
         position={[-2.579, 1.022, -8.738]}
         rotation={[-Math.PI / 2, 0, 0]}
         scale={0.305}
       >
+        {renderModalDetail("EN12401")}
         <mesh name="1100mm001" geometry={nodes['1100mm001'].geometry} material={materials['ผิวคอนกรีต ขัดมัน.010']} />
         <mesh name="1100mm001_1" geometry={nodes['1100mm001_1'].geometry} material={materials['ผนังทดลอง.010']} />
         <mesh name="1100mm001_2" geometry={nodes['1100mm001_2'].geometry} material={materials['Default Wall.010']} />
@@ -662,16 +752,31 @@ export default function EN124Building(props: EN124BuildingProps) {
 
       <Select
         name="EN124M1"
-        enabled={hover === "EN124M1" || click === "EN124M1"}
+        enabled={hover === "EN124M1" || select === "EN124M1"}
         onPointerOver={() => handleObjectHover("EN124M1")}
         onPointerOut={() => handleObjectHover(null)}
         onClick={() => {
-          handleObjectClick("EN124M1");
+          handleObjectSelect("EN124M1");
         }}
         position={[-13.263, 4.798, -3.131]}
         rotation={[-Math.PI / 2, 0, 0]}
         scale={0.305}
       >
+        {select === "EN124M1" && !props.isManage && (
+          <Html distanceFactor={100}>
+            <div className="pt-[10px] transform translate-x-[80%] bg-secondary text-left p-[10px_15px] rounded-md w-[320px] relative before:content-[''] before:absolute before:top-[25px] before:-left-10 before:h-[2px] before:w-[40px] before:bg-secondary">
+              <div className="flex justify-between items-center">
+                <label className="font-bold text-xl">ชั้น M1 - EN124M1</label>
+                <Link href={"/floor/EN124M1"} target="_blank">
+                  <Button variant={"ghost"} size={"icon"}>
+                    <ExternalLink className="size-5" />
+                  </Button>
+                </Link>
+              </div>
+              {renderFloorDetail()}
+            </div>
+          </Html>
+        )}
         <mesh name="1100mm010" geometry={nodes['1100mm010'].geometry} material={materials['ผิวคอนกรีต ขัดมัน.011']} />
         <mesh name="1100mm010_1" geometry={nodes['1100mm010_1'].geometry} material={materials['ผนังก่ออิฐ ทาสี.011']} />
         <mesh name="1100mm010_2" geometry={nodes['1100mm010_2'].geometry} material={materials['ผนังทดลอง.011']} />
@@ -700,16 +805,31 @@ export default function EN124Building(props: EN124BuildingProps) {
 
       <Select
         name="EN12402"
-        enabled={hover === "EN12402" || click === "EN12402"}
+        enabled={hover === "EN12402" || select === "EN12402"}
         onPointerOver={() => handleObjectHover("EN12402")}
         onPointerOut={() => handleObjectHover(null)}
         onClick={() => {
-          handleObjectClick("EN12402");
+          handleObjectSelect("EN12402");
         }}
         position={[2.274, 8.646, -0.691]}
         rotation={[-Math.PI / 2, 0, 0]}
         scale={0.305}
       >
+        {select === "EN12402" && !props.isManage && (
+          <Html distanceFactor={100}>
+            <div className="pt-[10px] transform translate-x-[80%] bg-secondary text-left p-[10px_15px] rounded-md w-[320px] relative before:content-[''] before:absolute before:top-[25px] before:-left-10 before:h-[2px] before:w-[40px] before:bg-secondary">
+              <div className="flex justify-between items-center">
+                <label className="font-bold text-xl">ชั้น 2 - EN12402</label>
+                <Link href={"/floor/EN12402"} target="_blank">
+                  <Button variant={"ghost"} size={"icon"}>
+                    <ExternalLink className="size-5" />
+                  </Button>
+                </Link>
+              </div>
+              {renderFloorDetail()}
+            </div>
+          </Html>
+        )}
         <mesh name="1100mm019" geometry={nodes['1100mm019'].geometry} material={materials['ผิวคอนกรีต ขัดมัน.012']} />
         <mesh name="1100mm019_1" geometry={nodes['1100mm019_1'].geometry} material={materials['ผนังก่ออิฐ ทาสี.012']} />
         <mesh name="1100mm019_2" geometry={nodes['1100mm019_2'].geometry} material={materials['ผนังทดลอง.012']} />
@@ -743,16 +863,31 @@ export default function EN124Building(props: EN124BuildingProps) {
 
       <Select
         name="EN12403"
-        enabled={hover === "EN12403" || click === "EN12403"}
+        enabled={hover === "EN12403" || select === "EN12403"}
         onPointerOver={() => handleObjectHover("EN12403")}
         onPointerOut={() => handleObjectHover(null)}
         onClick={() => {
-          handleObjectClick("EN12403");
+          handleObjectSelect("EN12403");
         }}
         position={[3.983, 12.804, -4.258]}
         rotation={[-Math.PI / 2, 0, 0]}
         scale={0.305}
       >
+        {select === "EN12403" && !props.isManage && (
+          <Html distanceFactor={100}>
+            <div className="pt-[10px] transform translate-x-[80%] bg-secondary text-left p-[10px_15px] rounded-md w-[320px] relative before:content-[''] before:absolute before:top-[25px] before:-left-10 before:h-[2px] before:w-[40px] before:bg-secondary">
+              <div className="flex justify-between items-center">
+                <label className="font-bold text-xl">ชั้น 3 - EN12403</label>
+                <Link href={"/floor/EN12403"} target="_blank">
+                  <Button variant={"ghost"} size={"icon"}>
+                    <ExternalLink className="size-5" />
+                  </Button>
+                </Link>
+              </div>
+              {renderFloorDetail()}
+            </div>
+          </Html>
+        )}
         <mesh name="1100mm028" geometry={nodes['1100mm028'].geometry} material={materials['ผิวคอนกรีต ขัดมัน.013']} />
         <mesh name="1100mm028_1" geometry={nodes['1100mm028_1'].geometry} material={materials['ผนังก่ออิฐ ทาสี.013']} />
         <mesh name="1100mm028_2" geometry={nodes['1100mm028_2'].geometry} material={materials['ผนังทดลอง.013']} />
@@ -785,16 +920,31 @@ export default function EN124Building(props: EN124BuildingProps) {
 
       <Select
         name="EN12404"
-        enabled={hover === "EN12404" || click === "EN12404"}
+        enabled={hover === "EN12404" || select === "EN12404"}
         onPointerOver={() => handleObjectHover("EN12404")}
         onPointerOut={() => handleObjectHover(null)}
         onClick={() => {
-          handleObjectClick("EN12404");
+          handleObjectSelect("EN12404");
         }}
         position={[-0.668, 16.813, -2.543]}
         rotation={[-Math.PI / 2, 0, 0]}
         scale={0.305}
       >
+        {select === "EN12404" && !props.isManage && (
+          <Html distanceFactor={100}>
+            <div className="pt-[10px] transform translate-x-[80%] bg-secondary text-left p-[10px_15px] rounded-md w-[320px] relative before:content-[''] before:absolute before:top-[25px] before:-left-10 before:h-[2px] before:w-[40px] before:bg-secondary">
+              <div className="flex justify-between items-center">
+                <label className="font-bold text-xl">ชั้น 4 - EN12404</label>
+                <Link href={"/floor/EN12404"} target="_blank">
+                  <Button variant={"ghost"} size={"icon"}>
+                    <ExternalLink className="size-5" />
+                  </Button>
+                </Link>
+              </div>
+              {renderFloorDetail()}
+            </div>
+          </Html>
+        )}
         <mesh name="1100mm037" geometry={nodes['1100mm037'].geometry} material={materials['ผิวคอนกรีต ขัดมัน.014']} />
         <mesh name="1100mm037_1" geometry={nodes['1100mm037_1'].geometry} material={materials['ผนังก่ออิฐ ทาสี.014']} />
         <mesh name="1100mm037_2" geometry={nodes['1100mm037_2'].geometry} material={materials['ผนังทดลอง.014']} />
@@ -826,16 +976,31 @@ export default function EN124Building(props: EN124BuildingProps) {
 
       <Select
         name="EN12405"
-        enabled={hover === "EN12405" || click === "EN12405"}
+        enabled={hover === "EN12405" || select === "EN12405"}
         onPointerOver={() => handleObjectHover("EN12405")}
         onPointerOut={() => handleObjectHover(null)}
         onClick={() => {
-          handleObjectClick("EN12405");
+          handleObjectSelect("EN12405");
         }}
         position={[0.382, 20.727, -3]}
         rotation={[-Math.PI / 2, 0, 0]}
         scale={0.305}
       >
+        {select === "EN12405" && !props.isManage && (
+          <Html distanceFactor={100}>
+            <div className="pt-[10px] transform translate-x-[80%] bg-secondary text-left p-[10px_15px] rounded-md w-[320px] relative before:content-[''] before:absolute before:top-[25px] before:-left-10 before:h-[2px] before:w-[40px] before:bg-secondary">
+              <div className="flex justify-between items-center">
+                <label className="font-bold text-xl">ชั้น 5 - EN12405</label>
+                <Link href={"/floor/EN12405"} target="_blank">
+                  <Button variant={"ghost"} size={"icon"}>
+                    <ExternalLink className="size-5" />
+                  </Button>
+                </Link>
+              </div>
+              {renderFloorDetail()}
+            </div>
+          </Html>
+        )}
         <mesh name="1100mm047" geometry={nodes['1100mm047'].geometry} material={materials['ผิวคอนกรีต ขัดมัน.015']} />
         <mesh name="1100mm047_1" geometry={nodes['1100mm047_1'].geometry} material={materials['ผนังก่ออิฐ ทาสี.015']} />
         <mesh name="1100mm047_2" geometry={nodes['1100mm047_2'].geometry} material={materials['ผนังทดลอง.015']} />
@@ -867,16 +1032,31 @@ export default function EN124Building(props: EN124BuildingProps) {
 
       <Select
         name="EN12406"
-        enabled={hover === "EN12406" || click === "EN12406"}
+        enabled={hover === "EN12406" || select === "EN12406"}
         onPointerOver={() => handleObjectHover("EN12406")}
         onPointerOut={() => handleObjectHover(null)}
         onClick={() => {
-          handleObjectClick("EN12406");
+          handleObjectSelect("EN12406");
         }}
         position={[0.349, 24.774, -2.394]}
         rotation={[-Math.PI / 2, 0, 0]}
         scale={0.305}
       >
+        {select === "EN12406" && !props.isManage && (
+          <Html distanceFactor={100}>
+            <div className="pt-[10px] transform translate-x-[80%] bg-secondary text-left p-[10px_15px] rounded-md w-[320px] relative before:content-[''] before:absolute before:top-[25px] before:-left-10 before:h-[2px] before:w-[40px] before:bg-secondary">
+              <div className="flex justify-between items-center">
+                <label className="font-bold text-xl">ชั้น 6 - EN12406</label>
+                <Link href={"/floor/EN12406"} target="_blank">
+                  <Button variant={"ghost"} size={"icon"}>
+                    <ExternalLink className="size-5" />
+                  </Button>
+                </Link>
+              </div>
+              {renderFloorDetail()}
+            </div>
+          </Html>
+        )}
         <mesh name="1100mm056" geometry={nodes['1100mm056'].geometry} material={materials['ผิวคอนกรีต ขัดมัน.016']} />
         <mesh name="1100mm056_1" geometry={nodes['1100mm056_1'].geometry} material={materials['ผนังก่ออิฐ ทาสี.016']} />
         <mesh name="1100mm056_2" geometry={nodes['1100mm056_2'].geometry} material={materials['ผนังทดลอง.016']} />
@@ -906,16 +1086,31 @@ export default function EN124Building(props: EN124BuildingProps) {
 
       <Select
         name="EN12407"
-        enabled={hover === "EN12407" || click === "EN12407"}
+        enabled={hover === "EN12407" || select === "EN12407"}
         onPointerOver={() => handleObjectHover("EN12407")}
         onPointerOut={() => handleObjectHover(null)}
         onClick={() => {
-          handleObjectClick("EN12407");
+          handleObjectSelect("EN12407");
         }}
         position={[0.678, 28.792, -2.574]}
         rotation={[-Math.PI / 2, 0, 0]}
         scale={0.305}
       >
+        {select === "EN12407" && !props.isManage && (
+          <Html distanceFactor={100}>
+            <div className="pt-[10px] transform translate-x-[80%] bg-secondary text-left p-[10px_15px] rounded-md w-[320px] relative before:content-[''] before:absolute before:top-[25px] before:-left-10 before:h-[2px] before:w-[40px] before:bg-secondary">
+              <div className="flex justify-between items-center">
+                <label className="font-bold text-xl">ชั้น 7 - EN12407</label>
+                <Link href={"/floor/EN12407"} target="_blank">
+                  <Button variant={"ghost"} size={"icon"}>
+                    <ExternalLink className="size-5" />
+                  </Button>
+                </Link>
+              </div>
+              {renderFloorDetail()}
+            </div>
+          </Html>
+        )}
         <mesh name="1100mm066" geometry={nodes['1100mm066'].geometry} material={materials['ผิวคอนกรีต ขัดมัน.017']} />
         <mesh name="1100mm066_1" geometry={nodes['1100mm066_1'].geometry} material={materials['ผนังก่ออิฐ ทาสี.017']} />
         <mesh name="1100mm066_2" geometry={nodes['1100mm066_2'].geometry} material={materials['ผนังทดลอง.017']} />
@@ -942,24 +1137,23 @@ export default function EN124Building(props: EN124BuildingProps) {
         <mesh name="1100mm066_23" geometry={nodes['1100mm066_23'].geometry} material={materials['AB_RAL3000_Red.015']} />
         <mesh name="1100mm066_24" geometry={nodes['1100mm066_24'].geometry} material={materials['AB_Steel.015']} />
         <mesh name="1100mm066_25" geometry={nodes['1100mm066_25'].geometry} material={materials['AB_Hose White.015']} />
-      
       </Select>
 
       <Select
         name="EN12408"
-        enabled={hover === "EN12408" || click === "EN12408"}
+        enabled={hover === "EN12408" || select === "EN12408"}
         onPointerOver={() => handleObjectHover("EN12408")}
         onPointerOut={() => handleObjectHover(null)}
         onClick={() => {
-          handleObjectClick("EN12408");
+          handleObjectSelect("EN12408");
         }}
         position={[0.334, 32.838, -2.552]}
         rotation={[-Math.PI / 2, 0, 0]}
         scale={0.305}
       >
-        {click === "EN12408" && !props.isManage && (
+        {select === "EN12408" && !props.isManage && (
           <Html distanceFactor={100}>
-            <div className="pt-[10px] transform translate-x-[80%] bg-secondary text-left p-[10px_15px] rounded-md w-[250px] relative before:content-[''] before:absolute before:top-[25px] before:-left-10 before:h-[2px] before:w-[40px] before:bg-secondary">
+            <div className="pt-[10px] transform translate-x-[80%] bg-secondary text-left p-[10px_15px] rounded-md w-[320px] relative before:content-[''] before:absolute before:top-[25px] before:-left-10 before:h-[2px] before:w-[40px] before:bg-secondary">
               <div className="flex justify-between items-center">
                 <label className="font-bold text-xl">ชั้น 8 - EN12408</label>
                 <Link href={"/floor/EN12408"} target="_blank">
@@ -968,6 +1162,7 @@ export default function EN124Building(props: EN124BuildingProps) {
                   </Button>
                 </Link>
               </div>
+              {renderFloorDetail()}
             </div>
           </Html>
         )}
