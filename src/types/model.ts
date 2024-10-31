@@ -191,3 +191,15 @@ export interface IFloorDetails {
   averagefloorHumidity: string
 }
 
+export interface IRoomDetails {
+  buildingCode: string
+  floorNumber: string
+  roomNumber: string
+  energyComsumption: string
+  roomMeter: string
+  roomPower: string
+  averagePM25: string
+  averageTemp: string
+  averageHumidity: string
+}
+

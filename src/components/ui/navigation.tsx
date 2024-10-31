@@ -21,6 +21,7 @@ import CardDetail from "./dashboard/card-detail";
 import { IBuilding, IElectricTodayUsage } from "@/types/model";
 import useFacultyStore from "@/stores/use-faculty-store";
 import CardSelectFloor from "./dashboard/card-select-floor";
+import CardSelectRoom from "./dashboard/card-select-room";
 
 type Props = {
   children: React.ReactNode;
@@ -33,6 +34,7 @@ type Props = {
   electricUsageData?: IElectricTodayUsage[];
   useCardBuildingDetail?: boolean;
   useCardSelectBuildingFloor?: boolean;
+  useCardSelectFloorRoom?: boolean;
 };
 
 export default function Navigation({
@@ -46,6 +48,7 @@ export default function Navigation({
   electricUsageData,
   useCardBuildingDetail = false,
   useCardSelectBuildingFloor = false,
+  useCardSelectFloorRoom = false,
 }: Props) {
   const pathname = usePathname();
   const router = useRouter();
@@ -117,6 +120,12 @@ export default function Navigation({
       {useCardSelectBuildingFloor && (
         <div className="right-3 hidden max-xl:block gap-2 items-center absolute top-[4.25rem] z-50">
           <CardSelectFloor building={pathname.split("/building/")[1]} />
+        </div>
+      )}
+
+      {useCardSelectFloorRoom && (
+        <div className="right-3 hidden max-xl:block gap-2 items-center absolute top-[4.25rem] z-50">
+          <CardSelectRoom room={pathname.split("/floor/")[1]} />
         </div>
       )}
 

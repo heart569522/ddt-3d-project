@@ -18,7 +18,7 @@ import TooltipHover from "@/components/ui/tooltip-hover";
 import Link from "next/link";
 import EnvironmentInfoChart from "@/components/ui/dashboard/environment-info-chart";
 import CanvasScreen from "@/components/ui/canvas-screen/canvas";
-import EN12408Floor from "@/components/models/en124/floor-room/en12408-floor";
+import EN12408Floor from "@/components/models/en124/floor-room/en12408-floor-old";
 import { Metadata } from "next";
 
 export async function generateMetadata({

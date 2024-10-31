@@ -29,7 +29,9 @@ interface Props {
   dpr?: [number, number];
   controlSettings?: OrbitControlsProps;
   planeSize?: [number, number];
-  planeColor?: Color | number,
+  planeColor?: Color | number;
+  outlineStrength?: number;
+  outlineResolution?: number;
   onObjectHover?: (object: string | null) => void;
   onObjectClick?: (object: string) => void;
 }
@@ -42,6 +44,8 @@ export default function CanvasScreen({
   controlSettings,
   planeSize = [500, 500],
   planeColor = Color.NAMES.seagreen,
+  outlineStrength = 3,
+  outlineResolution = 0.1,
   onObjectHover,
   onObjectClick,
 }: Props) {
@@ -73,14 +77,14 @@ export default function CanvasScreen({
 
         {/* Render the JSX model directly */}
         <Selection>
-          <EffectComposer resolutionScale={0.1} autoClear={false}>
+          <EffectComposer resolutionScale={outlineResolution} autoClear={false}>
             <Outline
               blendFunction={BlendFunction.SCREEN}
               xRay={true}
               blur={false}
               visibleEdgeColor={Color.NAMES.yellow}
               hiddenEdgeColor={Color.NAMES.yellow}
-              edgeStrength={3}
+              edgeStrength={outlineStrength}
             />
           </EffectComposer>
           {model}

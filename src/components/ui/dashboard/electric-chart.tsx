@@ -103,7 +103,7 @@ export function ElectricChart({ data, buildingId }: ElectricProps) {
     };
     return config;
   }, {} as ChartConfig);
-  
+
   const pieChartData = chartData?.map((item) => ({
     ...item,
     percent: parseFloat(
@@ -212,8 +212,10 @@ export function ElectricChart({ data, buildingId }: ElectricProps) {
             </Bar>
           </BarChart>
         </ChartContainer>
-        {!buildingId && (<p className="text-sm text-center italic mt-1">(Building Number)</p>)}
-        
+        {!buildingId && (
+          <p className="text-sm text-center italic mt-1">(Building Number)</p>
+        )}
+
         {/* Pie Chart */}
         <h3 className="text-base md:text-lg font-semibold mt-6 text-left">
           {selectedTimeRange === "today" ? "Today" : "24 Hour"} Usage (%)
@@ -248,13 +250,16 @@ const averageChartConfig = {
 
 interface Props {
   data: IAverageElectricityUsage[];
+  isFloorRoom?: boolean;
 }
 
-export function AverageElectricUsage({ data }: Props) {
+export function AverageElectricUsage({ data, isFloorRoom = false }: Props) {
   const chartData = data?.map((item) => {
-    const [, month] = item.Month.split("-").map(Number);
+    const monthString = isFloorRoom ? item.Month.replace(/^\d+-/, "") : item.Month;
+    const [, month] = monthString.split("-").map(Number);
+    
     return {
-      Month: `${monthNames[month - 1]}`,
+      Month: isFloorRoom ? monthString : `${monthNames[month - 1]}`,
       Usage: item.TotalUseRateMonth.toFixed(0),
     };
   });
