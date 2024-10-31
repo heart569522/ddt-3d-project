@@ -20,6 +20,7 @@ import { cn } from "@/lib/utils";
 import CardDetail from "./dashboard/card-detail";
 import { IBuilding, IElectricTodayUsage } from "@/types/model";
 import useFacultyStore from "@/stores/use-faculty-store";
+import CardSelectFloor from "./dashboard/card-select-floor";
 
 type Props = {
   children: React.ReactNode;
@@ -28,9 +29,10 @@ type Props = {
   toolbar?: React.ReactNode;
   isHideDashbaord?: boolean;
   isHideToolbar?: boolean;
-  useCardBuildingDetail?: boolean;
   buildingData?: IBuilding[];
   electricUsageData?: IElectricTodayUsage[];
+  useCardBuildingDetail?: boolean;
+  useCardSelectBuildingFloor?: boolean;
 };
 
 export default function Navigation({
@@ -40,9 +42,10 @@ export default function Navigation({
   toolbar,
   isHideDashbaord = false,
   isHideToolbar = false,
-  useCardBuildingDetail = false,
   buildingData,
   electricUsageData,
+  useCardBuildingDetail = false,
+  useCardSelectBuildingFloor = false,
 }: Props) {
   const pathname = usePathname();
   const router = useRouter();
@@ -108,6 +111,12 @@ export default function Navigation({
             electricUsageData={electricUsageData}
             buildingData={buildingData}
           />
+        </div>
+      )}
+
+      {useCardSelectBuildingFloor && (
+        <div className="right-3 hidden max-xl:block gap-2 items-center absolute top-[4.25rem] z-50">
+          <CardSelectFloor building={pathname.split("/building/")[1]} />
         </div>
       )}
 

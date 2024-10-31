@@ -3,7 +3,7 @@ import React from "react";
 import CanvasScreen from "./canvas";
 import EN12408Floor from "@/components/models/en124/floor-room/en12408-floor";
 import EN124Building from "@/components/models/en124/building/en124-building";
-import FacultyAllBuilding from "@/components/models/faculty/faculty-all-building";
+import FacultyAllBuilding from "@/components/models/faculty/faculty-all-building-old";
 
 export default function CanvasPanel() {
   return (

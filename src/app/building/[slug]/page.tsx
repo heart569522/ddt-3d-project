@@ -26,6 +26,7 @@ import CanvasScreen from "@/components/ui/canvas-screen/canvas";
 import { Metadata } from "next/types";
 import { notFound } from "next/navigation";
 import React from "react";
+import CardSelectFloor from "@/components/ui/dashboard/card-select-floor";
 
 export async function generateMetadata({
   params,
@@ -94,13 +95,16 @@ export default async function Building({
             detail={`Building: ${params.slug.toUpperCase()} Information`}
           />
           <EnvironmentAverage
-            data={avgEnvironment[params.slug.toUpperCase()]}
+            data={avgEnvironment?.[params.slug.toUpperCase()]}
           />
           <EnvironmentInfoChart data={pmTempHmdData} />
         </>
       }
       rightDashbaord={
         <div className="flex flex-col gap-2">
+          <div className="hidden xl:block">
+            <CardSelectFloor building={params.slug.toUpperCase()} />
+          </div>
           <ElectricChart
             data={electricUsageData}
             buildingId={params.slug.toUpperCase()}
@@ -108,6 +112,7 @@ export default async function Building({
           <AverageElectricUsage data={avgElectricUsage} />
         </div>
       }
+      useCardSelectBuildingFloor={true}
     >
       <div className="w-full h-dvh">{await renderCanvas()}</div>
     </Navigation>

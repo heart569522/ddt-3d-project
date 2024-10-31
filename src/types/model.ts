@@ -181,4 +181,13 @@ export interface ILampBrands {
   brand: string
 }
 
+export interface IFloorDetails {
+  buildingCode: string
+  floorNumber: string
+  floorMeter: string
+  floorPower: string
+  averagefloorPM25: string
+  averagefloorTemp: string
+  averagefloorHumidity: string
+}
 

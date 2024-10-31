@@ -5,10 +5,11 @@ Command: npx gltfjsx@6.5.0 ./public/models/building/en124/floor_8/room_floor_8.g
 "use client";
 
 import * as THREE from "three";
-import React, { useState } from "react";
+import React, { useCallback, useState } from "react";
 import { useGLTF } from "@react-three/drei";
 import { GLTF } from "three-stdlib";
 import { Select } from "@react-three/postprocessing";
+import { useEN12408Store } from "@/stores/use-floor-store";
 
 type GLTFResult = GLTF & {
   nodes: {
@@ -891,50 +892,26 @@ type GLTFResult = GLTF & {
   };
 };
 
-type EN12408FloorProps = JSX.IntrinsicElements["group"] & {
+type Props = JSX.IntrinsicElements["group"] & {
   isShowLamp?: boolean;
   isShowAir?: boolean;
   onObjectHover?: (object: string | null) => void;
   onObjectClick?: (object: string) => void;
 };
 
-type Floor8 =
-  | "EN1240801"
-  | "EN1240802"
-  | "EN1240803"
-  | "EN1240804"
-  | "EN1240805"
-  | "EN1240806"
-  | "EN1240807"
-  | "EN1240808"
-  | "EN1240809"
-  | "EN1240810"
-  | "EN1240811"
-  | "EN1240812"
-  | "EN1240813"
-  | "EN1240814"
-  | "EN1240815"
-  | "EN1240816"
-  | "EN1240817"
-  | "EN1240818"
-  | "EN1240819"
-  | "EN1240820"
-  | "EN1240821"
-  | "EN1240822"
-  | "EN1240823"
-  | "EN1240824"
-  | "EN1240825"
-  | "EN1240826"
-  | "EN1240827"
-  | "EN1240828"
-  | "EN1240829"
-  | "EN1240830"
-  | "EN1240831"
-  | "EN1240832"
-  | "EN1240833"
-  | "EN1240899";
+export const en124Floors8 = [
+  "EN1240801", "EN1240802", "EN1240803", "EN1240804", "EN1240805",
+  "EN1240806", "EN1240807", "EN1240808", "EN1240809", "EN1240810",
+  "EN1240811", "EN1240812", "EN1240813", "EN1240814", "EN1240815",
+  "EN1240816", "EN1240817", "EN1240818", "EN1240819", "EN1240820",
+  "EN1240821", "EN1240822", "EN1240823", "EN1240824", "EN1240825",
+  "EN1240826", "EN1240827", "EN1240828", "EN1240829", "EN1240830",
+  "EN1240831", "EN1240832", "EN1240833", "EN1240899"
+] as const;
 
-const initialClickState: Record<Floor8, boolean> = {
+export type EN124Floor8 = typeof en124Floors8[number];
+
+const initialClickState: Record<EN124Floor8, boolean> = {
   EN1240801: false,
   EN1240802: false,
   EN1240803: false,
@@ -971,33 +948,68 @@ const initialClickState: Record<Floor8, boolean> = {
   EN1240899: false,
 };
 
-export default function EN12408Floor(props: EN12408FloorProps) {
+export default function EN12408Floor(props: Props) {
   const { nodes, materials } = useGLTF(
     "/models/building/en124/floor_8/room_floor_8.glb"
   ) as GLTFResult;
 
-  const [hover, setHover] = useState<Floor8 | null>(null);
-  const [click, setClick] =
-    useState<Record<Floor8, boolean>>(initialClickState);
+  const [hover, setHover] = useState<EN124Floor8 | null>(null);
+  const { select, setSelect } = useEN12408Store(state => (state));
 
-  const handleObjectHover = (object: Floor8 | null) => {
+  const handleObjectHover = useCallback((object: EN124Floor8 | null) => {
     setHover(object);
-    if (props.onObjectHover) {
-      props.onObjectHover(object);
-    }
+  }, []);
+
+  const handleObjectSelect = useCallback(
+    (object: EN124Floor8, group: THREE.Group) => {
+      setSelect(object)
+      // ตั้งค่า select
+        // ตรวจสอบว่าถูกเลือกซ้ำหรือไม่
+        if (select === group) {
+          // ถ้าเลือกซ้ำ ให้คืนค่า select เป็น null เพื่อยกเลิกการเลือก
+          traverseAndSetColor(group, 0xf9ff79);
+        } else {
+          // ถ้าไม่ซ้ำให้ตั้งค่าสีใหม่
+          traverseAndResetColor(group);
+           // สีใหม่ที่ต้องการ
+        }
+    },
+    [setSelect]
+  );
+
+  // ฟังก์ชันช่วยในการเปลี่ยนสี mesh
+  const traverseAndSetColor = (group: THREE.Group, color: THREE.Color | number) => {
+    group.traverse((child) => {
+      if ((child as THREE.Mesh).isMesh) {
+        const mesh = child as THREE.Mesh;
+        if (mesh.material) {
+          const material = mesh.material as THREE.MeshStandardMaterial;
+          // เก็บค่า original color ไว้ถ้ายังไม่ถูกเก็บ
+          if (!material.userData.originalColor) {
+            material.userData.originalColor = material.color.clone();
+          }
+          material.color.set(color);
+          material.userData.isActive = true;
+        }
+      }
+    });
   };
 
-  const handleObjectClick = (object: Floor8) => {
-    setClick((prev) => {
-      const updatedState = {
-        ...prev,
-        [object]: !prev[object],
-      };
-      return updatedState;
+  // ฟังก์ชันช่วยในการคืนสีเดิม
+  const traverseAndResetColor = (group: THREE.Group) => {
+    group.traverse((child) => {
+      if ((child as THREE.Mesh).isMesh) {
+        const mesh = child as THREE.Mesh;
+        if (mesh.material) {
+          const material = mesh.material as THREE.MeshStandardMaterial;
+          const originalColor = material.userData.originalColor;
+          if (originalColor) {
+            material.color.copy(originalColor);
+          }
+          material.userData.isActive = false;
+        }
+      }
     });
-    if (props.onObjectClick) {
-      props.onObjectClick(object);
-    }
   };
 
   return (
@@ -3803,8 +3815,15 @@ export default function EN12408Floor(props: EN12408FloorProps) {
       )}
 
       {/* Room */}
-      <group
+      <Select
         name="EN1240801"
+        enabled={hover === "EN1240801" || select === "EN1240801"}
+        onPointerOver={() => handleObjectHover("EN1240801")}
+        onPointerOut={() => handleObjectHover(null)}
+        onClick={(e) => {
+          const group = e.object.parent as THREE.Group;
+          handleObjectSelect("EN1240801", group)
+        }}
         position={[32.655, -32.085, -23.436]}
         rotation={[-Math.PI / 2, 0, 0]}
         scale={0.305}
@@ -3886,7 +3905,7 @@ export default function EN12408Floor(props: EN12408FloorProps) {
           geometry={nodes.SW5_10.geometry}
           material={materials['ไม้เนื้อแข็ง 2"x4" ทาสี']}
         />
-      </group>
+      </Select>
       <group
         name="EN1240802"
         position={[32.655, -32.085, -23.436]}
@@ -5802,10 +5821,13 @@ export default function EN12408Floor(props: EN12408FloorProps) {
 
       <Select
         name="EN1240829"
-        enabled={hover === "EN1240829" || click.EN1240829}
+        enabled={hover === "EN1240829" || select === "EN1240829"}
         onPointerOver={() => handleObjectHover("EN1240829")}
         onPointerOut={() => handleObjectHover(null)}
-        onClick={() => handleObjectClick("EN1240829")}
+        onClick={(e) => {
+          const group = e.object.parent as THREE.Group;
+          handleObjectSelect("EN1240829", group)
+        }}
         position={[32.655, -32.085, -23.436]}
         rotation={[-Math.PI / 2, 0, 0]}
         scale={0.305}
@@ -5877,10 +5899,13 @@ export default function EN12408Floor(props: EN12408FloorProps) {
 
       <Select
         name="EN1240830"
-        enabled={hover === "EN1240830" || click.EN1240830}
+        enabled={hover === "EN1240830" || select === "EN1240830"}
         onPointerOver={() => handleObjectHover("EN1240830")}
         onPointerOut={() => handleObjectHover(null)}
-        onClick={() => handleObjectClick("EN1240830")}
+        onClick={(e) => {
+          const group = e.object.parent as THREE.Group;
+          handleObjectSelect("EN1240830", group)
+        }}
         position={[32.655, -32.085, -23.436]}
         rotation={[-Math.PI / 2, 0, 0]}
         scale={0.305}
