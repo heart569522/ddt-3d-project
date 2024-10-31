@@ -19,8 +19,8 @@ import {
   SSAO,
   SMAA,
 } from "@react-three/postprocessing";
-import { Color } from "three";
 import { BlendFunction } from 'postprocessing'
+import { Color } from "three";
 
 interface Props {
   model: React.ReactNode;
@@ -29,6 +29,7 @@ interface Props {
   dpr?: [number, number];
   controlSettings?: OrbitControlsProps;
   planeSize?: [number, number];
+  planeColor?: Color | number,
   onObjectHover?: (object: string | null) => void;
   onObjectClick?: (object: string) => void;
 }
@@ -40,6 +41,7 @@ export default function CanvasScreen({
   dpr = [0.3, 0.95],
   controlSettings,
   planeSize = [500, 500],
+  planeColor = Color.NAMES.seagreen,
   onObjectHover,
   onObjectClick,
 }: Props) {
@@ -92,7 +94,7 @@ export default function CanvasScreen({
           position={[0, 0, 0]}
           receiveShadow
         >
-          <meshStandardMaterial color={Color.NAMES.seagreen} />
+          <meshStandardMaterial color={planeColor} />
         </Plane>
 
         <OrbitControls {...controlSettings} />

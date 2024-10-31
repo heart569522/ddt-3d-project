@@ -1,8 +1,6 @@
 import {
   getAverageElectricityUsage,
-  getAverageEnvironment,
   getData,
-  getPmTempHmdData,
 } from "@/actions/actions";
 import { Button } from "@/components/shadcn-ui/button";
 import CardInfo from "@/components/ui/dashboard/card-info";
@@ -20,8 +18,8 @@ import Link from "next/link";
 import EnvironmentInfoChart from "@/components/ui/dashboard/environment-info-chart";
 import CanvasScreen from "@/components/ui/canvas-screen/canvas";
 import React from "react";
-import FacultyAllBuilding from "@/components/models/faculty/faculty-all-building";
 import CardDetail from "@/components/ui/dashboard/card-detail";
+import FacultyAllBuilding from "@/components/models/faculty/faculty-all-building";
 
 export default async function Overview() {
   const avgEnvironment = await getData("gaugeOutdoor");
@@ -132,7 +130,7 @@ export default async function Overview() {
             minPolarAngle: 0,
             maxPolarAngle: Math.PI / 2.25,
             // minDistance: 40,
-            maxDistance: 350,
+            maxDistance: 250,
             enablePan: false,
           }}
         />

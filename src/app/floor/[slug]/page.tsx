@@ -22,6 +22,7 @@ import CanvasScreen from "@/components/ui/canvas-screen/canvas";
 import { Metadata } from "next/types";
 import { notFound } from "next/navigation";
 import React from "react";
+import { Color } from "three";
 
 export async function generateMetadata({
   params,
@@ -55,14 +56,15 @@ export default async function Floor({ params }: { params: { slug: string } }) {
               isShowAir={false}
             />
           }
-          cameraPosition={[-5, 6, 12]}
+          cameraPosition={[-5, 18, 12]}
           controlSettings={{
             minPolarAngle: 0,
-            maxPolarAngle: Math.PI / 2.25,
+            maxPolarAngle: Math.PI / 3,
             minDistance: 20,
             maxDistance: 65,
             enablePan: false,
           }}
+          // planeColor={Color.NAMES.black}
         />
       );
     } catch (error) {
@@ -70,13 +72,15 @@ export default async function Floor({ params }: { params: { slug: string } }) {
     }
   };
 
-  const avgEnvironment = await getAverageEnvironment();
+  const avgEnvironment = await getData(
+    `gaugeRoom/${params.slug.toUpperCase()}99`
+  );
   const avgElectricUsage = await getDashboardData(
-    `UseRateBuildingPerMonth/${params.slug.toLowerCase()}`
+    `UseRateRoomPerMonth/${params.slug.toLowerCase()}99`
   );
   const electricUsage = await getData("UseRateToday");
   const electricUsageData = formatFacultyElectricTodayUsage(electricUsage);
-  const pmTempHmdData = await getData("HTPMPerMonth");
+  const pmTempHmdData = await getData(`RhtpmPerMonth/${params.slug.toLowerCase()}99`);
 
   return (
     <Navigation
@@ -84,10 +88,16 @@ export default async function Floor({ params }: { params: { slug: string } }) {
         <>
           <CardInfo
             title="General Information"
-            detail={`Building: ${params.slug.toUpperCase()} Information`}
+            detail={`Building: ${params.slug
+              .toUpperCase()
+              .substring(0, 5)}, Fl ${params.slug
+              .toUpperCase()
+              .substring(5, 7)} Information`}
           />
-          <EnvironmentAverage data={avgEnvironment} />
-          <EnvironmentInfoChart data={pmTempHmdData}/>
+          <EnvironmentAverage
+            data={avgEnvironment?.[`${params.slug.toUpperCase()}99`]}
+          />
+          <EnvironmentInfoChart data={pmTempHmdData} />
         </>
       }
       rightDashbaord={
