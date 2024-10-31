@@ -40,11 +40,11 @@ export function formatBuildingElectricTodayUsage(data: IElectricTodayUsage[], bu
   const floorUsageMap: { [key: string]: any } = {};
   // const abnormalThreshold = 100000;
 
-  const filteredData = data.filter((item) =>
+  const filteredData = data?.filter((item) =>
     item.fl_id.toUpperCase().startsWith(buildingId)
   );
 
-  filteredData.forEach((item: IElectricTodayUsage) => {
+  filteredData?.forEach((item: IElectricTodayUsage) => {
     // if (item.UseRateToday > abnormalThreshold) return;
 
     const floorNumber = `${parseInt(item.fl_id.slice(-2), 10)}-FL`;
