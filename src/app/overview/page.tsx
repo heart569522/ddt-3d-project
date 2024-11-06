@@ -26,6 +26,7 @@ export default async function Overview() {
   const avgElectricUsage = await getAverageElectricityUsage();
   const electricUsage = await getData("UseRateToday");
   const electricUsageData = formatFacultyElectricTodayUsage(electricUsage);
+  console.log("🚀 ~ Overview ~ electricUsageData:", electricUsageData)
   const pmTempHmdData = await getData("HTPMPerMonth");
   const buildingData = await getData("getBU");
 
@@ -124,7 +125,7 @@ export default async function Overview() {
         <CanvasScreen
           model={<FacultyAllBuilding isManage={false} />}
           cameraPosition={[-5, 6, 12]}
-          dpr={[0.2, 0.7]}
+          dpr={[0.5, 0.9]}
           planeSize={[2000, 2000]}
           controlSettings={{
             minPolarAngle: 0,

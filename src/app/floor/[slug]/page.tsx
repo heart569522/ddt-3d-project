@@ -9,10 +9,11 @@ import CardInfo from "@/components/ui/dashboard/card-info";
 import {
   AverageElectricUsage,
   ElectricChart,
+  ElectricFloorRoomChart,
 } from "@/components/ui/dashboard/electric-chart";
 import { EnvironmentAverage } from "@/components/ui/dashboard/environment-chart";
 import Navigation from "@/components/ui/navigation";
-import { formatFacultyElectricTodayUsage } from "@/lib/formats";
+import { formatFacultyElectricTodayUsage, formatFloorElectricTodayUsage } from "@/lib/formats";
 import { Droplets, FileDown, MapPin, Thermometer, UndoDot } from "lucide-react";
 import { IconFaceMask } from "@tabler/icons-react";
 import TooltipHover from "@/components/ui/tooltip-hover";
@@ -39,6 +40,7 @@ export async function generateMetadata({
 export default async function Floor({ params }: { params: { slug: string } }) {
   const buildingId = params.slug.toLowerCase().substring(0, 5);
   const floorId = params.slug.toLowerCase();
+  const floorDetail = await getData(`floorDetail/${floorId.toUpperCase()}`)
 
   const renderCanvas = async () => {
     try {
@@ -54,9 +56,11 @@ export default async function Floor({ params }: { params: { slug: string } }) {
             <FloorComponent
               castShadow
               receiveShadow
-              isShowLamp={false}
-              isShowAir={false}
+              isShowLamp={true}
+              isShowAir={true}
               isManage={false}
+              roomData={floorDetail}
+              pathname={floorId}
             />
           }
           cameraPosition={[-5, 25, 12]}
@@ -83,8 +87,8 @@ export default async function Floor({ params }: { params: { slug: string } }) {
   const avgElectricUsage = await getDashboardData(
     `UseRateRoomPerMonth/${params.slug.toLowerCase()}99`
   );
-  const electricUsage = await getData("UseRateToday");
-  const electricUsageData = formatFacultyElectricTodayUsage(electricUsage);
+  const electricUsage = await getData(`RoomUseHour`);
+  const electricUsageData = formatFloorElectricTodayUsage(electricUsage, floorId.toUpperCase());
   const pmTempHmdData = await getData(
     `RhtpmPerMonth/${params.slug.toLowerCase()}99`
   );
@@ -112,7 +116,7 @@ export default async function Floor({ params }: { params: { slug: string } }) {
           <div className="hidden xl:block">
             <CardSelectRoom room={params.slug.toUpperCase()} />
           </div>
-          <ElectricChart data={electricUsageData} />
+          <ElectricFloorRoomChart data={electricUsageData} floorId={floorId.toUpperCase()}/>
           <AverageElectricUsage data={avgElectricUsage} isFloorRoom={true} />
         </div>
       }
@@ -176,16 +180,18 @@ export default async function Floor({ params }: { params: { slug: string } }) {
               mediaQuerySize="md"
               positionMediaQuery="right"
             >
-              <Button variant="outline" size="icon">
+              <div className="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium border border-input bg-background hover:bg-accent hover:text-accent-foreground h-10 w-10">
                 <FileDown className="h-5 w-5" />
-              </Button>
+              </div>
             </TooltipHover>
           </ModalDownload>
         </>
       }
       useCardSelectFloorRoom={true}
     >
-      <div className="w-full h-dvh">{await renderCanvas()}</div>
+      <div className="w-full h-dvh">
+        {/* {await renderCanvas()} */}
+      </div>
     </Navigation>
   );
 }

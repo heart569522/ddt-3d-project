@@ -1,6 +1,7 @@
 import {
   getAverageElectricityUsage,
   getAverageEnvironment,
+  getDashboardData,
   getData,
 } from "@/actions/actions";
 import { Button } from "@/components/shadcn-ui/button";
@@ -8,18 +9,25 @@ import CardInfo from "@/components/ui/dashboard/card-info";
 import {
   AverageElectricUsage,
   ElectricChart,
+  ElectricFloorRoomChart,
 } from "@/components/ui/dashboard/electric-chart";
 import { EnvironmentAverage } from "@/components/ui/dashboard/environment-chart";
 import Navigation from "@/components/ui/navigation";
-import { formatFacultyElectricTodayUsage } from "@/lib/formats";
-import { Droplets, MapPin, Thermometer } from "lucide-react";
+import {
+  formatFacultyElectricTodayUsage,
+  formatRoomElectricTodayUsage,
+} from "@/lib/formats";
+import { Droplets, MapPin, Thermometer, UndoDot } from "lucide-react";
 import { IconFaceMask } from "@tabler/icons-react";
 import TooltipHover from "@/components/ui/tooltip-hover";
 import Link from "next/link";
 import EnvironmentInfoChart from "@/components/ui/dashboard/environment-info-chart";
 import CanvasScreen from "@/components/ui/canvas-screen/canvas";
-import EN12408Floor from "@/components/models/en124/floor-room/en12408-floor-old";
 import { Metadata } from "next";
+import EN12408Floor from "@/components/models/en124/floor-room/en12408-floor";
+import { notFound } from "next/navigation";
+import CardSelectRoom from "@/components/ui/dashboard/card-select-room";
+import { configs } from "@/lib/configs";
 
 export async function generateMetadata({
   params,
@@ -32,15 +40,67 @@ export async function generateMetadata({
 }
 
 export default async function Room({ params }: { params: { slug: string } }) {
-  const avgEnvironment = await getData(
-    `gaugeRoom/${params.slug.toUpperCase()}`
+  const buildingId = params.slug.toLowerCase().substring(0, 5);
+  const floorId = params.slug.toLowerCase().substring(0, 7);
+  const roomId = params.slug.toLowerCase();
+
+  const avgEnvironment = await getData(`gaugeRoom/${roomId.toUpperCase()}`);
+  const avgElectricUsage = await getDashboardData(
+    `UseRateRoomPerMonth/${roomId}`
   );
-  const avgElectricUsage = await getAverageElectricityUsage();
-  const electricUsage = await getData("UseRateToday");
-  const electricUsageData = formatFacultyElectricTodayUsage(electricUsage);
-  const pmTempHmdData = await getData(
-    `RhtpmPerMonth/${params.slug.toLowerCase()}`
-  );
+  const electricUsage = await getData(`RoomUseHour/${roomId}`);
+  const electricUsageData = formatRoomElectricTodayUsage(electricUsage);
+  console.log("🚀 ~ Room ~ electricUsageData:", electricUsageData);
+  const pmTempHmdData = await getData(`RhtpmPerMonth/${roomId}`);
+  const roomDetail = await getData(`floorDetail/${roomId.toUpperCase()}`);
+
+  const getCameraPosition = async () => {
+    return (
+      configs.building[buildingId]?.floor?.[floorId]?.room?.[roomId]
+        ?.cameraPosition || [0, 0, 0]
+    );
+  };
+
+  const renderCanvas = async () => {
+    try {
+      const RoomFloorComponent = (
+        await import(
+          `../../../components/models/${buildingId}/floor-room/${floorId}-floor`
+        )
+      ).default;
+
+      return (
+        <CanvasScreen
+          model={
+            <RoomFloorComponent
+              castShadow
+              receiveShadow
+              isShowLamp={true}
+              isShowAir={true}
+              isManage={false}
+              isRoomPage={true}
+              roomData={roomDetail}
+              pathname={floorId}
+            />
+          }
+          cameraPosition={await getCameraPosition()}
+          controlSettings={{
+            minPolarAngle: 0,
+            maxPolarAngle: 0,
+            minDistance: 10,
+            maxDistance: 12,
+            enablePan: false,
+          }}
+          outlineResolution={0.5}
+          outlineStrength={15}
+          isRoomPage={true}
+          // planeColor={Color.NAMES.black}
+        />
+      );
+    } catch (error) {
+      notFound();
+    }
+  };
 
   return (
     <Navigation
@@ -48,29 +108,41 @@ export default async function Room({ params }: { params: { slug: string } }) {
         <>
           <CardInfo
             title="General Information"
-            detail="asd';asl 654q qweqwe adc 1asdasdasd"
+            detail={`Building: ${params.slug
+              .toUpperCase()
+              .substring(0, 5)}, Fl ${params.slug
+              .toUpperCase()
+              .substring(5, 7)} Information`}
           />
-          <EnvironmentAverage data={avgEnvironment} />
+          <EnvironmentAverage
+            data={avgEnvironment?.[`${params.slug.toUpperCase()}`]}
+          />
           <EnvironmentInfoChart data={pmTempHmdData} />
         </>
       }
       rightDashbaord={
         <div className="flex flex-col gap-2">
-          <ElectricChart data={electricUsageData} />
-          <AverageElectricUsage data={avgElectricUsage} />
+          <div className="hidden xl:block">
+            {/* <CardSelectRoom room={params.slug.toUpperCase()} /> */}
+          </div>
+          <ElectricFloorRoomChart
+            data={electricUsageData?.[`${params.slug.toUpperCase()}`]}
+            roomId={params.slug.toUpperCase()}
+          />
+          <AverageElectricUsage data={avgElectricUsage} isFloorRoom={true} />
         </div>
       }
       toolbar={
         <>
           <TooltipHover
-            content={"View Map"}
+            content={"Reset"}
             position={"top"}
             isUseMediaQuery={true}
             mediaQuerySize="md"
             positionMediaQuery="right"
           >
             <Button variant="outline" size="icon">
-              <MapPin className="h-5 w-5" />
+              <UndoDot className="h-5 w-5" />
             </Button>
           </TooltipHover>
           <TooltipHover
@@ -114,26 +186,9 @@ export default async function Room({ params }: { params: { slug: string } }) {
           </TooltipHover>
         </>
       }
+      useCardSelectFloorRoom={false}
     >
-      <div className="w-full h-dvh relative">
-        <CanvasScreen
-          model={
-            <EN12408Floor
-              isShowLamp={false}
-              isShowAir={false}
-              castShadow
-              receiveShadow
-            />
-          }
-          cameraPosition={[-5, 6, 12]}
-          controlSettings={{
-            minPolarAngle: 0,
-            maxPolarAngle: Math.PI / 2.25,
-            minDistance: 20,
-            maxDistance: 65,
-          }}
-        />
-      </div>
+      <div className="w-full h-dvh">{/* {await renderCanvas()} */}</div>
     </Navigation>
   );
 }

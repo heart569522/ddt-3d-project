@@ -5,7 +5,7 @@ Command: npx gltfjsx@6.5.2 ./public/models/building/en124/en124-building-resize.
 "use client"
 
 import * as THREE from 'three'
-import React, { useCallback, useEffect, useState } from 'react'
+import React, { useCallback, useEffect, useRef, useState } from 'react'
 import { Html, useGLTF } from "@react-three/drei";
 import { Select } from "@react-three/postprocessing";
 import { GLTF } from "three-stdlib";
@@ -578,11 +578,11 @@ export default function EN124Building(props: Props) {
   const { select, setSelect } = useEN124Store(state => (state));
   const [floorDetail, setFloorDetail] = useState<IFloorDetails | null>(null);
 
-  const handleObjectHover = useCallback((object: EN124Floor | null) => {
+  const handleObjectHover = useCallback((object: EN124Floor | any) => {
     setHover(object);
   }, []);
 
-  const handleObjectSelect = useCallback((object: EN124Floor) => {
+  const handleObjectSelect = useCallback((object: EN124Floor | any) => {
     setSelect(object);
   }, [setSelect]);
 
@@ -610,62 +610,54 @@ export default function EN124Building(props: Props) {
                 </Button>
               </Link>
             </div>
-            {renderFloorDetail()}
+            <Table className="border rounded-md">
+              <TableBody>
+                <TableRow>
+                  <TableCell className="p-2">Building Code</TableCell>
+                  <TableCell className="p-2">
+                    {floorDetail?.buildingCode || "-"}
+                  </TableCell>
+                </TableRow>
+                <TableRow>
+                  <TableCell className="p-2">Floor</TableCell>
+                  <TableCell className="p-2">
+                    {floorDetail?.floorNumber || "-"}
+                  </TableCell>
+                </TableRow>
+                <TableRow>
+                  <TableCell className="p-2">Meter Energy</TableCell>
+                  <TableCell className="p-2">
+                    {floorDetail?.floorMeter || "-"}
+                  </TableCell>
+                </TableRow>
+                <TableRow>
+                  <TableCell className="p-2">Meter Power</TableCell>
+                  <TableCell className="p-2">
+                    {floorDetail?.floorPower || "-"}
+                  </TableCell>
+                </TableRow>
+                <TableRow>
+                  <TableCell className="p-2">Average PM 2.5</TableCell>
+                  <TableCell className="p-2">
+                    {floorDetail?.averagefloorPM25 || "-"}
+                  </TableCell>
+                </TableRow>
+                <TableRow>
+                  <TableCell className="p-2">Average Temperature</TableCell>
+                  <TableCell className="p-2">
+                    {floorDetail?.averagefloorTemp || "-"}
+                  </TableCell>
+                </TableRow>
+                <TableRow>
+                  <TableCell className="p-2">Average Humidity</TableCell>
+                  <TableCell className="p-2">
+                    {floorDetail?.averagefloorHumidity || "-"}
+                  </TableCell>
+                </TableRow>
+              </TableBody>
+            </Table>
           </div>
         </Html>
-      )
-    }
-  }
-
-  const renderFloorDetail = () => {
-    if (floorDetail) {
-      return (
-        <Table className="border rounded-md">
-          <TableBody>
-            <TableRow>
-              <TableCell className="p-2">Building Code</TableCell>
-              <TableCell className="p-2">
-                {floorDetail?.buildingCode || "-"}
-              </TableCell>
-            </TableRow>
-            <TableRow>
-              <TableCell className="p-2">Floor</TableCell>
-              <TableCell className="p-2">
-                {floorDetail?.floorNumber || "-"}
-              </TableCell>
-            </TableRow>
-            <TableRow>
-              <TableCell className="p-2">Meter Energy</TableCell>
-              <TableCell className="p-2">
-                {floorDetail?.floorMeter || "-"}
-              </TableCell>
-            </TableRow>
-            <TableRow>
-              <TableCell className="p-2">Meter Power</TableCell>
-              <TableCell className="p-2">
-                {floorDetail?.floorPower || "-"}
-              </TableCell>
-            </TableRow>
-            <TableRow>
-              <TableCell className="p-2">Average PM 2.5</TableCell>
-              <TableCell className="p-2">
-                {floorDetail?.averagefloorPM25 || "-"}
-              </TableCell>
-            </TableRow>
-            <TableRow>
-              <TableCell className="p-2">Average Temperature</TableCell>
-              <TableCell className="p-2">
-                {floorDetail?.averagefloorTemp || "-"}
-              </TableCell>
-            </TableRow>
-            <TableRow>
-              <TableCell className="p-2">Average Humidity</TableCell>
-              <TableCell className="p-2">
-                {floorDetail?.averagefloorHumidity || "-"}
-              </TableCell>
-            </TableRow>
-          </TableBody>
-        </Table>
       )
     }
   }
@@ -698,18 +690,21 @@ export default function EN124Building(props: Props) {
   // };
 
   return (
-    <group {...props} dispose={null}>
+    <group 
+      {...props} 
+      dispose={null}
+    >
       <Select
         name="EN12401"
         enabled={hover === "EN12401" || select === "EN12401"}
-        onPointerOver={() => {
-          handleObjectHover("EN12401");
-        }}
-        onPointerOut={() => {
-          handleObjectHover(null);
-        }}
-        onClick={() => {
-          handleObjectSelect("EN12401");
+        onPointerOver={(e) => 
+          handleObjectHover("EN12401")
+        } 
+        onPointerOut={(e) => 
+          handleObjectHover(null)
+        }
+        onClick={(e) => {
+          handleObjectSelect("EN12401")
         }}
         position={[-2.579, 1.022, -8.738]}
         rotation={[-Math.PI / 2, 0, 0]}
@@ -753,10 +748,14 @@ export default function EN124Building(props: Props) {
       <Select
         name="EN124M1"
         enabled={hover === "EN124M1" || select === "EN124M1"}
-        onPointerOver={() => handleObjectHover("EN124M1")}
-        onPointerOut={() => handleObjectHover(null)}
-        onClick={() => {
-          handleObjectSelect("EN124M1");
+        onPointerOver={(e) => 
+          handleObjectHover("EN124M1")
+        } 
+        onPointerOut={(e) => 
+          handleObjectHover(null)
+        }
+        onClick={(e) => {
+          handleObjectSelect("EN124M1")
         }}
         position={[-13.263, 4.798, -3.131]}
         rotation={[-Math.PI / 2, 0, 0]}
@@ -792,10 +791,14 @@ export default function EN124Building(props: Props) {
       <Select
         name="EN12402"
         enabled={hover === "EN12402" || select === "EN12402"}
-        onPointerOver={() => handleObjectHover("EN12402")}
-        onPointerOut={() => handleObjectHover(null)}
-        onClick={() => {
-          handleObjectSelect("EN12402");
+        onPointerOver={(e) => 
+          handleObjectHover("EN12402")
+        } 
+        onPointerOut={(e) => 
+          handleObjectHover(null)
+        }
+        onClick={(e) => {
+          handleObjectSelect("EN12402")
         }}
         position={[2.274, 8.646, -0.691]}
         rotation={[-Math.PI / 2, 0, 0]}
@@ -836,10 +839,14 @@ export default function EN124Building(props: Props) {
       <Select
         name="EN12403"
         enabled={hover === "EN12403" || select === "EN12403"}
-        onPointerOver={() => handleObjectHover("EN12403")}
-        onPointerOut={() => handleObjectHover(null)}
-        onClick={() => {
-          handleObjectSelect("EN12403");
+        onPointerOver={(e) => 
+          handleObjectHover("EN12403")
+        } 
+        onPointerOut={(e) => 
+          handleObjectHover(null)
+        }
+        onClick={(e) => {
+          handleObjectSelect("EN12403")
         }}
         position={[3.983, 12.804, -4.258]}
         rotation={[-Math.PI / 2, 0, 0]}
@@ -879,10 +886,14 @@ export default function EN124Building(props: Props) {
       <Select
         name="EN12404"
         enabled={hover === "EN12404" || select === "EN12404"}
-        onPointerOver={() => handleObjectHover("EN12404")}
-        onPointerOut={() => handleObjectHover(null)}
-        onClick={() => {
-          handleObjectSelect("EN12404");
+        onPointerOver={(e) => 
+          handleObjectHover("EN12404")
+        } 
+        onPointerOut={(e) => 
+          handleObjectHover(null)
+        }
+        onClick={(e) => {
+          handleObjectSelect("EN12404")
         }}
         position={[-0.668, 16.813, -2.543]}
         rotation={[-Math.PI / 2, 0, 0]}
@@ -921,10 +932,14 @@ export default function EN124Building(props: Props) {
       <Select
         name="EN12405"
         enabled={hover === "EN12405" || select === "EN12405"}
-        onPointerOver={() => handleObjectHover("EN12405")}
-        onPointerOut={() => handleObjectHover(null)}
-        onClick={() => {
-          handleObjectSelect("EN12405");
+        onPointerOver={(e) => 
+          handleObjectHover("EN12405")
+        } 
+        onPointerOut={(e) => 
+          handleObjectHover(null)
+        }
+        onClick={(e) => {
+          handleObjectSelect("EN12405")
         }}
         position={[0.382, 20.727, -3]}
         rotation={[-Math.PI / 2, 0, 0]}
@@ -963,10 +978,14 @@ export default function EN124Building(props: Props) {
       <Select
         name="EN12406"
         enabled={hover === "EN12406" || select === "EN12406"}
-        onPointerOver={() => handleObjectHover("EN12406")}
-        onPointerOut={() => handleObjectHover(null)}
-        onClick={() => {
-          handleObjectSelect("EN12406");
+        onPointerOver={(e) => 
+          handleObjectHover("EN12406")
+        } 
+        onPointerOut={(e) => 
+          handleObjectHover(null)
+        }
+        onClick={(e) => {
+          handleObjectSelect("EN12406")
         }}
         position={[0.349, 24.774, -2.394]}
         rotation={[-Math.PI / 2, 0, 0]}
@@ -1003,10 +1022,14 @@ export default function EN124Building(props: Props) {
       <Select
         name="EN12407"
         enabled={hover === "EN12407" || select === "EN12407"}
-        onPointerOver={() => handleObjectHover("EN12407")}
-        onPointerOut={() => handleObjectHover(null)}
-        onClick={() => {
-          handleObjectSelect("EN12407");
+        onPointerOver={(e) => 
+          handleObjectHover("EN12407")
+        } 
+        onPointerOut={(e) => 
+          handleObjectHover(null)
+        }
+        onClick={(e) => {
+          handleObjectSelect("EN12407")
         }}
         position={[0.678, 28.792, -2.574]}
         rotation={[-Math.PI / 2, 0, 0]}
@@ -1044,10 +1067,14 @@ export default function EN124Building(props: Props) {
       <Select
         name="EN12408"
         enabled={hover === "EN12408" || select === "EN12408"}
-        onPointerOver={() => handleObjectHover("EN12408")}
-        onPointerOut={() => handleObjectHover(null)}
-        onClick={() => {
-          handleObjectSelect("EN12408");
+        onPointerOver={(e) => 
+          handleObjectHover("EN12408")
+        } 
+        onPointerOut={(e) => 
+          handleObjectHover(null)
+        }
+        onClick={(e) => {
+          handleObjectSelect("EN12408")
         }}
         position={[0.334, 32.838, -2.552]}
         rotation={[-Math.PI / 2, 0, 0]}

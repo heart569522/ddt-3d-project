@@ -38,7 +38,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/shadcn-ui/select";
-import { IAverageElectricityUsage, IElectricUsageChart } from "@/types/model";
+import { IAverageElectricityUsage, IElectricFloorRoomUsageChart, IElectricUsageChart } from "@/types/model";
 import { monthNames, suffixesNumber } from "@/lib/utils";
 import { useEffect, useState } from "react";
 import { getData } from "@/actions/actions";
@@ -47,6 +47,10 @@ import {
   formatBuildingElectricTodayUsage,
   formatFacultyElectric24Usage,
   formatFacultyElectricTodayUsage,
+  formatFloorElectric24Usage,
+  formatFloorElectricTodayUsage,
+  formatRoomElectric24Usage,
+  formatRoomElectricTodayUsage,
 } from "@/lib/formats";
 import { configs } from "@/lib/configs";
 import React from "react";
@@ -103,6 +107,7 @@ export function ElectricChart({ data, buildingId }: ElectricProps) {
     };
     return config;
   }, {} as ChartConfig);
+  console.log("🚀 ~ chartConfig ~ chartConfig:", chartConfig)
 
   const pieChartData = chartData?.map((item) => ({
     ...item,
@@ -111,18 +116,6 @@ export function ElectricChart({ data, buildingId }: ElectricProps) {
     ),
   }));
 
-  const CustomTooltip = ({ active, payload }: any) => {
-    if (active && payload && payload.length) {
-      const { name, value } = payload[0];
-      return (
-        <div className="custom-tooltip flex bg-primary-foreground text-[10px] rounded-md px-2 py-1">
-          <p>{`${name}`}</p> {`${value}%`}
-        </div>
-      );
-    }
-
-    return null;
-  };
 
   const totalUsageRate = () => {
     if (buildingId) {
@@ -241,6 +234,185 @@ export function ElectricChart({ data, buildingId }: ElectricProps) {
   );
 }
 
+interface ElectricRoomProps {
+  data: IElectricFloorRoomUsageChart[];
+  roomId?: string;
+  floorId?: string;
+}
+
+export function ElectricFloorRoomChart({ data, roomId, floorId }: ElectricRoomProps) {
+  const [chartData, setChartData] = useState<IElectricFloorRoomUsageChart[]>(data);
+  const [selectedTimeRange, setSelectedTimeRange] = useState("today");
+
+  useEffect(() => {
+    const fetchData = async () => {
+      let newData;
+
+      switch (selectedTimeRange) {
+        case "24hr":
+          if (roomId) {
+            const response = await getData(`RoomUseHourYesterday`);
+            newData = formatRoomElectric24Usage(response, roomId as string);
+          }
+
+          if (floorId) {
+            const response = await getData(`RoomUseHourYesterday`);
+            newData = formatFloorElectric24Usage(response, floorId as string);
+          }
+
+          break;
+
+        case "today":
+        default:
+          if (data.length === 0) {
+            if (roomId) {
+              const response = await getData(`RoomUseHour/${roomId}`);
+              newData = formatRoomElectricTodayUsage(response);
+            }
+
+            if (floorId) {
+              const response = await getData(`RoomUseHour`);
+              newData = formatFloorElectricTodayUsage(response, floorId);
+            }
+          } else {
+            newData = data;
+          }
+          break;
+      }
+      
+      setChartData(newData as any);
+    };
+
+    fetchData();
+  }, [selectedTimeRange]);
+
+  const chartConfig = chartData?.reduce((config, item, index) => {
+    config[item.name] = {
+      label: item.name,
+      color: `hsl(var(--chart-${index + 1}))`,
+    };
+    return config;
+  }, {} as ChartConfig);
+
+  const pieChartData = chartData?.map((item) => {
+    const value = parseFloat(item.value);
+    const total = parseFloat(item.total);
+  
+    // ตรวจสอบว่าค่า total ไม่เป็น 0 หรือมีค่าเป็น NaN ก่อนทำการคำนวณ
+    const percent = total !== 0 && !isNaN(total)
+      ? parseFloat(((value / total) * 100).toFixed(configs.numberOfDecimal))
+      : 0; // หรือค่าอื่นที่คุณต้องการ เช่น 0 หรือ null
+  
+    return {
+      ...item,
+      percent,
+    };
+  });
+  
+  const totalUsageRate = () => {
+    return chartData[0]?.total.toLocaleString();
+  };
+
+  return (
+    <Card>
+      <CardHeader>
+        <Select value={selectedTimeRange} onValueChange={setSelectedTimeRange}>
+          <SelectTrigger
+            className="w-full rounded-md sm:ml-auto"
+            aria-label="Select a value"
+          >
+            <SelectValue placeholder="Today" />
+          </SelectTrigger>
+          <SelectContent className="rounded-lg">
+            <SelectItem value="today" className="rounded-md">
+              Today
+            </SelectItem>
+            <SelectItem value="24hr" className="rounded-md">
+              24 hour
+            </SelectItem>
+          </SelectContent>
+        </Select>
+        <CardTitle className="text-sm md:text-base text-left pt-4">
+          {selectedTimeRange === "today" ? "Today" : "24 Hour"} Electricity
+          Usage Rate
+        </CardTitle>
+        {/* <CardDescription>January - June 2024</CardDescription> */}
+      </CardHeader>
+      <CardContent>
+        <Card className="transition bg-secondary/60 hover:bg-secondary/30 mb-6">
+          <CardHeader className="pb-1">
+            <CardTitle className="text-3xl sm:text-4xl text-center">
+              {chartData && (
+                <>
+                  {totalUsageRate()}&nbsp;
+                  <span className="text-sm sm:text-base opacity-70">
+                    kW/Hour
+                  </span>
+                </>
+              )}
+            </CardTitle>
+          </CardHeader>
+          <CardFooter></CardFooter>
+        </Card>
+        <ChartContainer config={chartConfig}>
+          <BarChart
+            accessibilityLayer
+            data={chartData}
+            margin={{
+              top: 20,
+              right: 6,
+              left: 6,
+              bottom: 10
+            }}
+          >
+            <CartesianGrid vertical={false} />
+            <XAxis
+              dataKey="name"
+              tickLine={false}
+              tickMargin={20}
+              axisLine={false}
+            />
+            <ChartTooltip
+              cursor={false}
+              content={<ChartTooltipContent hideLabel />}
+            />
+            <Bar dataKey="value" radius={4}>
+              <LabelList
+                position="top"
+                dataKey="value"
+                offset={12}
+                className="fill-foreground"
+                fontSize={10}
+              />
+            </Bar>
+          </BarChart>
+        </ChartContainer>
+
+        {/* Pie Chart */}
+        <h3 className="text-base md:text-lg font-semibold mt-6 text-left">
+          {selectedTimeRange === "today" ? "Today" : "24 Hour"} Usage (%)
+        </h3>
+        <ChartContainer
+          config={chartConfig}
+          className="mx-auto aspect-square max-h-[300px]"
+        >
+          <PieChart>
+            <ChartTooltip
+              cursor={false}
+              content={<ChartTooltipContent hideLabel />}
+            />
+            <Pie data={pieChartData} dataKey="percent" nameKey="name" />
+            <ChartLegend
+              content={<ChartLegendContent nameKey="name" />}
+              className="-translate-y-2 flex-wrap gap-2 [&>*]:basis-1/4 [&>*]:justify-center"
+            />
+          </PieChart>
+        </ChartContainer>
+      </CardContent>
+    </Card>
+  );
+}
+
 const averageChartConfig = {
   Usage: {
     label: "Usage",
@@ -255,14 +427,17 @@ interface Props {
 
 export function AverageElectricUsage({ data, isFloorRoom = false }: Props) {
   const chartData = data?.map((item) => {
-    const monthString = isFloorRoom ? item.Month.replace(/^\d+-/, "") : item.Month;
+    const monthString = isFloorRoom
+      ? item.Month.replace(/^\d+-/, "")
+      : item.Month;
     const [, month] = monthString.split("-").map(Number);
-    
+
     return {
       Month: isFloorRoom ? monthString : `${monthNames[month - 1]}`,
       Usage: item.TotalUseRateMonth.toFixed(0),
     };
   });
+  // console.log("🚀 ~ chartData ~ chartData:", chartData)
 
   return (
     <Card>

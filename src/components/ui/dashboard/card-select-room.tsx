@@ -17,7 +17,6 @@ interface Props {
 }
 
 export default function CardSelectRoom({ room }: Props) {
-  console.log("🚀 ~ CardSelectRoom ~ room:", room)
   const [rooms, setRooms] = useState<string[]>([]);
   const { select, setSelect } = getFloorStore(room);
 

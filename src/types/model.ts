@@ -9,6 +9,29 @@ export interface IAverageElectricityUsage {
   TotalUseRateMonth: number;
 }
 
+export interface IFloorRoomUseHour {
+  room: string
+  MinOpen: any
+  MaxClose: any
+  TotalMinutes: any
+  noPeopleMinutes: number
+  UseRateRoom: number
+  recordDate: string
+  air_en: number
+  sw_en: number
+  rac_en: number
+  other_en: number
+}
+
+export interface IRoomUse24 {
+  room: string
+  UseRateRoom: number
+  Air: number
+  Switch: number
+  Rec: number
+  Other: number
+}
+
 export interface IPmTempHmd {
   Month: string;
   HumidMonth: number;
@@ -50,6 +73,13 @@ export interface IElectricUsageChart {
   meterId: string;
   value: number;
   total: number;
+}
+
+export interface IElectricFloorRoomUsageChart {
+  name: string;
+  value: string;
+  total: string;
+  fill: string;
 }
 
 export interface IAvatar {
@@ -191,7 +221,7 @@ export interface IFloorDetails {
   averagefloorHumidity: string
 }
 
-export interface IRoomDetails {
+export interface IModalRoomDetails {
   buildingCode: string
   floorNumber: string
   roomNumber: string
@@ -202,4 +232,21 @@ export interface IRoomDetails {
   averageTemp: string
   averageHumidity: string
 }
+
+export interface IRoomData {
+  lightingStatus: {
+    id: string;
+    status: string;
+  }[];
+  airStatus: {
+    id: string;
+    current: number;
+    status: string;
+  }[];
+  roomPower: number;
+  roomMeter: number;
+  roomHumidity: number;
+  roomPM25: number;
+  roomTemp: number;
+};
 

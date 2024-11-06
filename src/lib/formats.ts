@@ -1,4 +1,9 @@
-import { IElectric24Usage, IElectricTodayUsage } from "@/types/model";
+import {
+  IElectric24Usage,
+  IElectricTodayUsage,
+  IRoomUse24,
+  IFloorRoomUseHour,
+} from "@/types/model";
 import { configs } from "./configs";
 
 export function formatFacultyElectricTodayUsage(data: IElectricTodayUsage[]) {
@@ -36,7 +41,10 @@ export function formatFacultyElectricTodayUsage(data: IElectricTodayUsage[]) {
   return formatData;
 }
 
-export function formatBuildingElectricTodayUsage(data: IElectricTodayUsage[], buildingId: string) {
+export function formatBuildingElectricTodayUsage(
+  data: IElectricTodayUsage[],
+  buildingId: string
+) {
   const floorUsageMap: { [key: string]: any } = {};
   // const abnormalThreshold = 100000;
 
@@ -75,6 +83,89 @@ export function formatBuildingElectricTodayUsage(data: IElectricTodayUsage[], bu
   return formatData;
 }
 
+export function formatFloorElectricTodayUsage(
+  data: IFloorRoomUseHour[],
+  floorId: string
+) {
+  const floorData = data.filter((item) => item.room.startsWith(floorId));
+
+  let totalUseRateRoom = 0;
+
+  const formattedData = floorData.map((item) => {
+    const roomName = item.room.substring(6, 9);
+    const useRateRoom = item.UseRateRoom || 0;
+
+    // Accumulate the total UseRateRoom
+    totalUseRateRoom += useRateRoom;
+
+    return {
+      name: roomName,
+      value: useRateRoom.toFixed(configs.numberOfDecimal),
+      total: "0",
+      fill: `var(--color-${roomName})`,
+    };
+  });
+
+  // Update each entry's total field with the accumulated total
+  const totalAsString = totalUseRateRoom.toFixed(configs.numberOfDecimal);
+  formattedData.forEach((entry) => {
+    entry.total = totalAsString;
+  });
+
+  console.log(
+    "🚀 ~ formatRoomElectricTodayUsage ~ formattedData:",
+    formattedData
+  );
+  return formattedData;
+}
+
+export function formatRoomElectricTodayUsage(data: IFloorRoomUseHour[]) {
+  const roomUsageMap: { [key: string]: any } = {};
+
+  data?.forEach((item: IFloorRoomUseHour) => {
+    const roomNumber = item.room;
+
+    if (!roomUsageMap[roomNumber]) {
+      roomUsageMap[roomNumber] = [];
+    }
+
+    const formattedData = [
+      {
+        name: "Air",
+        value: item.air_en.toFixed(configs.numberOfDecimal),
+        total: "0",
+        fill: `var(--color-Air)`,
+      },
+      {
+        name: "Rec",
+        value: item.rac_en.toFixed(configs.numberOfDecimal),
+        total: "0",
+        fill: `var(--color-Rec)`,
+      },
+      {
+        name: "Switch",
+        value: item.sw_en.toFixed(configs.numberOfDecimal),
+        total: "0",
+        fill: `var(--color-Switch)`,
+      },
+      {
+        name: "Other",
+        value: item.other_en.toFixed(configs.numberOfDecimal),
+        total: "0",
+        fill: `var(--color-Other)`,
+      },
+    ];
+
+    roomUsageMap[roomNumber] = formattedData;
+  });
+
+  console.log(
+    "🚀 ~ formatRoomElectricTodayUsage ~ roomUsageMap:",
+    roomUsageMap
+  );
+  return roomUsageMap;
+}
+
 export function formatFacultyElectric24Usage(data: IElectric24Usage[]) {
   const buildingUsageMap: { [key: string]: any } = {};
 
@@ -108,7 +199,10 @@ export function formatFacultyElectric24Usage(data: IElectric24Usage[]) {
   return formatData;
 }
 
-export function formatBuildingElectric24Usage(data: IElectric24Usage[], buildingId: string) {
+export function formatBuildingElectric24Usage(
+  data: IElectric24Usage[],
+  buildingId: string
+) {
   const floorUsageMap: { [key: string]: any } = {};
 
   const filteredData = data.filter((item) =>
@@ -119,8 +213,7 @@ export function formatBuildingElectric24Usage(data: IElectric24Usage[], building
     const floorNumber = `${parseInt(item.fl_id.slice(-2), 10)}-FL`;
 
     if (floorUsageMap[floorNumber]) {
-      floorUsageMap[floorNumber].UseRateYesterday +=
-        item.UseRateYesterday;
+      floorUsageMap[floorNumber].UseRateYesterday += item.UseRateYesterday;
     } else {
       floorUsageMap[floorNumber] = {
         buildingId: floorNumber,
@@ -145,6 +238,75 @@ export function formatBuildingElectric24Usage(data: IElectric24Usage[], building
   return formatData;
 }
 
+export function formatFloorElectric24Usage(
+  data: IRoomUse24[],
+  floorId: string
+) {
+  const floorData = data.filter((item) => item.room.startsWith(floorId));
+  let totalUseRateRoom = 0;
+
+  const formattedData = floorData.map((item) => {
+    const roomName = item.room.substring(6, 9);
+    const useRateRoom = item.UseRateRoom || 0;
+
+    // Accumulate the total UseRateRoom
+    totalUseRateRoom += useRateRoom;
+
+    return {
+      name: roomName,
+      value: useRateRoom.toFixed(configs.numberOfDecimal),
+      total: "0",
+      fill: `var(--color-${roomName})`,
+    };
+  });
+
+  // Update each entry's total field with the accumulated total
+  const totalAsString = totalUseRateRoom.toFixed(configs.numberOfDecimal);
+  formattedData.forEach((entry) => {
+    entry.total = totalAsString;
+  });
+
+  return formattedData;
+}
+
+export function formatRoomElectric24Usage(data: IRoomUse24[], roomId: string) {
+  const roomData = data.find((item) => item.room === roomId);
+  const roomUsageMap: { [key: string]: any } = {};
+
+  if (roomData) {
+    const roomNumber = roomData.room;
+
+    roomUsageMap[roomNumber] = [
+      {
+        name: "Air",
+        value: roomData.Air?.toFixed(configs.numberOfDecimal) || "0",
+        total: "0",
+        fill: `var(--color-Air)`,
+      },
+      {
+        name: "Rec",
+        value: roomData.Rec?.toFixed(configs.numberOfDecimal) || "0",
+        total: "0",
+        fill: `var(--color-Rec)`,
+      },
+      {
+        name: "Switch",
+        value: roomData.Switch?.toFixed(configs.numberOfDecimal) || "0",
+        total: "0",
+        fill: `var(--color-Switch)`,
+      },
+      {
+        name: "Other",
+        value: roomData.Other?.toFixed(configs.numberOfDecimal) || "0",
+        total: "0",
+        fill: `var(--color-Other)`,
+      },
+    ];
+  }
+
+  return roomUsageMap[roomId];
+}
+
 export function formatDate(dateString: string): string {
   const date = new Date(dateString);
 
@@ -155,7 +317,9 @@ export function formatDate(dateString: string): string {
   return `${day}/${month}/${yearBE}`;
 }
 
-export function formatDatetoISOStringWithoutTime(date?: Date): string | undefined {
+export function formatDatetoISOStringWithoutTime(
+  date?: Date
+): string | undefined {
   return date ? date.toISOString().split("T")[0] : undefined;
 }
 

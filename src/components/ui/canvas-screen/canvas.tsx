@@ -10,7 +10,7 @@ import {
   Sky,
 } from "@react-three/drei";
 import { Canvas } from "@react-three/fiber";
-import React, { Suspense, useState } from "react";
+import React, { Suspense, useEffect, useState } from "react";
 import ModelLoader from "./model-loading";
 import {
   Selection,
@@ -19,8 +19,10 @@ import {
   SSAO,
   SMAA,
 } from "@react-three/postprocessing";
-import { BlendFunction } from 'postprocessing'
-import { Color } from "three";
+import { BlendFunction } from "postprocessing";
+import { Color, Vector3 } from "three";
+import { getFloorStore } from "@/stores/get-floor-store";
+import { usePathname } from "next/navigation";
 
 interface Props {
   model: React.ReactNode;
@@ -32,6 +34,7 @@ interface Props {
   planeColor?: Color | number;
   outlineStrength?: number;
   outlineResolution?: number;
+  isRoomPage?: boolean;
   onObjectHover?: (object: string | null) => void;
   onObjectClick?: (object: string) => void;
 }
@@ -46,9 +49,20 @@ export default function CanvasScreen({
   planeColor = Color.NAMES.seagreen,
   outlineStrength = 3,
   outlineResolution = 0.1,
-  onObjectHover,
-  onObjectClick,
+  isRoomPage = false,
 }: Props) {
+  // const pathname = usePathname();
+  // const roomPath = pathname.split("/room/")[1]
+  // const { setSelect } = getFloorStore(roomPath.substring(0, 7));
+
+  // useEffect(() => {
+  //   if (isRoomPage) {
+  //     setSelect(roomPath)
+  //   }
+  // }, [isRoomPage, roomPath])
+
+  const setDefaultPosition = new Vector3(...cameraPosition);
+  // const [cameraPos, setCameraPos] = useState(new Vector3(...cameraPosition));
 
   return (
     <Canvas
@@ -77,7 +91,11 @@ export default function CanvasScreen({
 
         {/* Render the JSX model directly */}
         <Selection>
-          <EffectComposer resolutionScale={outlineResolution} autoClear={false}>
+          <EffectComposer
+            resolutionScale={outlineResolution}
+            multisampling={0}
+            autoClear={false}
+          >
             <Outline
               blendFunction={BlendFunction.SCREEN}
               xRay={true}
@@ -101,7 +119,17 @@ export default function CanvasScreen({
           <meshStandardMaterial color={planeColor} />
         </Plane>
 
-        <OrbitControls {...controlSettings} />
+        <OrbitControls
+          {...controlSettings}
+          // onChange={(e) => {
+          //   const newPosition = e?.target?.object?.position?.clone();
+          //   if (newPosition) {
+          //     setCameraPos(newPosition); // Update camera position if defined
+          //     console.log("Camera position:", newPosition); // Log position for testing
+          //   }
+          // }}
+          target={isRoomPage ? setDefaultPosition : 0}
+        />
         <Environment preset="city" blur={1} />
         {/* <Sky inclination={0.6} /> */}
       </Suspense>
