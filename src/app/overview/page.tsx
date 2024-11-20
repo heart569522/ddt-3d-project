@@ -26,7 +26,6 @@ export default async function Overview() {
   const avgElectricUsage = await getAverageElectricityUsage();
   const electricUsage = await getData("UseRateToday");
   const electricUsageData = formatFacultyElectricTodayUsage(electricUsage);
-  console.log("🚀 ~ Overview ~ electricUsageData:", electricUsageData)
   const pmTempHmdData = await getData("HTPMPerMonth");
   const buildingData = await getData("getBU");
 

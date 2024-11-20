@@ -34,9 +34,13 @@ const chartConfig = {
 
 interface HumidityProps {
   data: IEnvironmentLineChart[];
+  isDashboardRoom?: boolean;
 }
 
-export default function HumidityChart({ data }: HumidityProps) {
+export default function HumidityChart({
+  data,
+  isDashboardRoom,
+}: HumidityProps) {
   return (
     <Card className="transition bg-secondary/60 hover:bg-secondary/30">
       <CardHeader>
@@ -45,64 +49,70 @@ export default function HumidityChart({ data }: HumidityProps) {
         </CardTitle>
       </CardHeader>
       <CardContent>
-        <ChartContainer config={chartConfig}>
-          <LineChart
-            accessibilityLayer
-            data={data}
-            margin={{
-              top: 12,
-              right: 6,
-              left: 10,
-            }}
-          >
-            <CartesianGrid vertical={false} />
-            <XAxis
-              dataKey="month"
-              tickLine={false}
-              axisLine={false}
-              tickMargin={8}
-              tickFormatter={(value) => value.slice(0, 3)}
-            />
-            <ChartTooltip cursor={false} content={<ChartTooltipContent />} />
-            <Line
-              dataKey="min"
-              type="monotone"
-              stroke="var(--color-min)"
-              strokeWidth={2}
-              dot={{
-                fill: "var(--color-min)",
+        {data.length !== 0 ? (
+          <ChartContainer config={chartConfig}>
+            <LineChart
+              accessibilityLayer
+              data={data}
+              margin={{
+                top: 12,
+                right: isDashboardRoom ? 27 : 6,
+                left: isDashboardRoom ? 27 : 10,
               }}
-              activeDot={{
-                r: 6,
-              }}
-            />
-            <Line
-              dataKey="max"
-              type="monotone"
-              stroke="var(--color-max)"
-              strokeWidth={2}
-              dot={{
-                fill: "var(--color-max)",
-              }}
-              activeDot={{
-                r: 6,
-              }}
-            />
-            <Line
-              dataKey="mean"
-              type="monotone"
-              stroke="var(--color-mean)"
-              strokeWidth={2}
-              dot={{
-                fill: "var(--color-mean)",
-              }}
-              activeDot={{
-                r: 6,
-              }}
-            />
-            <ChartLegend content={<ChartLegendContent />} />
-          </LineChart>
-        </ChartContainer>
+            >
+              <CartesianGrid vertical={false} />
+              <XAxis
+                dataKey="title"
+                tickLine={false}
+                axisLine={false}
+                tickMargin={8}
+                tickFormatter={(value) => value}
+              />
+              <ChartTooltip cursor={false} content={<ChartTooltipContent />} />
+              <Line
+                dataKey="min"
+                type="monotone"
+                stroke="var(--color-min)"
+                strokeWidth={2}
+                dot={{
+                  fill: "var(--color-min)",
+                }}
+                activeDot={{
+                  r: 6,
+                }}
+              />
+              <Line
+                dataKey="max"
+                type="monotone"
+                stroke="var(--color-max)"
+                strokeWidth={2}
+                dot={{
+                  fill: "var(--color-max)",
+                }}
+                activeDot={{
+                  r: 6,
+                }}
+              />
+              <Line
+                dataKey="mean"
+                type="monotone"
+                stroke="var(--color-mean)"
+                strokeWidth={2}
+                dot={{
+                  fill: "var(--color-mean)",
+                }}
+                activeDot={{
+                  r: 6,
+                }}
+              />
+              <ChartLegend content={<ChartLegendContent />} />
+            </LineChart>
+          </ChartContainer>
+        ) : (
+          <p className="text-base text-center font-semibold opacity-60 italic py-10">
+            Data Not Available
+          </p>
+        )}
       </CardContent>
     </Card>
   );

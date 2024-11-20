@@ -38,6 +38,7 @@ interface AverageProps {
 
 interface PMProps {
   data: IEnvironmentLineChart[];
+  isDashboardRoom?: boolean;
 }
 
 export function EnvironmentAverage({ data }: AverageProps) {
@@ -96,21 +97,27 @@ export function EnvironmentAverage({ data }: AverageProps) {
                 {averagePM25?.toFixed(configs.numberOfDecimal)}
               </p>
             </div>
-            <div className="flex justify-between items-center gap-2">
-              <span className="">0</span>
-              <Progress
-                className="bg-zinc-200 dark:bg-zinc-700"
-                indicatorColor={getPM25ColorProgress(
-                  calculatePercents(averagePM25 as number, 600)
-                )}
-                value={calculatePercents(averagePM25 as number, 600)}
-                aria-label={`${calculatePercents(
-                  averagePM25 as number,
-                  600
-                )}% increase`}
-              />
-              <span className="">600</span>
-            </div>
+            {averagePM25 ? (
+              <div className="flex justify-between items-center gap-2">
+                <span className="">0</span>
+                <Progress
+                  className="bg-zinc-200 dark:bg-zinc-700"
+                  indicatorColor={getPM25ColorProgress(
+                    calculatePercents(averagePM25 as number, 600)
+                  )}
+                  value={calculatePercents(averagePM25 as number, 600)}
+                  aria-label={`${calculatePercents(
+                    averagePM25 as number,
+                    600
+                  )}% increase`}
+                />
+                <span className="">600</span>
+              </div>
+            ) : (
+              <p className="text-base text-center font-semibold opacity-60 italic">
+                Data Not Available
+              </p>
+            )}
           </CardContent>
         </Card>
         <Card className="transition bg-secondary/60 hover:bg-secondary/30">
@@ -126,21 +133,27 @@ export function EnvironmentAverage({ data }: AverageProps) {
                 )}
               </p>
             </div>
-            <div className="flex justify-between items-center gap-2">
-              <span className="">0</span>
-              <Progress
-                className="bg-zinc-200 dark:bg-zinc-700"
-                indicatorColor={getTempColorProgress(
-                  calculatePercents(averageTemp as number, 50)
-                )}
-                value={calculatePercents(averageTemp as number, 50)}
-                aria-label={`${calculatePercents(
-                  averageTemp as number,
-                  50
-                )}% increase`}
-              />
-              <span className="">50</span>
-            </div>
+            {averageTemp ? (
+              <div className="flex justify-between items-center gap-2">
+                <span className="">0</span>
+                <Progress
+                  className="bg-zinc-200 dark:bg-zinc-700"
+                  indicatorColor={getTempColorProgress(
+                    calculatePercents(averageTemp as number, 50)
+                  )}
+                  value={calculatePercents(averageTemp as number, 50)}
+                  aria-label={`${calculatePercents(
+                    averageTemp as number,
+                    50
+                  )}% increase`}
+                />
+                <span className="">50</span>
+              </div>
+            ) : (
+              <p className="text-base text-center font-semibold opacity-60 italic">
+                Data Not Available
+              </p>
+            )}
           </CardContent>
         </Card>
         <Card className="transition bg-secondary/60 hover:bg-secondary/30">
@@ -149,24 +162,32 @@ export function EnvironmentAverage({ data }: AverageProps) {
               <h4 className="text-sm sm:text-base opacity-90">Humidity :</h4>
               <p className="text-xl sm:text-2xl font-semibold">
                 {averageHumidity?.toFixed(configs.numberOfDecimal)}&nbsp;
-                <span className="text-base sm:text-lg">%</span>
+                {averageHumidity && (
+                  <span className="text-base sm:text-lg">%</span>
+                )}
               </p>
             </div>
-            <div className="flex justify-between items-center gap-2">
-              <span className="">0</span>
-              <Progress
-                className="bg-zinc-200 dark:bg-zinc-700"
-                indicatorColor={getHumidityColorProgress(
-                  calculatePercents(averageHumidity as number, 100)
-                )}
-                value={calculatePercents(averageHumidity as number, 100)}
-                aria-label={`${calculatePercents(
-                  averageHumidity as number,
-                  100
-                )}% increase`}
-              />
-              <span className="">100</span>
-            </div>
+            {averageHumidity ? (
+              <div className="flex justify-between items-center gap-2">
+                <span className="">0</span>
+                <Progress
+                  className="bg-zinc-200 dark:bg-zinc-700"
+                  indicatorColor={getHumidityColorProgress(
+                    calculatePercents(averageHumidity as number, 100)
+                  )}
+                  value={calculatePercents(averageHumidity as number, 100)}
+                  aria-label={`${calculatePercents(
+                    averageHumidity as number,
+                    100
+                  )}% increase`}
+                />
+                <span className="">100</span>
+              </div>
+            ) : (
+              <p className="text-base text-center font-semibold opacity-60 italic">
+                Data Not Available
+              </p>
+            )}
           </CardContent>
         </Card>
       </CardContent>
@@ -189,73 +210,77 @@ const chartConfig = {
   },
 } satisfies ChartConfig;
 
-export function EnvironmentPMChart({ data }: PMProps) {
+export function EnvironmentPMChart({ data, isDashboardRoom }: PMProps) {
   return (
     <Card className="transition bg-secondary/60 hover:bg-secondary/30">
       <CardHeader>
-        <CardTitle className="text-sm md:text-base text-left">
-          PM 2.5
-        </CardTitle>
+        <CardTitle className="text-sm md:text-base text-left">PM 2.5</CardTitle>
       </CardHeader>
       <CardContent>
-        <ChartContainer config={chartConfig}>
-          <LineChart
-            accessibilityLayer
-            data={data}
-            margin={{
-              top: 12,
-              right: 6,
-              left: 10,
-            }}
-          >
-            <CartesianGrid vertical={false} />
-            <XAxis
-              dataKey="month"
-              tickLine={false}
-              axisLine={false}
-              tickMargin={8}
-              tickFormatter={(value) => value.slice(0, 3)}
-            />
-            <ChartTooltip cursor={false} content={<ChartTooltipContent />} />
-            <Line
-              dataKey="min"
-              type="monotone"
-              stroke="var(--color-min)"
-              strokeWidth={2}
-              dot={{
-                fill: "var(--color-min)",
+        {data.length !== 0 ? (
+          <ChartContainer config={chartConfig}>
+            <LineChart
+              accessibilityLayer
+              data={data}
+              margin={{
+                top: 12,
+                right: isDashboardRoom ? 27 : 6,
+                left: isDashboardRoom ? 27 : 10,
               }}
-              activeDot={{
-                r: 6,
-              }}
-            />
-            <Line
-              dataKey="max"
-              type="monotone"
-              stroke="var(--color-max)"
-              strokeWidth={2}
-              dot={{
-                fill: "var(--color-max)",
-              }}
-              activeDot={{
-                r: 6,
-              }}
-            />
-            <Line
-              dataKey="mean"
-              type="monotone"
-              stroke="var(--color-mean)"
-              strokeWidth={2}
-              dot={{
-                fill: "var(--color-mean)",
-              }}
-              activeDot={{
-                r: 6,
-              }}
-            />
-            <ChartLegend content={<ChartLegendContent />} />
-          </LineChart>
-        </ChartContainer>
+            >
+              <CartesianGrid vertical={false} />
+              <XAxis
+                dataKey="title"
+                tickLine={false}
+                axisLine={false}
+                tickMargin={8}
+                tickFormatter={(value) => value}
+              />
+              <ChartTooltip cursor={false} content={<ChartTooltipContent />} />
+              <Line
+                dataKey="min"
+                type="monotone"
+                stroke="var(--color-min)"
+                strokeWidth={2}
+                dot={{
+                  fill: "var(--color-min)",
+                }}
+                activeDot={{
+                  r: 6,
+                }}
+              />
+              <Line
+                dataKey="max"
+                type="monotone"
+                stroke="var(--color-max)"
+                strokeWidth={2}
+                dot={{
+                  fill: "var(--color-max)",
+                }}
+                activeDot={{
+                  r: 6,
+                }}
+              />
+              <Line
+                dataKey="mean"
+                type="monotone"
+                stroke="var(--color-mean)"
+                strokeWidth={2}
+                dot={{
+                  fill: "var(--color-mean)",
+                }}
+                activeDot={{
+                  r: 6,
+                }}
+              />
+              <ChartLegend content={<ChartLegendContent />} />
+            </LineChart>
+          </ChartContainer>
+        ) : (
+          <p className="text-base text-center font-semibold opacity-60 italic py-10">
+            Data Not Available
+          </p>
+        )}
       </CardContent>
     </Card>
   );
