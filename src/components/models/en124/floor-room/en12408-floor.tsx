@@ -1183,13 +1183,13 @@ export default function EN12408Floor(props: Props) {
                 <TableRow>
                   <TableCell className="p-2">Average Temperature</TableCell>
                   <TableCell className="p-2">
-                    {modalFloorRoomDetail?.averageTemp || "-"}
+                    {`${modalFloorRoomDetail?.averageTemp} °C` || "-"}
                   </TableCell>
                 </TableRow>
                 <TableRow>
                   <TableCell className="p-2">Average Humidity</TableCell>
                   <TableCell className="p-2">
-                    {modalFloorRoomDetail?.averageHumidity || "-"}
+                    {`${modalFloorRoomDetail?.averageHumidity} %` || "-"}
                   </TableCell>
                 </TableRow>
               </TableBody>
@@ -1304,6 +1304,7 @@ export default function EN12408Floor(props: Props) {
         scale={0.305}
       >
         {!props.isManage && !props.isRoomPage && renderModalDetail("EN1240801")}
+        {!props.isManage && props.isRoomPage && renderModalRoomDetail("EN1240801")}
         <mesh name="SW5" geometry={nodes.SW5.geometry} material={materials['กระจกใสหนา 1 1/2 หุน']} />
         <mesh name="SW5_1" geometry={nodes.SW5_1.geometry} material={materials['กรอบประตูหน้าต่าง ตาม']} />
         <mesh name="SW5_2" geometry={nodes.SW5_2.geometry} material={materials.ผนังทดลอง} />
@@ -1317,6 +1318,8 @@ export default function EN12408Floor(props: Props) {
         <mesh name="SW5_10" geometry={nodes.SW5_10.geometry} material={materials['ไม้เนื้อแข็ง 2"x4" ทาสี']} />
       </Select>
       <group name="EN1240802" position={[-6.739, 1.281, -20.349]} rotation={[-Math.PI / 2, 0, 0]} scale={0.305}>
+        {!props.isManage && !props.isRoomPage && renderModalDetail("EN1240802")}
+        {!props.isManage && props.isRoomPage && renderModalRoomDetail("EN1240802")}
         <mesh name="SW4" geometry={nodes.SW4.geometry} material={materials['กระจกใสหนา 1 1/2 หุน.001']} />
         <mesh name="SW4_1" geometry={nodes.SW4_1.geometry} material={materials['กรอบประตูหน้าต่าง ตา']} />
         <mesh name="SW4_2" geometry={nodes.SW4_2.geometry} material={materials['ผนังทดลอง.001']} />
@@ -1327,6 +1330,8 @@ export default function EN12408Floor(props: Props) {
         <mesh name="SW4_7" geometry={nodes.SW4_7.geometry} material={materials['ไม้เนื้อแข็ง 2" x 4" ทาสี.001']} />
       </group>
       <group name="EN1240803" position={[-2.757, 1.169, -19.992]} rotation={[-Math.PI / 2, 0, 0]} scale={0.305}>
+        {!props.isManage && !props.isRoomPage && renderModalDetail("EN1240803")}
+        {!props.isManage && props.isRoomPage && renderModalRoomDetail("EN1240803")}
         <mesh name="SW4001" geometry={nodes.SW4001.geometry} material={materials['กระจกใสหนา 1 1/2 หุน.002']} />
         <mesh name="SW4001_1" geometry={nodes.SW4001_1.geometry} material={materials['กรอบประตูหน้าต่าง ตา.001']} />
         <mesh name="SW4001_2" geometry={nodes.SW4001_2.geometry} material={materials['ผนังทดลอง.002']} />
@@ -1340,6 +1345,8 @@ export default function EN12408Floor(props: Props) {
         <mesh name="SW4001_10" geometry={nodes.SW4001_10.geometry} material={materials['ไม้เนื้อแข็ง 2"x4" ทาสี.001']} />
       </group>
       <group name="EN1240804" position={[4.924, 1.474, -17.092]} rotation={[-Math.PI / 2, 0, 0]} scale={0.305}>
+        {!props.isManage && !props.isRoomPage && renderModalDetail("EN1240804")}
+        {!props.isManage && props.isRoomPage && renderModalRoomDetail("EN1240804")}
         <mesh name="SW8" geometry={nodes.SW8.geometry} material={materials['กรอบประตูหน้าต่าง ตา.002']} />
         <mesh name="SW8_1" geometry={nodes.SW8_1.geometry} material={materials['กระจกใสหนา 1 1/2 หุน.003']} />
         <mesh name="SW8_2" geometry={nodes.SW8_2.geometry} material={materials['ผนังทดลอง.003']} />
@@ -1352,6 +1359,8 @@ export default function EN12408Floor(props: Props) {
         <mesh name="SW8_9" geometry={nodes.SW8_9.geometry} material={materials['ไม้เนื้อแข็ง 2" x 4" ทาสี.003']} />
       </group>
       <group name="EN1240805" position={[12.042, 1.548, -14.494]} rotation={[-Math.PI / 2, 0, 0]} scale={0.305}>
+        {!props.isManage && !props.isRoomPage && renderModalDetail("EN1240805")}
+        {!props.isManage && props.isRoomPage && renderModalRoomDetail("EN1240805")}
         <mesh name="SD2" geometry={nodes.SD2.geometry} material={materials['Aluminum.004']} />
         <mesh name="SD2_1" geometry={nodes.SD2_1.geometry} material={materials['กระจกใสหนา 2 หุน']} />
         <mesh name="SD2_2" geometry={nodes.SD2_2.geometry} material={materials['เหล็ก ตามมาตราฐาน Decoradoor S-']} />
@@ -1365,6 +1374,8 @@ export default function EN12408Floor(props: Props) {
         <mesh name="SD2_10" geometry={nodes.SD2_10.geometry} material={materials['กระจกใสหนา 1 1/2 หุน.004']} />
       </group>
       <group name="EN1240806" position={[20.573, 1.604, -14.562]} rotation={[-Math.PI / 2, 0, 0]} scale={0.305}>
+        {!props.isManage && !props.isRoomPage && renderModalDetail("EN1240806")}
+        {!props.isManage && props.isRoomPage && renderModalRoomDetail("EN1240806")}
         <mesh name="SD2001" geometry={nodes.SD2001.geometry} material={materials['Aluminum.005']} />
         <mesh name="SD2001_1" geometry={nodes.SD2001_1.geometry} material={materials['กระจกใสหนา 2 หุน.001']} />
         <mesh name="SD2001_2" geometry={nodes.SD2001_2.geometry} material={materials['เหล็ก ตามมาตราฐาน Decoradoo.001']} />
@@ -1376,6 +1387,8 @@ export default function EN12408Floor(props: Props) {
         <mesh name="SD2001_8" geometry={nodes.SD2001_8.geometry} material={materials['Glass.002']} />
       </group>
       <group name="EN1240807" position={[-10.961, 1.206, -17.663]} rotation={[-Math.PI / 2, 0, 0]} scale={0.305}>
+        {!props.isManage && !props.isRoomPage && renderModalDetail("EN1240807")}
+        {!props.isManage && props.isRoomPage && renderModalRoomDetail("EN1240807")}
         <mesh name="WD1001" geometry={nodes.WD1001.geometry} material={materials['Aluminum.006']} />
         <mesh name="WD1001_1" geometry={nodes.WD1001_1.geometry} material={materials['ไม้อัดยางทาสี.004']} />
         <mesh name="WD1001_2" geometry={nodes.WD1001_2.geometry} material={materials['ไม้เนื้อแข็ง 2" x 4" ทาสี.004']} />
@@ -1384,6 +1397,8 @@ export default function EN12408Floor(props: Props) {
         <mesh name="WD1001_5" geometry={nodes.WD1001_5.geometry} material={materials['ผนังก่ออิฐ ทาสี.005']} />
       </group>
       <group name="EN1240808" position={[-3.782, 1.112, -16.455]} rotation={[-Math.PI / 2, 0, 0]} scale={0.305}>
+        {!props.isManage && !props.isRoomPage && renderModalDetail("EN1240808")}
+        {!props.isManage && props.isRoomPage && renderModalRoomDetail("EN1240808")}
         <mesh name="SD7" geometry={nodes.SD7.geometry} material={materials['Aluminum.007']} />
         <mesh name="SD7_1" geometry={nodes.SD7_1.geometry} material={materials['เหล็ก ตามมาตราฐาน Decoradoo.003']} />
         <mesh name="SD7_2" geometry={nodes.SD7_2.geometry} material={materials['เหล็ก ตามมาตราฐาน Decoradoo.004']} />
@@ -1393,6 +1408,8 @@ export default function EN12408Floor(props: Props) {
         <mesh name="SD7_6" geometry={nodes.SD7_6.geometry} material={materials['ผนังก่ออิฐ ทาสี.006']} />
       </group>
       <group name="EN1240809" position={[-3.808, 1.103, -14.624]} rotation={[-Math.PI / 2, 0, 0]} scale={0.305}>
+        {!props.isManage && !props.isRoomPage && renderModalDetail("EN1240809")}
+        {!props.isManage && props.isRoomPage && renderModalRoomDetail("EN1240809")}
         <mesh name="SD7001" geometry={nodes.SD7001.geometry} material={materials['Aluminum.008']} />
         <mesh name="SD7001_1" geometry={nodes.SD7001_1.geometry} material={materials['เหล็ก ตามมาตราฐาน Decoradoo.005']} />
         <mesh name="SD7001_2" geometry={nodes.SD7001_2.geometry} material={materials['เหล็ก ตามมาตราฐาน Decoradoo.006']} />
@@ -1402,6 +1419,8 @@ export default function EN12408Floor(props: Props) {
         <mesh name="SD7001_6" geometry={nodes.SD7001_6.geometry} material={materials['ผนังก่ออิฐ ทาสี.007']} />
       </group>
       <group name="EN1240810" position={[5.603, 1.189, -12.167]} rotation={[-Math.PI / 2, 0, 0]} scale={0.305}>
+        {!props.isManage && !props.isRoomPage && renderModalDetail("EN1240810")}
+        {!props.isManage && props.isRoomPage && renderModalRoomDetail("EN1240810")}
         <mesh name="SD4" geometry={nodes.SD4.geometry} material={materials['Aluminum.009']} />
         <mesh name="SD4_1" geometry={nodes.SD4_1.geometry} material={materials['เหล็ก ตามมาตราฐาน Decoradoo.007']} />
         <mesh name="SD4_2" geometry={nodes.SD4_2.geometry} material={materials['เหล็ก ตามมาตราฐาน Decoradoo.008']} />
@@ -1413,6 +1432,8 @@ export default function EN12408Floor(props: Props) {
         <mesh name="SD4_8" geometry={nodes.SD4_8.geometry} material={materials['ไม้เนื้อแข็ง 2" x 4" ทาสี.005']} />
       </group>
       <group name="EN1240811" position={[19.2, 1.445, -8.323]} rotation={[-Math.PI / 2, 0, 0]} scale={0.305}>
+        {!props.isManage && !props.isRoomPage && renderModalDetail("EN1240811")}
+        {!props.isManage && props.isRoomPage && renderModalRoomDetail("EN1240811")}
         <mesh name="SD2002" geometry={nodes.SD2002.geometry} material={materials['Aluminum.010']} />
         <mesh name="SD2002_1" geometry={nodes.SD2002_1.geometry} material={materials['กระจกใสหนา 2 หุน.002']} />
         <mesh name="SD2002_2" geometry={nodes.SD2002_2.geometry} material={materials['เหล็ก ตามมาตราฐาน Decoradoo.009']} />
@@ -1427,6 +1448,8 @@ export default function EN12408Floor(props: Props) {
         <mesh name="SD2002_11" geometry={nodes.SD2002_11.geometry} material={materials['ไม้เนื้อแข็ง 2" x 4" ทาสี.006']} />
       </group>
       <group name="EN1240812" position={[-9.388, 1.308, 0.863]} rotation={[-Math.PI / 2, 0, 0]} scale={0.305}>
+      {!props.isManage && !props.isRoomPage && renderModalDetail("EN1240812")}
+      {!props.isManage && props.isRoomPage && renderModalRoomDetail("EN1240812")}
         <mesh name="SD2003" geometry={nodes.SD2003.geometry} material={materials['Aluminum.011']} />
         <mesh name="SD2003_1" geometry={nodes.SD2003_1.geometry} material={materials['กระจกใสหนา 2 หุน.003']} />
         <mesh name="SD2003_2" geometry={nodes.SD2003_2.geometry} material={materials['เหล็ก ตามมาตราฐาน Decoradoo.011']} />
@@ -1438,6 +1461,8 @@ export default function EN12408Floor(props: Props) {
         <mesh name="SD2003_8" geometry={nodes.SD2003_8.geometry} material={materials['Glass.004']} />
       </group>
       <group name="EN1240813" position={[11.159, 1.141, 0.917]} rotation={[-Math.PI / 2, 0, 0]} scale={0.305}>
+      {!props.isManage && !props.isRoomPage && renderModalDetail("EN1240813")}
+      {!props.isManage && props.isRoomPage && renderModalRoomDetail("EN1240813")}
         <mesh name="AD1" geometry={nodes.AD1.geometry} material={materials['กระจกใสหนา 2 หุน.004']} />
         <mesh name="AD1_1" geometry={nodes.AD1_1.geometry} material={materials.อลูมิเนียมสีเงินขนาดม} />
         <mesh name="AD1_2" geometry={nodes.AD1_2.geometry} material={materials['ผนังก่ออิฐ ทาสี.011']} />
@@ -1452,6 +1477,8 @@ export default function EN12408Floor(props: Props) {
         <mesh name="AD1_11" geometry={nodes.AD1_11.geometry} material={materials.Default} />
       </group>
       <group name="EN1240814" position={[20.75, 1.501, -4.022]} rotation={[-Math.PI / 2, 0, 0]} scale={0.305}>
+      {!props.isManage && !props.isRoomPage && renderModalDetail("EN1240814")}
+      {!props.isManage && props.isRoomPage && renderModalRoomDetail("EN1240814")}
         <mesh name="SW12010" geometry={nodes.SW12010.geometry} material={materials['ผิวคอนกรีต ขัดมัน.009']} />
         <mesh name="SW12010_1" geometry={nodes.SW12010_1.geometry} material={materials['Glass.006']} />
         <mesh name="SW12010_2" geometry={nodes.SW12010_2.geometry} material={materials['ผนังทดลอง.013']} />
@@ -1463,6 +1490,8 @@ export default function EN12408Floor(props: Props) {
         <mesh name="SW12010_8" geometry={nodes.SW12010_8.geometry} material={materials['ไม้เนื้อแข็ง 2" x 4" ทาสี.008']} />
       </group>
       <group name="EN1240815" position={[12.474, 1.189, -0.578]} rotation={[-Math.PI / 2, 0, 0]} scale={0.305}>
+      {!props.isManage && !props.isRoomPage && renderModalDetail("EN1240815")}
+      {!props.isManage && props.isRoomPage && renderModalRoomDetail("EN1240815")}
         <mesh name="WD1003" geometry={nodes.WD1003.geometry} material={materials['Aluminum.014']} />
         <mesh name="WD1003_1" geometry={nodes.WD1003_1.geometry} material={materials['ไม้อัดยางทาสี.009']} />
         <mesh name="WD1003_2" geometry={nodes.WD1003_2.geometry} material={materials['ไม้เนื้อแข็ง 2" x 4" ทาสี.009']} />
@@ -1472,6 +1501,8 @@ export default function EN12408Floor(props: Props) {
         <mesh name="WD1003_6" geometry={nodes.WD1003_6.geometry} material={materials['ผิวคอนกรีต ขัดมัน.010']} />
       </group>
       <group name="EN1240816" position={[19.789, 1.592, 0.364]} rotation={[-Math.PI / 2, 0, 0]} scale={0.305}>
+      {!props.isManage && !props.isRoomPage && renderModalDetail("EN1240816")}
+      {!props.isManage && props.isRoomPage && renderModalRoomDetail("EN1240816")}
         <mesh name="SW12011" geometry={nodes.SW12011.geometry} material={materials['ผิวคอนกรีต ขัดมัน.011']} />
         <mesh name="SW12011_1" geometry={nodes.SW12011_1.geometry} material={materials['Glass.007']} />
         <mesh name="SW12011_2" geometry={nodes.SW12011_2.geometry} material={materials['ผนังทดลอง.015']} />
@@ -1483,6 +1514,8 @@ export default function EN12408Floor(props: Props) {
         <mesh name="SW12011_8" geometry={nodes.SW12011_8.geometry} material={materials['ไม้เนื้อแข็ง 2" x 4" ทาสี.010']} />
       </group>
       <group name="EN1240817" position={[13.326, 1.343, 2.978]} rotation={[-Math.PI / 2, 0, 0]} scale={0.305}>
+      {!props.isManage && !props.isRoomPage && renderModalDetail("EN1240817")}
+      {!props.isManage && props.isRoomPage && renderModalRoomDetail("EN1240817")}
         <mesh name="SW11" geometry={nodes.SW11.geometry} material={materials['ผิวคอนกรีต ขัดมัน.012']} />
         <mesh name="SW11_1" geometry={nodes.SW11_1.geometry} material={materials['Glass.008']} />
         <mesh name="SW11_2" geometry={nodes.SW11_2.geometry} material={materials['ผนังก่ออิฐ ทาสี.015']} />
@@ -1513,6 +1546,8 @@ export default function EN12408Floor(props: Props) {
         <mesh name="SD2005_8" geometry={nodes.SD2005_8.geometry} material={materials['Glass.009']} />
       </Select>
       <group name="EN1240819" position={[-10.836, 1.23, 7.408]} rotation={[-Math.PI / 2, 0, 0]} scale={0.305}>
+        {!props.isManage && !props.isRoomPage && renderModalDetail("EN1240819")}
+        {!props.isManage && props.isRoomPage && renderModalRoomDetail("EN1240819")}
         <mesh name="AW1001" geometry={nodes.AW1001.geometry} material={materials['Glass.010']} />
         <mesh name="AW1001_1" geometry={nodes.AW1001_1.geometry} material={materials['Default.001']} />
         <mesh name="AW1001_2" geometry={nodes.AW1001_2.geometry} material={materials['ผนังก่ออิฐ ทาสี.017']} />
@@ -1525,6 +1560,8 @@ export default function EN12408Floor(props: Props) {
         <mesh name="AW1001_9" geometry={nodes.AW1001_9.geometry} material={materials['ไม้เนื้อแข็ง 2" x 4" ทาสี.012']} />
       </group>
       <group name="EN1240820" position={[8.504, 1.03, 7.918]} rotation={[-Math.PI / 2, 0, 0]} scale={0.305}>
+        {!props.isManage && !props.isRoomPage && renderModalDetail("EN1240820")}
+        {!props.isManage && props.isRoomPage && renderModalRoomDetail("EN1240820")}
         <mesh name="WD3004" geometry={nodes.WD3004.geometry} material={materials['Aluminum.019']} />
         <mesh name="WD3004_1" geometry={nodes.WD3004_1.geometry} material={materials['ไม้อัดยางทาสี.013']} />
         <mesh name="WD3004_2" geometry={nodes.WD3004_2.geometry} material={materials['ไม้เนื้อแข็ง 2" x 4" ทาสี.013']} />
@@ -1534,6 +1571,8 @@ export default function EN12408Floor(props: Props) {
         <mesh name="WD3004_6" geometry={nodes.WD3004_6.geometry} material={materials['ผิวคอนกรีต ขัดมัน.015']} />
       </group>
       <group name="EN1240821" position={[11.318, 1.192, 6.492]} rotation={[-Math.PI / 2, 0, 0]} scale={0.305}>
+        {!props.isManage && !props.isRoomPage && renderModalDetail("EN1240821")}
+        {!props.isManage && props.isRoomPage && renderModalRoomDetail("EN1240821")}
         <mesh name="SW4002" geometry={nodes.SW4002.geometry} material={materials['กระจกใสหนา 1 1/2 หุน.011']} />
         <mesh name="SW4002_1" geometry={nodes.SW4002_1.geometry} material={materials['กรอบประตูหน้าต่าง ตา.004']} />
         <mesh name="SW4002_2" geometry={nodes.SW4002_2.geometry} material={materials['ผนังทดลอง.020']} />
@@ -1544,6 +1583,8 @@ export default function EN12408Floor(props: Props) {
         <mesh name="SW4002_7" geometry={nodes.SW4002_7.geometry} material={materials['ไม้เนื้อแข็ง 2" x 4" ทาสี.014']} />
       </group>
       <group name="EN1240822" position={[11.416, 1.214, 8.212]} rotation={[-Math.PI / 2, 0, 0]} scale={0.305}>
+        {!props.isManage && !props.isRoomPage && renderModalDetail("EN1240822")}
+        {!props.isManage && props.isRoomPage && renderModalRoomDetail("EN1240822")}
         <mesh name="SW7" geometry={nodes.SW7.geometry} material={materials['กระจกใสหนา 1 1/2 หุน.012']} />
         <mesh name="SW7_1" geometry={nodes.SW7_1.geometry} material={materials['กรอบประตูหน้าต่าง ตา.005']} />
         <mesh name="SW7_2" geometry={nodes.SW7_2.geometry} material={materials['ผนังทดลอง.021']} />
@@ -1555,6 +1596,8 @@ export default function EN12408Floor(props: Props) {
         <mesh name="SW7_8" geometry={nodes.SW7_8.geometry} material={materials['ไม้เนื้อแข็ง 2" x 4" ทาสี.015']} />
       </group>
       <group name="EN1240823" position={[-19.143, 1.516, 15.926]} rotation={[-Math.PI / 2, 0, 0]} scale={0.305}>
+        {!props.isManage && !props.isRoomPage && renderModalDetail("EN1240823")}
+        {!props.isManage && props.isRoomPage && renderModalRoomDetail("EN1240823")}
         <mesh name="SD2006" geometry={nodes.SD2006.geometry} material={materials['Aluminum.022']} />
         <mesh name="SD2006_1" geometry={nodes.SD2006_1.geometry} material={materials['กระจกใสหนา 2 หุน.006']} />
         <mesh name="SD2006_2" geometry={nodes.SD2006_2.geometry} material={materials['เหล็ก ตามมาตราฐาน Decoradoo.015']} />
@@ -1566,6 +1609,8 @@ export default function EN12408Floor(props: Props) {
         <mesh name="SD2006_8" geometry={nodes.SD2006_8.geometry} material={materials['Glass.011']} />
       </group>
       <group name="EN1240824" position={[-10.823, 1.234, 12.529]} rotation={[-Math.PI / 2, 0, 0]} scale={0.305}>
+        {!props.isManage && !props.isRoomPage && renderModalDetail("EN1240824")}
+        {!props.isManage && props.isRoomPage && renderModalRoomDetail("EN1240824")}
         <mesh name="AW1003" geometry={nodes.AW1003.geometry} material={materials['Glass.013']} />
         <mesh name="AW1003_1" geometry={nodes.AW1003_1.geometry} material={materials['Default.003']} />
         <mesh name="AW1003_2" geometry={nodes.AW1003_2.geometry} material={materials['ผนังก่ออิฐ ทาสี.022']} />
@@ -1578,6 +1623,8 @@ export default function EN12408Floor(props: Props) {
         <mesh name="AW1003_9" geometry={nodes.AW1003_9.geometry} material={materials['ไม้เนื้อแข็ง 2" x 4" ทาสี.017']} />
       </group>
       <group name="EN1240825" position={[9.302, 1.654, 11.904]} rotation={[-Math.PI / 2, 0, 0]} scale={0.305}>
+        {!props.isManage && !props.isRoomPage && renderModalDetail("EN1240825")}
+        {!props.isManage && props.isRoomPage && renderModalRoomDetail("EN1240825")}
         <mesh name="1100mm" geometry={nodes['1100mm'].geometry} material={materials['ผิวคอนกรีต ขัดมัน.019']} />
         <mesh name="1100mm_1" geometry={nodes['1100mm_1'].geometry} material={materials['ผนังทดลอง.025']} />
         <mesh name="1100mm_2" geometry={nodes['1100mm_2'].geometry} material={materials['Default Wall.025']} />
@@ -1592,6 +1639,8 @@ export default function EN12408Floor(props: Props) {
         <mesh name="1100mm_11" geometry={nodes['1100mm_11'].geometry} material={materials['AB_Hose White']} />
       </group>
       <group name="EN1240826" position={[8.993, 1.385, 15.898]} rotation={[-Math.PI / 2, 0, 0]} scale={0.305}>
+        {!props.isManage && !props.isRoomPage && renderModalDetail("EN1240826")}
+        {!props.isManage && props.isRoomPage && renderModalRoomDetail("EN1240826")}
         <mesh name="SW12021" geometry={nodes.SW12021.geometry} material={materials['ผิวคอนกรีต ขัดมัน.020']} />
         <mesh name="SW12021_1" geometry={nodes.SW12021_1.geometry} material={materials['Glass.014']} />
         <mesh name="SW12021_2" geometry={nodes.SW12021_2.geometry} material={materials['ผนังก่ออิฐ ทาสี.024']} />
@@ -1603,6 +1652,8 @@ export default function EN12408Floor(props: Props) {
         <mesh name="SW12021_8" geometry={nodes.SW12021_8.geometry} material={materials['ไม้เนื้อแข็ง 2" x 4" ทาสี.018']} />
       </group>
       <group name="EN1240827" position={[13.865, 1.526, 15.652]} rotation={[-Math.PI / 2, 0, 0]} scale={0.305}>
+        {!props.isManage && !props.isRoomPage && renderModalDetail("EN1240827")}
+        {!props.isManage && props.isRoomPage && renderModalRoomDetail("EN1240827")}
         <mesh name="SW12022" geometry={nodes.SW12022.geometry} material={materials['ผิวคอนกรีต ขัดมัน.021']} />
         <mesh name="SW12022_1" geometry={nodes.SW12022_1.geometry} material={materials['Glass.015']} />
         <mesh name="SW12022_2" geometry={nodes.SW12022_2.geometry} material={materials['ผนังก่ออิฐ ทาสี.025']} />
@@ -1614,6 +1665,8 @@ export default function EN12408Floor(props: Props) {
         <mesh name="SW12022_8" geometry={nodes.SW12022_8.geometry} material={materials['ไม้เนื้อแข็ง 2" x 4" ทาสี.019']} />
       </group>
       <group name="EN1240828" position={[-12.977, 1.51, 21.114]} rotation={[-Math.PI / 2, 0, 0]} scale={0.305}>
+        {!props.isManage && !props.isRoomPage && renderModalDetail("EN1240828")}
+        {!props.isManage && props.isRoomPage && renderModalRoomDetail("EN1240828")}
         <mesh name="SD2007" geometry={nodes.SD2007.geometry} material={materials['Aluminum.027']} />
         <mesh name="SD2007_1" geometry={nodes.SD2007_1.geometry} material={materials['กระจกใสหนา 2 หุน.007']} />
         <mesh name="SD2007_2" geometry={nodes.SD2007_2.geometry} material={materials['เหล็ก ตามมาตราฐาน Decoradoo.018']} />
@@ -1633,6 +1686,7 @@ export default function EN12408Floor(props: Props) {
         scale={0.305}
       >
         {!props.isManage && !props.isRoomPage && renderModalDetail("EN1240829")}
+        {!props.isManage && props.isRoomPage && renderModalRoomDetail("EN1240829")}
         <mesh name="SD2008" geometry={nodes.SD2008.geometry} material={materials['Aluminum.028']} />
         <mesh name="SD2008_1" geometry={nodes.SD2008_1.geometry} material={materials['กระจกใสหนา 2 หุน.008']} />
         <mesh name="SD2008_2" geometry={nodes.SD2008_2.geometry} material={materials['เหล็ก ตามมาตราฐาน Decoradoo.020']} />
@@ -1652,6 +1706,7 @@ export default function EN12408Floor(props: Props) {
         scale={0.305}
       >
         {!props.isManage && !props.isRoomPage && renderModalDetail("EN1240830")}
+        {!props.isManage && props.isRoomPage && renderModalRoomDetail("EN1240830")}
         <mesh name="WD1004" geometry={nodes.WD1004.geometry} material={materials['Aluminum.029']} />
         <mesh name="WD1004_1" geometry={nodes.WD1004_1.geometry} material={materials['ไม้อัดยางทาสี.020']} />
         <mesh name="WD1004_2" geometry={nodes.WD1004_2.geometry} material={materials['ไม้เนื้อแข็ง 2" x 4" ทาสี.020']} />
@@ -1662,6 +1717,8 @@ export default function EN12408Floor(props: Props) {
       </Select>
 
       <group name="EN1240831" position={[5.444, 1.336, 19.02]} rotation={[-Math.PI / 2, 0, 0]} scale={0.305}>
+        {!props.isManage && !props.isRoomPage && renderModalDetail("EN1240831")}
+        {!props.isManage && props.isRoomPage && renderModalRoomDetail("EN1240831")}
         <mesh name="SW11002" geometry={nodes.SW11002.geometry} material={materials['ผิวคอนกรีต ขัดมัน.025']} />
         <mesh name="SW11002_1" geometry={nodes.SW11002_1.geometry} material={materials['Glass.018']} />
         <mesh name="SW11002_2" geometry={nodes.SW11002_2.geometry} material={materials['ผนังก่ออิฐ ทาสี.029']} />
@@ -1672,6 +1729,8 @@ export default function EN12408Floor(props: Props) {
         <mesh name="SW11002_7" geometry={nodes.SW11002_7.geometry} material={materials['ไม้เนื้อแข็ง 2" x 4" ทาสี.021']} />
       </group>
       <group name="EN1240832" position={[2.232, 1.396, 23.892]} rotation={[-Math.PI / 2, 0, 0]} scale={0.305}>
+        {!props.isManage && !props.isRoomPage && renderModalDetail("EN1240832")}
+        {!props.isManage && props.isRoomPage && renderModalRoomDetail("EN1240832")}
         <mesh name="SW12030" geometry={nodes.SW12030.geometry} material={materials['ผิวคอนกรีต ขัดมัน.026']} />
         <mesh name="SW12030_1" geometry={nodes.SW12030_1.geometry} material={materials['Glass.019']} />
         <mesh name="SW12030_2" geometry={nodes.SW12030_2.geometry} material={materials['ผนังก่ออิฐ ทาสี.030']} />
@@ -1683,6 +1742,8 @@ export default function EN12408Floor(props: Props) {
         <mesh name="SW12030_8" geometry={nodes.SW12030_8.geometry} material={materials['ไม้เนื้อแข็ง 2" x 4" ทาสี.022']} />
       </group>
       <group name="EN1240833" position={[5.714, 1.503, 23.932]} rotation={[-Math.PI / 2, 0, 0]} scale={0.305}>
+        {!props.isManage && !props.isRoomPage && renderModalDetail("EN1240833")}
+        {!props.isManage && props.isRoomPage && renderModalRoomDetail("EN1240833")}
         <mesh name="SW12031" geometry={nodes.SW12031.geometry} material={materials['ผิวคอนกรีต ขัดมัน.027']} />
         <mesh name="SW12031_1" geometry={nodes.SW12031_1.geometry} material={materials['Glass.020']} />
         <mesh name="SW12031_2" geometry={nodes.SW12031_2.geometry} material={materials['ผนังก่ออิฐ ทาสี.031']} />
@@ -1694,6 +1755,8 @@ export default function EN12408Floor(props: Props) {
         <mesh name="SW12031_8" geometry={nodes.SW12031_8.geometry} material={materials['ไม้เนื้อแข็ง 2" x 4" ทาสี.023']} />
       </group>
       <group name="EN1240899" position={[-3.835, 1.264, 0.539]} rotation={[-Math.PI / 2, 0, 0]} scale={0.305}>
+        {!props.isManage && !props.isRoomPage && renderModalDetail("EN1240899")}
+        {!props.isManage && props.isRoomPage && renderModalRoomDetail("EN1240899")}
         <mesh name="1100mm004" geometry={nodes['1100mm004'].geometry} material={materials['ผิวคอนกรีต ขัดมัน.028']} />
         <mesh name="1100mm004_1" geometry={nodes['1100mm004_1'].geometry} material={materials['ผนังก่ออิฐ ทาสี.032']} />
         <mesh name="1100mm004_2" geometry={nodes['1100mm004_2'].geometry} material={materials['ผนังทดลอง.034']} />
