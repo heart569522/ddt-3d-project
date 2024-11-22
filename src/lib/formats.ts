@@ -93,7 +93,7 @@ export function formatFloorElectricTodayUsage(
 
   const formattedData = floorData.map((item) => {
     const roomName = item.room.substring(6, 9);
-    const useRateRoom = item.UseRateRoom || 0;
+    const useRateRoom = Math.abs(item.UseRateRoom || 0);
 
     // Accumulate the total UseRateRoom
     totalUseRateRoom += useRateRoom;
@@ -132,29 +132,39 @@ export function formatRoomElectricTodayUsage(data: IFloorRoomUseHour[]) {
     const formattedData = [
       {
         name: "Air",
-        value: item.air_en.toFixed(configs.numberOfDecimal),
-        total: "0",
+        value: item.air_en.toFixed(configs.numberOfDecimal) || null, // No Math.abs here
+        total: "0", // Placeholder for total
         fill: `var(--color-Air)`,
       },
       {
         name: "Rec",
-        value: item.rac_en.toFixed(configs.numberOfDecimal),
+        value: item.rac_en.toFixed(configs.numberOfDecimal) || null, // No Math.abs here
         total: "0",
         fill: `var(--color-Rec)`,
       },
       {
         name: "Switch",
-        value: item.sw_en.toFixed(configs.numberOfDecimal),
+        value: item.sw_en.toFixed(configs.numberOfDecimal) || null, // No Math.abs here
         total: "0",
         fill: `var(--color-Switch)`,
       },
       {
         name: "Other",
-        value: item.other_en.toFixed(configs.numberOfDecimal),
+        value: item.other_en.toFixed(configs.numberOfDecimal) || null, // No Math.abs here
         total: "0",
         fill: `var(--color-Other)`,
       },
     ];
+
+    // Calculate total using Math.abs to handle negative values
+    const total = formattedData
+      .reduce((sum, entry) => sum + Math.abs(parseFloat(entry.value || "0")), 0)
+      .toFixed(configs.numberOfDecimal);
+
+    // Set the total field for all entries
+    formattedData.forEach((entry) => {
+      entry.total = total;
+    });
 
     roomUsageMap[roomNumber] = formattedData;
   });
@@ -276,7 +286,7 @@ export function formatRoomElectric24Usage(data: IRoomUse24[], roomId: string) {
   if (roomData) {
     const roomNumber = roomData.room;
 
-    roomUsageMap[roomNumber] = [
+    const formattedData = [
       {
         name: "Air",
         value: roomData.Air?.toFixed(configs.numberOfDecimal) || "0",
@@ -302,6 +312,18 @@ export function formatRoomElectric24Usage(data: IRoomUse24[], roomId: string) {
         fill: `var(--color-Other)`,
       },
     ];
+
+    // Calculate the total using absolute values
+    const total = formattedData
+      .reduce((sum, entry) => sum + Math.abs(parseFloat(entry.value || "0")), 0)
+      .toFixed(configs.numberOfDecimal);
+
+    // Set the total field for each entry
+    formattedData.forEach((entry) => {
+      entry.total = total;
+    });
+
+    roomUsageMap[roomNumber] = formattedData;
   }
 
   return roomUsageMap[roomId];
@@ -323,9 +345,13 @@ export function formatDatetoISOStringWithoutTime(
   return date ? date.toISOString().split("T")[0] : undefined;
 }
 
-export function formatMinutesToHours(minutes: number): string {
+export function formatMinutesToHours(minutes: number, lang?: "en" | "th") {
   const hours = Math.floor(minutes / 60);
   const remainingMinutes = minutes % 60;
 
-  return `${hours} ชม. ${remainingMinutes} น.`;
+  if (lang == "en") {
+    return `${hours} hrs ${remainingMinutes} mins`;
+  } else {
+    return `${hours} ชม. ${remainingMinutes} น.`;
+  }
 }

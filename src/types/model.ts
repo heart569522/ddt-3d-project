@@ -33,10 +33,18 @@ export interface IRoomUse24 {
 }
 
 export interface IPmTempHmd {
+  Day: string;
+  Week: string;
   Month: string;
   HumidMonth: number;
   PM25Month: number;
   TempMonth: number;
+  HumidWeek: number;
+  PM25Week: number;
+  TempWeek: number;
+  HumidDay: number;
+  PM25Day: number;
+  TempDay: number;
   HumidMin: number;
   PM25Min: number;
   TempMin: number;
@@ -46,7 +54,7 @@ export interface IPmTempHmd {
 }
 
 export interface IEnvironmentLineChart {
-  month: string;
+  title: string;
   min: number;
   max: number;
   mean: number;

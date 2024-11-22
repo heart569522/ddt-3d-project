@@ -19,14 +19,13 @@ import EnvironmentInfoChart from "@/components/ui/dashboard/environment-info-cha
 import CanvasScreen from "@/components/ui/canvas-screen/canvas";
 import React from "react";
 import CardDetail from "@/components/ui/dashboard/card-detail";
-import FacultyAllBuilding from "@/components/models/faculty/faculty-all-building";
+import FacultyAllBuilding from "@/components/models/faculty/faculty-with-bg-map";
 
 export default async function Overview() {
   const avgEnvironment = await getData("gaugeOutdoor");
   const avgElectricUsage = await getAverageElectricityUsage();
   const electricUsage = await getData("UseRateToday");
   const electricUsageData = formatFacultyElectricTodayUsage(electricUsage);
-  console.log("🚀 ~ Overview ~ electricUsageData:", electricUsageData)
   const pmTempHmdData = await getData("HTPMPerMonth");
   const buildingData = await getData("getBU");
 
@@ -124,14 +123,15 @@ export default async function Overview() {
       <div className="w-full h-dvh">
         <CanvasScreen
           model={<FacultyAllBuilding isManage={false} />}
-          cameraPosition={[-5, 6, 12]}
-          dpr={[0.5, 0.9]}
+          cameraPosition={[-5, 15, 25]}
+          dpr={[0.8, 1.2]}
           planeSize={[2000, 2000]}
+          isUsePlane={false}
           controlSettings={{
             minPolarAngle: 0,
             maxPolarAngle: Math.PI / 2.25,
             // minDistance: 40,
-            maxDistance: 250,
+            maxDistance: 175,
             enablePan: false,
           }}
         />

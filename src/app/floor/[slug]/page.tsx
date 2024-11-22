@@ -190,7 +190,7 @@ export default async function Floor({ params }: { params: { slug: string } }) {
       useCardSelectFloorRoom={true}
     >
       <div className="w-full h-dvh">
-        {/* {await renderCanvas()} */}
+        {await renderCanvas()}
       </div>
     </Navigation>
   );

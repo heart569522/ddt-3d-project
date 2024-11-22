@@ -33,6 +33,8 @@ import { DateTimePicker } from "@/components/ui/datetime-picker";
 import { th } from "date-fns/locale";
 import { formatDatetoISOStringWithoutTime } from "@/lib/formats";
 import FormLabel from "../../form-label";
+import EN12408Floor from "@/components/models/en124/floor-room/en12408-floor";
+import CanvasScreen from "../../canvas-screen/canvas";
 
 interface Props {
   airTypes: IAirTypes[];
@@ -345,7 +347,30 @@ export default function AirForm({
   return (
     <div className="flex flex-1 items-start justify-start">
       <div className="grid gap-4 grid-cols-12 w-full relative">
-        <div className="col-span-12 lg:col-span-6 xl:col-span-6"></div>
+        <div className="col-span-12 lg:col-span-6 xl:col-span-6">
+          <div className="h-[500px]">
+            <CanvasScreen
+              model={
+                <EN12408Floor
+                  isShowLamp={true}
+                  isShowAir={true}
+                  isManage={true}
+                  castShadow
+                  receiveShadow
+                />
+              }
+              cameraPosition={[0, 0, 90]}
+              controlSettings={{
+                minPolarAngle: 0,
+                maxPolarAngle: 0,
+                minDistance: 15,
+                maxDistance: 35,
+                enablePan: true,
+                enableRotate: false,
+              }}
+            />
+          </div>
+        </div>
         <div className="col-span-12 lg:col-span-6 xl:col-span-6">
           <form onSubmit={handleSubmit(onSubmit)}>
             <Card>

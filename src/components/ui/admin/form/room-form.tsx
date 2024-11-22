@@ -21,6 +21,8 @@ import { Session } from "next-auth";
 import { createData, updateData } from "@/actions/actions";
 import { useRouter } from "next/navigation";
 import FormLabel from "../../form-label";
+import CanvasScreen from "../../canvas-screen/canvas";
+import EN12408Floor from "@/components/models/en124/floor-room/en12408-floor";
 
 interface Props {
   roomTypes: IRoomTypes[];
@@ -62,15 +64,15 @@ export default function RoomForm({
   const [showAlert, setShowAlert] = useState<AlertProps | null>(null);
   const router = useRouter();
   const [triggerResetCombobox, setTriggerResetCombobox] =
-  useState<boolean>(false);
-  
+    useState<boolean>(false);
+
   const clearAlert = () => {
     setShowAlert(null);
     if (isFormEdit) {
       router.push("/admin/management/rooms");
     }
   };
-  
+
   const validateFormData = (data: IRoomSchema): boolean => {
     let isValid = true;
 
@@ -98,10 +100,7 @@ export default function RoomForm({
       isValid = false;
     }
 
-    if (
-      data.airAmount < 0 ||
-      data.lampAmount < 0
-    ) {
+    if (data.airAmount < 0 || data.lampAmount < 0) {
       isValid = false;
     }
 
@@ -195,7 +194,30 @@ export default function RoomForm({
   return (
     <div className="flex flex-1 items-start justify-start">
       <div className="grid gap-4 grid-cols-12 w-full relative">
-        <div className="col-span-12 lg:col-span-6 xl:col-span-5"></div>
+        <div className="col-span-12 lg:col-span-6 xl:col-span-5">
+          <div className="h-[500px]">
+            <CanvasScreen
+              model={
+                <EN12408Floor
+                  isShowLamp={true}
+                  isShowAir={true}
+                  isManage={true}
+                  castShadow
+                  receiveShadow
+                />
+              }
+              cameraPosition={[0, 0, 90]}
+              controlSettings={{
+                minPolarAngle: 0,
+                maxPolarAngle: 0,
+                minDistance: 15,
+                maxDistance: 35,
+                enablePan: true,
+                enableRotate: false,
+              }}
+            />
+          </div>
+        </div>
         <div className="col-span-12 lg:col-span-6 xl:col-span-7">
           <form onSubmit={handleSubmit(onSubmit)}>
             <Card>
@@ -222,7 +244,9 @@ export default function RoomForm({
                     )}
                   </div>
                   <div className="grid gap-3">
-                    <FormLabel required htmlFor="Building">อาคาร</FormLabel>
+                    <FormLabel required htmlFor="Building">
+                      อาคาร
+                    </FormLabel>
                     <Combobox
                       title="อาคาร"
                       listData={building}
@@ -244,7 +268,9 @@ export default function RoomForm({
                     )}
                   </div>
                   <div className="grid gap-3">
-                    <FormLabel required htmlFor="roomName">ชื่อห้อง</FormLabel>
+                    <FormLabel required htmlFor="roomName">
+                      ชื่อห้อง
+                    </FormLabel>
                     <Input
                       {...register("roomName")}
                       type="text"
@@ -258,7 +284,9 @@ export default function RoomForm({
                     )}
                   </div>
                   <div className="grid gap-3">
-                    <FormLabel required htmlFor="roomType">ประเภทห้อง</FormLabel>
+                    <FormLabel required htmlFor="roomType">
+                      ประเภทห้อง
+                    </FormLabel>
                     <Combobox
                       title="ประเภทห้อง"
                       listData={roomTypes}
@@ -291,7 +319,9 @@ export default function RoomForm({
                           "flex flex-1 justify-between gap-4 items-center col-span-12 sm:col-span-6"
                         )}
                       >
-                        <FormLabel htmlFor="airAmount" className=" text-nowrap">เครื่องปรับอากาศ</FormLabel>
+                        <FormLabel htmlFor="airAmount" className=" text-nowrap">
+                          เครื่องปรับอากาศ
+                        </FormLabel>
                         <Input
                           {...register("airAmount", { valueAsNumber: true })}
                           type="number"
@@ -374,7 +404,9 @@ export default function RoomForm({
                               "flex flex-1 justify-between gap-4 items-center col-span-12 sm:col-span-6"
                             )}
                           >
-                            <FormLabel className="text-nowrap">เครื่องปรับอากาศ</FormLabel>
+                            <FormLabel className="text-nowrap">
+                              เครื่องปรับอากาศ
+                            </FormLabel>
                             <Input
                               type="number"
                               placeholder=""
@@ -389,7 +421,9 @@ export default function RoomForm({
                               "flex flex-1 justify-between gap-4 items-center col-span-12 sm:col-span-6"
                             )}
                           >
-                            <FormLabel className="text-nowrap">กล้องวงจรปิด</FormLabel>
+                            <FormLabel className="text-nowrap">
+                              กล้องวงจรปิด
+                            </FormLabel>
                             <Input
                               type="number"
                               value={initData?.sensor_cctv}

@@ -31,6 +31,8 @@ import { DateTimePicker } from "@/components/ui/datetime-picker";
 import { th } from "date-fns/locale";
 import { formatDatetoISOStringWithoutTime } from "@/lib/formats";
 import FormLabel from "../../form-label";
+import CanvasScreen from "../../canvas-screen/canvas";
+import EN12408Floor from "@/components/models/en124/floor-room/en12408-floor";
 
 interface Props {
   lampTypes: ILampTypes[];
@@ -84,7 +86,7 @@ export default function LampForm({
 
   console.log(getValues());
   console.log("Errors:", errors);
-  
+
   const [showAlert, setShowAlert] = useState<AlertProps | null>(null);
   const router = useRouter();
   const [triggerResetCombobox, setTriggerResetCombobox] =
@@ -290,7 +292,30 @@ export default function LampForm({
   return (
     <div className="flex flex-1 items-start justify-start">
       <div className="grid gap-4 grid-cols-12 w-full relative">
-        <div className="col-span-12 lg:col-span-6 xl:col-span-6"></div>
+        <div className="col-span-12 lg:col-span-6 xl:col-span-6">
+          <div className="h-[500px]">
+            <CanvasScreen
+              model={
+                <EN12408Floor
+                  isShowLamp={true}
+                  isShowAir={true}
+                  isManage={true}
+                  castShadow
+                  receiveShadow
+                />
+              }
+              cameraPosition={[0, 0, 90]}
+              controlSettings={{
+                minPolarAngle: 0,
+                maxPolarAngle: 0,
+                minDistance: 15,
+                maxDistance: 35,
+                enablePan: true,
+                enableRotate: false,
+              }}
+            />
+          </div>
+        </div>
         <div className="col-span-12 lg:col-span-6 xl:col-span-6">
           <form onSubmit={handleSubmit(onSubmit)}>
             <Card>
@@ -333,7 +358,9 @@ export default function LampForm({
                     )}
                   </div>
                   <div className="grid gap-3">
-                    <FormLabel required htmlFor="sensorId">Sensor ID</FormLabel>
+                    <FormLabel required htmlFor="sensorId">
+                      Sensor ID
+                    </FormLabel>
                     <Combobox
                       title="Sensor ID"
                       listData={sensorSwitch}
@@ -354,7 +381,9 @@ export default function LampForm({
                     )}
                   </div>
                   <div className="grid gap-3">
-                    <FormLabel required htmlFor="lamp">โคมไฟ</FormLabel>
+                    <FormLabel required htmlFor="lamp">
+                      โคมไฟ
+                    </FormLabel>
                     <Combobox
                       title="โคมไฟ"
                       listData={lampTypes}
@@ -366,7 +395,9 @@ export default function LampForm({
                       triggerReset={triggerResetCombobox}
                       onValueChange={(selectedValue) => {
                         setValue("lamp", selectedValue),
-                        findSensorLampTypes(`getLampTypeById/${selectedValue}`);
+                          findSensorLampTypes(
+                            `getLampTypeById/${selectedValue}`
+                          );
                       }}
                     />
                     {errors.lamp && (
@@ -410,7 +441,9 @@ export default function LampForm({
                     </div>
                   </div>
                   <div className="grid gap-3">
-                    <FormLabel required htmlFor="lampBrand">ยี่ห้อโคมไฟ</FormLabel>
+                    <FormLabel required htmlFor="lampBrand">
+                      ยี่ห้อโคมไฟ
+                    </FormLabel>
                     <Combobox
                       title="ยี่ห้อโคมไฟ"
                       listData={lampBrands}
@@ -431,7 +464,9 @@ export default function LampForm({
                     )}
                   </div>
                   <div className="grid gap-3">
-                    <FormLabel required htmlFor="lamp">หลอด</FormLabel>
+                    <FormLabel required htmlFor="lamp">
+                      หลอด
+                    </FormLabel>
                     <Combobox
                       title="หลอด"
                       listData={bulbTypes}
@@ -443,7 +478,7 @@ export default function LampForm({
                       triggerReset={triggerResetCombobox}
                       onValueChange={(selectedValue) => {
                         setValue("bulb", selectedValue),
-                        findBulbTypes(`getBulbTypeById/${selectedValue}`);
+                          findBulbTypes(`getBulbTypeById/${selectedValue}`);
                       }}
                     />
                     {errors.lamp && (
@@ -477,7 +512,9 @@ export default function LampForm({
                         id="bulbWatt"
                         disabled
                       />
-                      <FormLabel className="text-nowrap">ความยาว (ซม.)</FormLabel>
+                      <FormLabel className="text-nowrap">
+                        ความยาว (ซม.)
+                      </FormLabel>
                       <Input
                         {...register("bulbLength")}
                         type="string"
@@ -496,7 +533,9 @@ export default function LampForm({
                     </div>
                   </div>
                   <div className="grid gap-3">
-                    <FormLabel required htmlFor="bulbBrand">ยี่ห้อหลอด</FormLabel>
+                    <FormLabel required htmlFor="bulbBrand">
+                      ยี่ห้อหลอด
+                    </FormLabel>
                     <Combobox
                       title="ยี่ห้อหลอด"
                       listData={bulbBrands}
@@ -517,7 +556,9 @@ export default function LampForm({
                     )}
                   </div>
                   <div className="grid gap-3">
-                    <FormLabel required htmlFor="installDate">วันที่ติดตั้ง</FormLabel>
+                    <FormLabel required htmlFor="installDate">
+                      วันที่ติดตั้ง
+                    </FormLabel>
                     <DateTimePicker
                       {...register("installDate")}
                       displayFormat={{ hour24: "dd/MM/yyyy" }}
@@ -534,7 +575,9 @@ export default function LampForm({
                     )}
                   </div>
                   <div className="grid gap-3">
-                    <FormLabel required htmlFor="installer">ช่างติดตั้ง</FormLabel>
+                    <FormLabel required htmlFor="installer">
+                      ช่างติดตั้ง
+                    </FormLabel>
                     <Input
                       {...register("installer")}
                       type="text"

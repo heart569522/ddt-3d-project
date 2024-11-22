@@ -38,7 +38,11 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/shadcn-ui/select";
-import { IAverageElectricityUsage, IElectricFloorRoomUsageChart, IElectricUsageChart } from "@/types/model";
+import {
+  IAverageElectricityUsage,
+  IElectricFloorRoomUsageChart,
+  IElectricUsageChart,
+} from "@/types/model";
 import { monthNames, suffixesNumber } from "@/lib/utils";
 import { useEffect, useState } from "react";
 import { getData } from "@/actions/actions";
@@ -107,7 +111,6 @@ export function ElectricChart({ data, buildingId }: ElectricProps) {
     };
     return config;
   }, {} as ChartConfig);
-  console.log("🚀 ~ chartConfig ~ chartConfig:", chartConfig)
 
   const pieChartData = chartData?.map((item) => ({
     ...item,
@@ -115,7 +118,6 @@ export function ElectricChart({ data, buildingId }: ElectricProps) {
       ((item.value / item.total) * 100).toFixed(configs.numberOfDecimal)
     ),
   }));
-
 
   const totalUsageRate = () => {
     if (buildingId) {
@@ -173,38 +175,45 @@ export function ElectricChart({ data, buildingId }: ElectricProps) {
           </CardHeader>
           <CardFooter></CardFooter>
         </Card>
-        <ChartContainer config={chartConfig}>
-          <BarChart
-            accessibilityLayer
-            data={chartData}
-            margin={{
-              top: 20,
-              right: 6,
-              left: 6,
-            }}
-          >
-            <CartesianGrid vertical={false} />
-            <XAxis
-              dataKey="buildingId"
-              tickLine={false}
-              tickMargin={10}
-              axisLine={false}
-            />
-            <ChartTooltip
-              cursor={false}
-              content={<ChartTooltipContent hideLabel />}
-            />
-            <Bar dataKey="value" radius={4}>
-              <LabelList
-                position="top"
-                dataKey="value"
-                offset={12}
-                className="fill-foreground"
-                fontSize={10}
+        {chartData.length !== 0 ? (
+          <ChartContainer config={chartConfig}>
+            <BarChart
+              accessibilityLayer
+              data={chartData}
+              margin={{
+                top: 20,
+                right: 6,
+                left: 6,
+              }}
+            >
+              <CartesianGrid vertical={false} />
+              <XAxis
+                dataKey="buildingId"
+                tickLine={false}
+                tickMargin={10}
+                axisLine={false}
               />
-            </Bar>
-          </BarChart>
-        </ChartContainer>
+              <ChartTooltip
+                cursor={false}
+                content={<ChartTooltipContent hideLabel />}
+              />
+              <Bar dataKey="value" radius={4}>
+                <LabelList
+                  position="top"
+                  dataKey="value"
+                  offset={12}
+                  className="fill-foreground"
+                  fontSize={10}
+                />
+              </Bar>
+            </BarChart>
+          </ChartContainer>
+        ) : (
+          <p className="text-base text-center font-semibold opacity-60 italic py-6">
+            Data Not Available
+          </p>
+        )}
+
         {!buildingId && (
           <p className="text-sm text-center italic mt-1">(Building Number)</p>
         )}
@@ -213,22 +222,28 @@ export function ElectricChart({ data, buildingId }: ElectricProps) {
         <h3 className="text-base md:text-lg font-semibold mt-6 text-left">
           {selectedTimeRange === "today" ? "Today" : "24 Hour"} Usage (%)
         </h3>
-        <ChartContainer
-          config={chartConfig}
-          className="mx-auto aspect-square max-h-[300px]"
-        >
-          <PieChart>
-            <ChartTooltip
-              cursor={false}
-              content={<ChartTooltipContent hideLabel />}
-            />
-            <Pie data={pieChartData} dataKey="percent" nameKey="buildingId" />
-            <ChartLegend
-              content={<ChartLegendContent nameKey="buildingId" />}
-              className="-translate-y-2 flex-wrap gap-2 [&>*]:basis-1/4 [&>*]:justify-center"
-            />
-          </PieChart>
-        </ChartContainer>
+        {pieChartData.length !== 0 ? (
+          <ChartContainer
+            config={chartConfig}
+            className="mx-auto aspect-square max-h-[300px]"
+          >
+            <PieChart>
+              <ChartTooltip
+                cursor={false}
+                content={<ChartTooltipContent hideLabel />}
+              />
+              <Pie data={pieChartData} dataKey="percent" nameKey="buildingId" />
+              <ChartLegend
+                content={<ChartLegendContent nameKey="buildingId" />}
+                className="-translate-y-2 flex-wrap gap-2 [&>*]:basis-1/4 [&>*]:justify-center"
+              />
+            </PieChart>
+          </ChartContainer>
+        ) : (
+          <p className="text-base text-center font-semibold opacity-60 italic py-10">
+            Data Not Available
+          </p>
+        )}
       </CardContent>
     </Card>
   );
@@ -240,8 +255,13 @@ interface ElectricRoomProps {
   floorId?: string;
 }
 
-export function ElectricFloorRoomChart({ data, roomId, floorId }: ElectricRoomProps) {
-  const [chartData, setChartData] = useState<IElectricFloorRoomUsageChart[]>(data);
+export function ElectricFloorRoomChart({
+  data,
+  roomId,
+  floorId,
+}: ElectricRoomProps) {
+  const [chartData, setChartData] =
+    useState<IElectricFloorRoomUsageChart[]>(data);
   const [selectedTimeRange, setSelectedTimeRange] = useState("today");
 
   useEffect(() => {
@@ -279,7 +299,7 @@ export function ElectricFloorRoomChart({ data, roomId, floorId }: ElectricRoomPr
           }
           break;
       }
-      
+
       setChartData(newData as any);
     };
 
@@ -295,20 +315,20 @@ export function ElectricFloorRoomChart({ data, roomId, floorId }: ElectricRoomPr
   }, {} as ChartConfig);
 
   const pieChartData = chartData?.map((item) => {
-    const value = parseFloat(item.value);
+    const value = Math.abs(parseFloat(item.value));
     const total = parseFloat(item.total);
-  
-    // ตรวจสอบว่าค่า total ไม่เป็น 0 หรือมีค่าเป็น NaN ก่อนทำการคำนวณ
-    const percent = total !== 0 && !isNaN(total)
-      ? parseFloat(((value / total) * 100).toFixed(configs.numberOfDecimal))
-      : 0; // หรือค่าอื่นที่คุณต้องการ เช่น 0 หรือ null
-  
+
+    const percent =
+      total !== 0 && !isNaN(total)
+        ? parseFloat(((value / total) * 100).toFixed(configs.numberOfDecimal))
+        : 0;
+
     return {
       ...item,
       percent,
     };
   });
-  
+
   const totalUsageRate = () => {
     return chartData[0]?.total.toLocaleString();
   };
@@ -354,39 +374,41 @@ export function ElectricFloorRoomChart({ data, roomId, floorId }: ElectricRoomPr
           </CardHeader>
           <CardFooter></CardFooter>
         </Card>
-        <ChartContainer config={chartConfig}>
-          <BarChart
-            accessibilityLayer
-            data={chartData}
-            margin={{
-              top: 20,
-              right: 6,
-              left: 6,
-              bottom: 10
-            }}
-          >
-            <CartesianGrid vertical={false} />
-            <XAxis
-              dataKey="name"
-              tickLine={false}
-              tickMargin={20}
-              axisLine={false}
-            />
-            <ChartTooltip
-              cursor={false}
-              content={<ChartTooltipContent hideLabel />}
-            />
-            <Bar dataKey="value" radius={4}>
-              <LabelList
-                position="top"
-                dataKey="value"
-                offset={12}
-                className="fill-foreground"
-                fontSize={10}
+        {chartData && (
+          <ChartContainer config={chartConfig}>
+            <BarChart
+              accessibilityLayer
+              data={chartData}
+              margin={{
+                top: 20,
+                right: 6,
+                left: 6,
+                bottom: 10,
+              }}
+            >
+              <CartesianGrid vertical={false} />
+              <XAxis
+                dataKey="name"
+                tickLine={false}
+                tickMargin={20}
+                axisLine={false}
               />
-            </Bar>
-          </BarChart>
-        </ChartContainer>
+              <ChartTooltip
+                cursor={false}
+                content={<ChartTooltipContent hideLabel />}
+              />
+              <Bar dataKey="value" radius={4}>
+                <LabelList
+                  position="top"
+                  dataKey="value"
+                  offset={12}
+                  className="fill-foreground"
+                  fontSize={10}
+                />
+              </Bar>
+            </BarChart>
+          </ChartContainer>
+        )}
 
         {/* Pie Chart */}
         <h3 className="text-base md:text-lg font-semibold mt-6 text-left">
@@ -425,19 +447,42 @@ interface Props {
   isFloorRoom?: boolean;
 }
 
+const monthOrder = [
+  "Jan",
+  "Feb",
+  "Mar",
+  "Apr",
+  "May",
+  "Jun",
+  "Jul",
+  "Aug",
+  "Sep",
+  "Oct",
+  "Nov",
+  "Dec",
+];
+
 export function AverageElectricUsage({ data, isFloorRoom = false }: Props) {
   const chartData = data?.map((item) => {
     const monthString = isFloorRoom
       ? item.Month.replace(/^\d+-/, "")
       : item.Month;
+
     const [, month] = monthString.split("-").map(Number);
 
     return {
-      Month: isFloorRoom ? monthString : `${monthNames[month - 1]}`,
-      Usage: item.TotalUseRateMonth.toFixed(0),
+      Month: isFloorRoom ? monthString : `${monthNames[month - 1]}`, // Format the month
+      Usage: item.TotalUseRateMonth.toFixed(0), // Format usage value
     };
   });
-  // console.log("🚀 ~ chartData ~ chartData:", chartData)
+
+  if (isFloorRoom) {
+    // Sort only if not isFloorRoom
+    chartData.sort((a, b) => {
+      // Sort by the month order
+      return monthOrder.indexOf(a.Month) - monthOrder.indexOf(b.Month);
+    });
+  }
 
   return (
     <Card>
@@ -448,42 +493,48 @@ export function AverageElectricUsage({ data, isFloorRoom = false }: Props) {
         <CardDescription>Last 6 Month</CardDescription>
       </CardHeader>
       <CardContent>
-        <ChartContainer config={averageChartConfig}>
-          <AreaChart
-            accessibilityLayer
-            data={chartData}
-            margin={{
-              top: 12,
-              left: -20,
-              right: 6,
-            }}
-          >
-            <CartesianGrid vertical={false} />
-            <XAxis
-              dataKey="Month"
-              tickLine={false}
-              axisLine={false}
-              tickMargin={8}
-              tickFormatter={(value) => value.slice(0, 3)}
-            />
-            <YAxis
-              tickLine={false}
-              axisLine={false}
-              tickMargin={0}
-              tickCount={5}
-              tickFormatter={(value) => suffixesNumber(value)}
-            />
-            <ChartTooltip cursor={false} content={<ChartTooltipContent />} />
-            <Area
-              dataKey="Usage"
-              type="natural"
-              fill="var(--color-Usage)"
-              fillOpacity={0.4}
-              stroke="var(--color-Usage)"
-              stackId="a"
-            />
-          </AreaChart>
-        </ChartContainer>
+        {chartData?.length !== 0 ? (
+          <ChartContainer config={averageChartConfig}>
+            <AreaChart
+              accessibilityLayer
+              data={chartData}
+              margin={{
+                top: 12,
+                left: -20,
+                right: 6,
+              }}
+            >
+              <CartesianGrid vertical={false} />
+              <XAxis
+                dataKey="Month"
+                tickLine={false}
+                axisLine={false}
+                tickMargin={8}
+                tickFormatter={(value) => value.slice(0, 3)}
+              />
+              <YAxis
+                tickLine={false}
+                axisLine={false}
+                tickMargin={0}
+                tickCount={5}
+                tickFormatter={(value) => suffixesNumber(value)}
+              />
+              <ChartTooltip cursor={false} content={<ChartTooltipContent />} />
+              <Area
+                dataKey="Usage"
+                type="natural"
+                fill="var(--color-Usage)"
+                fillOpacity={0.4}
+                stroke="var(--color-Usage)"
+                stackId="a"
+              />
+            </AreaChart>
+          </ChartContainer>
+        ) : (
+          <p className="text-base text-center font-semibold opacity-60 italic py-10">
+            Data Not Available
+          </p>
+        )}
       </CardContent>
     </Card>
   );

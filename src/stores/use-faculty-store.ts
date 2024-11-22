@@ -4,6 +4,7 @@ export type FacultyBuilding =
   | "EN_Activity_Areas"
   | "EN001"
   | "EN101"
+  | "EN103"
   | "EN104"
   | "EN105"
   | "EN106"
@@ -18,7 +19,12 @@ export type FacultyBuilding =
   | "EN124"
   | "EN126"
   | "EN161"
-  | "EN202";
+  | "EN202"
+  | "EN111"
+  | "EN118"
+  | "EN119"
+  | "EN122"
+  | "EN509";
 
 export interface ClickFacultyState {
   click: FacultyBuilding | null; // เก็บชื่อของโมเดลที่ถูกคลิกล่าสุด หรือ null ถ้าไม่มี

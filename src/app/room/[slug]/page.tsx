@@ -17,7 +17,13 @@ import {
   formatFacultyElectricTodayUsage,
   formatRoomElectricTodayUsage,
 } from "@/lib/formats";
-import { Droplets, MapPin, Thermometer, UndoDot } from "lucide-react";
+import {
+  Droplets,
+  LayoutDashboard,
+  MapPin,
+  Thermometer,
+  UndoDot,
+} from "lucide-react";
 import { IconFaceMask } from "@tabler/icons-react";
 import TooltipHover from "@/components/ui/tooltip-hover";
 import Link from "next/link";
@@ -28,6 +34,7 @@ import EN12408Floor from "@/components/models/en124/floor-room/en12408-floor";
 import { notFound } from "next/navigation";
 import CardSelectRoom from "@/components/ui/dashboard/card-select-room";
 import { configs } from "@/lib/configs";
+import CardSelectInRoom from "@/components/ui/dashboard/card-select-in-room";
 
 export async function generateMetadata({
   params,
@@ -94,7 +101,6 @@ export default async function Room({ params }: { params: { slug: string } }) {
           outlineResolution={0.5}
           outlineStrength={15}
           isRoomPage={true}
-          // planeColor={Color.NAMES.black}
         />
       );
     } catch (error) {
@@ -123,7 +129,7 @@ export default async function Room({ params }: { params: { slug: string } }) {
       rightDashbaord={
         <div className="flex flex-col gap-2">
           <div className="hidden xl:block">
-            {/* <CardSelectRoom room={params.slug.toUpperCase()} /> */}
+            <CardSelectInRoom room={params.slug.toUpperCase()} />
           </div>
           <ElectricFloorRoomChart
             data={electricUsageData?.[`${params.slug.toUpperCase()}`]}
@@ -135,52 +141,15 @@ export default async function Room({ params }: { params: { slug: string } }) {
       toolbar={
         <>
           <TooltipHover
-            content={"Reset"}
+            content={"Dashboard"}
             position={"top"}
             isUseMediaQuery={true}
             mediaQuerySize="md"
             positionMediaQuery="right"
           >
-            <Button variant="outline" size="icon">
-              <UndoDot className="h-5 w-5" />
-            </Button>
-          </TooltipHover>
-          <TooltipHover
-            content={"Temperature"}
-            position="top"
-            isUseMediaQuery={true}
-            mediaQuerySize="md"
-            positionMediaQuery="right"
-          >
-            <Link target="_blank" href={"/contour/temperature"}>
+            <Link href={`/room-dashboard/${roomId.toUpperCase()}`} target="_blank">
               <Button variant="outline" size="icon">
-                <Thermometer className="h-5 w-5" />
-              </Button>
-            </Link>
-          </TooltipHover>
-          <TooltipHover
-            content={"Humidity"}
-            position="top"
-            isUseMediaQuery={true}
-            mediaQuerySize="md"
-            positionMediaQuery="right"
-          >
-            <Link target="_blank" href={"/contour/humidity"}>
-              <Button variant="outline" size="icon">
-                <Droplets className="h-5 w-5" />
-              </Button>
-            </Link>
-          </TooltipHover>
-          <TooltipHover
-            content={"PM 2.5"}
-            position="top"
-            isUseMediaQuery={true}
-            mediaQuerySize="md"
-            positionMediaQuery="right"
-          >
-            <Link target="_blank" href={"/contour/pm25"}>
-              <Button variant="outline" size="icon">
-                <IconFaceMask className="h-5 w-5" />
+                <LayoutDashboard className="h-5 w-5" />
               </Button>
             </Link>
           </TooltipHover>
@@ -188,7 +157,7 @@ export default async function Room({ params }: { params: { slug: string } }) {
       }
       useCardSelectFloorRoom={false}
     >
-      <div className="w-full h-dvh">{/* {await renderCanvas()} */}</div>
+      <div className="w-full h-dvh">{await renderCanvas()}</div>
     </Navigation>
   );
 }

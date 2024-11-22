@@ -35,6 +35,7 @@ interface Props {
   outlineStrength?: number;
   outlineResolution?: number;
   isRoomPage?: boolean;
+  isUsePlane?: boolean;
   onObjectHover?: (object: string | null) => void;
   onObjectClick?: (object: string) => void;
 }
@@ -50,6 +51,7 @@ export default function CanvasScreen({
   outlineStrength = 3,
   outlineResolution = 0.1,
   isRoomPage = false,
+  isUsePlane = true,
 }: Props) {
   // const pathname = usePathname();
   // const roomPath = pathname.split("/room/")[1]
@@ -110,14 +112,16 @@ export default function CanvasScreen({
 
         {/* <ambientLight intensity={-0.5} /> */}
         {/* Ground Plane to receive shadows */}
-        <Plane
-          args={planeSize}
-          rotation={[-Math.PI / 2, 0, 0]}
-          position={[0, 0, 0]}
-          receiveShadow
-        >
-          <meshStandardMaterial color={planeColor} />
-        </Plane>
+        {isUsePlane && (
+          <Plane
+            args={planeSize}
+            rotation={[-Math.PI / 2, 0, 0]}
+            position={[0, 0, 0]}
+            receiveShadow
+          >
+            <meshStandardMaterial color={planeColor} />
+          </Plane>
+        )}
 
         <OrbitControls
           {...controlSettings}
