@@ -122,128 +122,134 @@ export function ElectricChart({ data, buildingId }: ElectricProps) {
   const totalUsageRate = () => {
     if (buildingId) {
       const total = chartData.reduce((sum, item) => sum + item.value, 0);
-      return total.toLocaleString();
+      return total != 0 ? total.toLocaleString() : null;
     } else {
-      return chartData[0]?.total.toLocaleString();
+      return chartData[0]?.total != 0
+        ? chartData[0]?.total.toLocaleString()
+        : null;
     }
   };
 
   return (
-    <Card>
+    <Card className="bg-background/60">
       <CardHeader>
         <Select value={selectedTimeRange} onValueChange={setSelectedTimeRange}>
           <SelectTrigger
-            className="w-full rounded-md sm:ml-auto"
+            className="w-full rounded-md sm:ml-auto bg-secondary/90"
             aria-label="Select a value"
           >
             <SelectValue placeholder="Today" />
           </SelectTrigger>
-          <SelectContent className="rounded-lg">
+          <SelectContent className="rounded-lg bg-secondary/90">
             <SelectItem value="today" className="rounded-md">
               Today
             </SelectItem>
             <SelectItem value="24hr" className="rounded-md">
               24 hour
             </SelectItem>
-            {/* <SelectItem value="month" className="rounded-md">
-              This Month
-            </SelectItem>
-            <SelectItem value="6month" className="rounded-md">
-              Last 6 Month
-            </SelectItem> */}
           </SelectContent>
         </Select>
-        <CardTitle className="text-sm md:text-base text-left pt-4">
-          {selectedTimeRange === "today" ? "Today" : "24 Hour"} Electricity
-          Usage Rate
-        </CardTitle>
         {/* <CardDescription>January - June 2024</CardDescription> */}
       </CardHeader>
       <CardContent>
-        <Card className="transition bg-secondary/60 hover:bg-secondary/30 mb-6">
-          <CardHeader className="pb-1">
-            <CardTitle className="text-3xl sm:text-4xl text-center">
-              {chartData && (
-                <>
-                  {totalUsageRate()}&nbsp;
-                  <span className="text-sm sm:text-base opacity-70">
-                    kW/Hour
-                  </span>
-                </>
-              )}
-            </CardTitle>
-          </CardHeader>
-          <CardFooter></CardFooter>
-        </Card>
-        {chartData.length !== 0 ? (
-          <ChartContainer config={chartConfig}>
-            <BarChart
-              accessibilityLayer
-              data={chartData}
-              margin={{
-                top: 20,
-                right: 6,
-                left: 6,
-              }}
-            >
-              <CartesianGrid vertical={false} />
-              <XAxis
-                dataKey="buildingId"
-                tickLine={false}
-                tickMargin={10}
-                axisLine={false}
-              />
-              <ChartTooltip
-                cursor={false}
-                content={<ChartTooltipContent hideLabel />}
-              />
-              <Bar dataKey="value" radius={4}>
-                <LabelList
-                  position="top"
-                  dataKey="value"
-                  offset={12}
-                  className="fill-foreground"
-                  fontSize={10}
+        <div className="rounded-md bg-secondary/80 p-3">
+          <div className="text-sm md:text-base text-left font-semibold">
+            {selectedTimeRange === "today" ? "Today" : "24 Hour"} Electricity
+            Usage Rate
+          </div>
+          <div className="text-3xl sm:text-4xl text-center p-6 font-semibold rounded-md bg-secondary/90 mt-3 mb-2">
+            {chartData && (
+              <>
+                {totalUsageRate() !== null && totalUsageRate() !== undefined ? (
+                  <>
+                    {totalUsageRate()}&nbsp;
+                    <span className="text-sm sm:text-base opacity-70">
+                      kW/Hour
+                    </span>
+                  </>
+                ) : (
+                  "-"
+                )}
+              </>
+            )}
+          </div>
+          {chartData.length !== 0 ? (
+            <ChartContainer config={chartConfig}>
+              <BarChart
+                accessibilityLayer
+                data={chartData}
+                margin={{
+                  top: 20,
+                  right: 6,
+                  left: 6,
+                }}
+              >
+                <CartesianGrid vertical={false} />
+                <XAxis
+                  dataKey="buildingId"
+                  tickLine={false}
+                  tickMargin={10}
+                  axisLine={false}
                 />
-              </Bar>
-            </BarChart>
-          </ChartContainer>
-        ) : (
-          <p className="text-base text-center font-semibold opacity-60 italic py-6">
-            Data Not Available
-          </p>
-        )}
-
-        {!buildingId && (
-          <p className="text-sm text-center italic mt-1">(Building Number)</p>
-        )}
+                <ChartTooltip
+                  cursor={false}
+                  content={<ChartTooltipContent hideLabel />}
+                />
+                <Bar dataKey="value" radius={4}>
+                  <LabelList
+                    position="top"
+                    dataKey="value"
+                    offset={12}
+                    className="fill-foreground"
+                    fontSize={10}
+                  />
+                </Bar>
+              </BarChart>
+            </ChartContainer>
+          ) : (
+            <p className="text-base text-center font-semibold opacity-60 italic py-6">
+              Data Not Available
+            </p>
+          )}
+          {!buildingId && (
+            <p className="text-sm text-center opacity-80 italic mt-1">
+              (Building Number)
+            </p>
+          )}
+        </div>
 
         {/* Pie Chart */}
-        <h3 className="text-base md:text-lg font-semibold mt-6 text-left">
-          {selectedTimeRange === "today" ? "Today" : "24 Hour"} Usage (%)
-        </h3>
-        {pieChartData.length !== 0 ? (
-          <ChartContainer
-            config={chartConfig}
-            className="mx-auto aspect-square max-h-[300px]"
-          >
-            <PieChart>
-              <ChartTooltip
-                cursor={false}
-                content={<ChartTooltipContent hideLabel />}
-              />
-              <Pie data={pieChartData} dataKey="percent" nameKey="buildingId" />
-              <ChartLegend
-                content={<ChartLegendContent nameKey="buildingId" />}
-                className="-translate-y-2 flex-wrap gap-2 [&>*]:basis-1/4 [&>*]:justify-center"
-              />
-            </PieChart>
-          </ChartContainer>
-        ) : (
-          <p className="text-base text-center font-semibold opacity-60 italic py-10">
-            Data Not Available
-          </p>
-        )}
+        <div className="rounded-md bg-secondary/80 p-3 mt-6">
+          <h3 className="text-base md:text-lg font-semibold text-left">
+            {selectedTimeRange === "today" ? "Today" : "24 Hour"} Usage (%)
+          </h3>
+          {pieChartData.length !== 0 ? (
+            <ChartContainer
+              config={chartConfig}
+              className="mx-auto mt-4 aspect-square max-h-[300px] "
+            >
+              <PieChart>
+                <ChartTooltip
+                  cursor={false}
+                  content={<ChartTooltipContent hideLabel />}
+                />
+                <Pie
+                  data={pieChartData}
+                  dataKey="percent"
+                  nameKey="buildingId"
+                />
+                <ChartLegend
+                  content={<ChartLegendContent nameKey="buildingId" />}
+                  className="-translate-y-2 flex-wrap gap-2 [&>*]:basis-1/4 [&>*]:justify-center"
+                />
+              </PieChart>
+            </ChartContainer>
+          ) : (
+            <p className="text-base text-center font-semibold opacity-60 italic py-10">
+              Data Not Available
+            </p>
+          )}
+        </div>
       </CardContent>
     </Card>
   );
@@ -263,6 +269,7 @@ export function ElectricFloorRoomChart({
   const [chartData, setChartData] =
     useState<IElectricFloorRoomUsageChart[]>(data);
   const [selectedTimeRange, setSelectedTimeRange] = useState("today");
+  console.log("🚀 ~ chartData:", chartData);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -330,20 +337,20 @@ export function ElectricFloorRoomChart({
   });
 
   const totalUsageRate = () => {
-    return chartData[0]?.total.toLocaleString();
+    return chartData[0]?.total ? chartData[0]?.total.toLocaleString() : null;
   };
 
   return (
-    <Card>
+    <Card className="bg-background/60">
       <CardHeader>
         <Select value={selectedTimeRange} onValueChange={setSelectedTimeRange}>
           <SelectTrigger
-            className="w-full rounded-md sm:ml-auto"
+            className="w-full rounded-md sm:ml-auto bg-secondary/90"
             aria-label="Select a value"
           >
             <SelectValue placeholder="Today" />
           </SelectTrigger>
-          <SelectContent className="rounded-lg">
+          <SelectContent className="rounded-lg bg-secondary/90">
             <SelectItem value="today" className="rounded-md">
               Today
             </SelectItem>
@@ -352,84 +359,99 @@ export function ElectricFloorRoomChart({
             </SelectItem>
           </SelectContent>
         </Select>
-        <CardTitle className="text-sm md:text-base text-left pt-4">
-          {selectedTimeRange === "today" ? "Today" : "24 Hour"} Electricity
-          Usage Rate
-        </CardTitle>
         {/* <CardDescription>January - June 2024</CardDescription> */}
       </CardHeader>
       <CardContent>
-        <Card className="transition bg-secondary/60 hover:bg-secondary/30 mb-6">
-          <CardHeader className="pb-1">
-            <CardTitle className="text-3xl sm:text-4xl text-center">
-              {chartData && (
-                <>
-                  {totalUsageRate()}&nbsp;
-                  <span className="text-sm sm:text-base opacity-70">
-                    kW/Hour
-                  </span>
-                </>
-              )}
-            </CardTitle>
-          </CardHeader>
-          <CardFooter></CardFooter>
-        </Card>
-        {chartData && (
-          <ChartContainer config={chartConfig}>
-            <BarChart
-              accessibilityLayer
-              data={chartData}
-              margin={{
-                top: 20,
-                right: 6,
-                left: 6,
-                bottom: 10,
-              }}
-            >
-              <CartesianGrid vertical={false} />
-              <XAxis
-                dataKey="name"
-                tickLine={false}
-                tickMargin={20}
-                axisLine={false}
-              />
-              <ChartTooltip
-                cursor={false}
-                content={<ChartTooltipContent hideLabel />}
-              />
-              <Bar dataKey="value" radius={4}>
-                <LabelList
-                  position="top"
-                  dataKey="value"
-                  offset={12}
-                  className="fill-foreground"
-                  fontSize={10}
+        <div className="rounded-md bg-secondary/80 p-3">
+          <div className="text-sm md:text-base text-left font-semibold">
+            {selectedTimeRange === "today" ? "Today" : "24 Hour"} Electricity
+            Usage Rate
+          </div>
+          <div className="text-3xl sm:text-4xl text-center p-6 font-semibold rounded-md bg-secondary/90 mt-3 mb-2">
+            {chartData && (
+              <>
+                {totalUsageRate() !== null && totalUsageRate() !== undefined ? (
+                  <>
+                    {totalUsageRate()}&nbsp;
+                    <span className="text-sm sm:text-base opacity-70">
+                      kW/Hour
+                    </span>
+                  </>
+                ) : (
+                  "-"
+                )}
+              </>
+            )}
+          </div>
+          {chartData.length !== 0 ? (
+            <ChartContainer config={chartConfig}>
+              <BarChart
+                accessibilityLayer
+                data={chartData}
+                margin={{
+                  top: 20,
+                  right: 6,
+                  left: 6,
+                  bottom: 10,
+                }}
+              >
+                <CartesianGrid vertical={false} />
+                <XAxis
+                  dataKey="name"
+                  tickLine={false}
+                  tickMargin={20}
+                  axisLine={false}
                 />
-              </Bar>
-            </BarChart>
-          </ChartContainer>
-        )}
+                <ChartTooltip
+                  cursor={false}
+                  content={<ChartTooltipContent hideLabel />}
+                />
+                <Bar dataKey="value" radius={4}>
+                  <LabelList
+                    position="top"
+                    dataKey="value"
+                    offset={12}
+                    className="fill-foreground"
+                    fontSize={10}
+                  />
+                </Bar>
+              </BarChart>
+            </ChartContainer>
+          ) : (
+            <p className="text-base text-center font-semibold opacity-60 italic py-6">
+              Data Not Available
+            </p>
+          )}
+        </div>
 
         {/* Pie Chart */}
-        <h3 className="text-base md:text-lg font-semibold mt-6 text-left">
-          {selectedTimeRange === "today" ? "Today" : "24 Hour"} Usage (%)
-        </h3>
-        <ChartContainer
-          config={chartConfig}
-          className="mx-auto aspect-square max-h-[300px]"
-        >
-          <PieChart>
-            <ChartTooltip
-              cursor={false}
-              content={<ChartTooltipContent hideLabel />}
-            />
-            <Pie data={pieChartData} dataKey="percent" nameKey="name" />
-            <ChartLegend
-              content={<ChartLegendContent nameKey="name" />}
-              className="-translate-y-2 flex-wrap gap-2 [&>*]:basis-1/4 [&>*]:justify-center"
-            />
-          </PieChart>
-        </ChartContainer>
+        <div className="rounded-md bg-secondary/80 p-3 mt-6">
+          <h3 className="text-base md:text-lg font-semibold text-left">
+            {selectedTimeRange === "today" ? "Today" : "24 Hour"} Usage (%)
+          </h3>
+          {chartData.length !== 0 ? (
+            <ChartContainer
+              config={chartConfig}
+              className="mx-auto aspect-square max-h-[300px]"
+            >
+              <PieChart>
+                <ChartTooltip
+                  cursor={false}
+                  content={<ChartTooltipContent hideLabel />}
+                />
+                <Pie data={pieChartData} dataKey="percent" nameKey="name" />
+                <ChartLegend
+                  content={<ChartLegendContent nameKey="name" />}
+                  className="-translate-y-2 flex-wrap gap-2 [&>*]:basis-1/4 [&>*]:justify-center"
+                />
+              </PieChart>
+            </ChartContainer>
+          ) : (
+            <p className="text-base text-center font-semibold opacity-60 italic py-6">
+              Data Not Available
+            </p>
+          )}
+        </div>
       </CardContent>
     </Card>
   );
@@ -485,7 +507,7 @@ export function AverageElectricUsage({ data, isFloorRoom = false }: Props) {
   }
 
   return (
-    <Card>
+    <Card className="bg-background/60">
       <CardHeader>
         <CardTitle className="text-base md:text-lg text-left">
           Average Electricity Usage
@@ -494,7 +516,10 @@ export function AverageElectricUsage({ data, isFloorRoom = false }: Props) {
       </CardHeader>
       <CardContent>
         {chartData?.length !== 0 ? (
-          <ChartContainer config={averageChartConfig}>
+          <ChartContainer
+            className="bg-secondary/80 rounded-md p-2"
+            config={averageChartConfig}
+          >
             <AreaChart
               accessibilityLayer
               data={chartData}

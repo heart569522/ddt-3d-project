@@ -17,11 +17,12 @@ import { UseRateChart } from "./use-rate-chart";
 
 interface Props {
   data: IPmTempHmd[];
+  isFaculty?: boolean;
   electricData?: any;
   timeRange?: "7day" | "1month" | "6month" | string;
 }
 
-export default function EnvironmentInfoChart({ data }: Props) {
+export default function EnvironmentInfoChart({ data, isFaculty = false }: Props) {
   let PMData: IEnvironmentLineChart[] = [];
   let TempData: IEnvironmentLineChart[] = [];
   let HumidityData: IEnvironmentLineChart[] = [];
@@ -53,7 +54,7 @@ export default function EnvironmentInfoChart({ data }: Props) {
   });
 
   return (
-    <Card>
+    <Card className="bg-background/60">
       <CardHeader>
         <CardTitle className="text-base md:text-lg text-left">
           Environment Info. 6 Month
@@ -61,14 +62,22 @@ export default function EnvironmentInfoChart({ data }: Props) {
       </CardHeader>
       <CardContent className="flex flex-col gap-4">
         <EnvironmentPMChart data={PMData} />
-        <TemperatureChart data={TempData} />
-        <HumidityChart data={HumidityData} />
+        {!isFaculty && (
+          <>
+            <TemperatureChart data={TempData} />
+            <HumidityChart data={HumidityData} />
+          </>
+        )}
       </CardContent>
     </Card>
   );
 }
 
-export function EnvironmentInfoRoomChart({ data, electricData, timeRange }: Props) {
+export function EnvironmentInfoRoomChart({
+  data,
+  electricData,
+  timeRange,
+}: Props) {
   const { PMData, TempData, HumidityData } = React.useMemo(() => {
     let PMData: IEnvironmentLineChart[] = [];
     let TempData: IEnvironmentLineChart[] = [];
@@ -154,7 +163,7 @@ export function EnvironmentInfoRoomChart({ data, electricData, timeRange }: Prop
         <HumidityChart data={HumidityData} isDashboardRoom={true} />
       </div>
       <div className="transition bg-secondary/60 hover:bg-secondary/30 m-2">
-        <UseRateChart data={electricData}/>
+        <UseRateChart data={electricData} />
       </div>
     </CardContent>
   );

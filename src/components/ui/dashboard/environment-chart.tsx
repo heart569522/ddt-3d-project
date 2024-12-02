@@ -17,7 +17,7 @@ import {
 } from "@/components/shadcn-ui/chart";
 import { Progress } from "@/components/shadcn-ui/progress";
 import { configs } from "@/lib/configs";
-import { monthNames } from "@/lib/utils";
+import { monthNames, suffixesNumber } from "@/lib/utils";
 import { IAverageEnvironment, IEnvironmentLineChart } from "@/types/model";
 import { Minus } from "lucide-react";
 import React, { useMemo } from "react";
@@ -34,6 +34,7 @@ import {
 
 interface AverageProps {
   data: IAverageEnvironment;
+  isFaculty?: boolean;
 }
 
 interface PMProps {
@@ -41,7 +42,8 @@ interface PMProps {
   isDashboardRoom?: boolean;
 }
 
-export function EnvironmentAverage({ data }: AverageProps) {
+export function EnvironmentAverage({ data, isFaculty = false }: AverageProps) {
+  console.log("🚀 ~ EnvironmentAverage ~ data:", data)
   const {
     averagePM25 = null,
     averageTemp = null,
@@ -81,7 +83,7 @@ export function EnvironmentAverage({ data }: AverageProps) {
   };
 
   return (
-    <Card>
+    <Card className="bg-background/60">
       <CardHeader className="pb-0">
         <CardTitle className="text-base md:text-lg text-left">
           Realtime Environment Data
@@ -89,7 +91,7 @@ export function EnvironmentAverage({ data }: AverageProps) {
         {/* <CardDescription>January - June 2024</CardDescription> */}
       </CardHeader>
       <CardContent className="flex flex-col flex-1 pb-8 gap-4">
-        <Card className="mt-4 transition bg-secondary/60 hover:bg-secondary/30">
+        <Card className="mt-4 transition bg-secondary/80">
           <CardContent className="mt-4 flex flex-col gap-2 sm:gap-3">
             <div className="flex gap-2 items-end justify-start ">
               <h4 className="text-sm sm:text-base opacity-90">PM 2.5 :</h4>
@@ -120,76 +122,86 @@ export function EnvironmentAverage({ data }: AverageProps) {
             )}
           </CardContent>
         </Card>
-        <Card className="transition bg-secondary/60 hover:bg-secondary/30">
-          <CardContent className="mt-4 flex flex-col gap-2 sm:gap-3">
-            <div className="flex gap-2 items-end justify-start ">
-              <h4 className="text-sm sm:text-base opacity-90">Temperature :</h4>
-              <p className="text-xl sm:text-2xl font-semibold">
-                {averageTemp && (
-                  <>
-                    {averageTemp.toFixed(configs.numberOfDecimal)}&nbsp;
-                    <span className="text-base sm:text-lg align-super">°C</span>
-                  </>
+        {!isFaculty && (
+          <>
+            <Card className="transition bg-secondary/80">
+              <CardContent className="mt-4 flex flex-col gap-2 sm:gap-3">
+                <div className="flex gap-2 items-end justify-start ">
+                  <h4 className="text-sm sm:text-base opacity-90">
+                    Temperature :
+                  </h4>
+                  <p className="text-xl sm:text-2xl font-semibold">
+                    {averageTemp && (
+                      <>
+                        {averageTemp.toFixed(configs.numberOfDecimal)}&nbsp;
+                        <span className="text-base sm:text-lg align-super">
+                          °C
+                        </span>
+                      </>
+                    )}
+                  </p>
+                </div>
+                {averageTemp ? (
+                  <div className="flex justify-between items-center gap-2">
+                    <span className="">0</span>
+                    <Progress
+                      className="bg-zinc-200 dark:bg-zinc-700"
+                      indicatorColor={getTempColorProgress(
+                        calculatePercents(averageTemp as number, 50)
+                      )}
+                      value={calculatePercents(averageTemp as number, 50)}
+                      aria-label={`${calculatePercents(
+                        averageTemp as number,
+                        50
+                      )}% increase`}
+                    />
+                    <span className="">50</span>
+                  </div>
+                ) : (
+                  <p className="text-base text-center font-semibold opacity-60 italic">
+                    Data Not Available
+                  </p>
                 )}
-              </p>
-            </div>
-            {averageTemp ? (
-              <div className="flex justify-between items-center gap-2">
-                <span className="">0</span>
-                <Progress
-                  className="bg-zinc-200 dark:bg-zinc-700"
-                  indicatorColor={getTempColorProgress(
-                    calculatePercents(averageTemp as number, 50)
-                  )}
-                  value={calculatePercents(averageTemp as number, 50)}
-                  aria-label={`${calculatePercents(
-                    averageTemp as number,
-                    50
-                  )}% increase`}
-                />
-                <span className="">50</span>
-              </div>
-            ) : (
-              <p className="text-base text-center font-semibold opacity-60 italic">
-                Data Not Available
-              </p>
-            )}
-          </CardContent>
-        </Card>
-        <Card className="transition bg-secondary/60 hover:bg-secondary/30">
-          <CardContent className="mt-4 flex flex-col gap-2 sm:gap-3">
-            <div className="flex gap-2 items-end justify-start ">
-              <h4 className="text-sm sm:text-base opacity-90">Humidity :</h4>
-              <p className="text-xl sm:text-2xl font-semibold">
-                {averageHumidity?.toFixed(configs.numberOfDecimal)}&nbsp;
-                {averageHumidity && (
-                  <span className="text-base sm:text-lg">%</span>
+              </CardContent>
+            </Card>
+            <Card className="transition bg-secondary/80">
+              <CardContent className="mt-4 flex flex-col gap-2 sm:gap-3">
+                <div className="flex gap-2 items-end justify-start ">
+                  <h4 className="text-sm sm:text-base opacity-90">
+                    Humidity :
+                  </h4>
+                  <p className="text-xl sm:text-2xl font-semibold">
+                    {averageHumidity?.toFixed(configs.numberOfDecimal)}&nbsp;
+                    {averageHumidity && (
+                      <span className="text-base sm:text-lg">%</span>
+                    )}
+                  </p>
+                </div>
+                {averageHumidity ? (
+                  <div className="flex justify-between items-center gap-2">
+                    <span className="">0</span>
+                    <Progress
+                      className="bg-zinc-200 dark:bg-zinc-700"
+                      indicatorColor={getHumidityColorProgress(
+                        calculatePercents(averageHumidity as number, 100)
+                      )}
+                      value={calculatePercents(averageHumidity as number, 100)}
+                      aria-label={`${calculatePercents(
+                        averageHumidity as number,
+                        100
+                      )}% increase`}
+                    />
+                    <span className="">100</span>
+                  </div>
+                ) : (
+                  <p className="text-base text-center font-semibold opacity-60 italic">
+                    Data Not Available
+                  </p>
                 )}
-              </p>
-            </div>
-            {averageHumidity ? (
-              <div className="flex justify-between items-center gap-2">
-                <span className="">0</span>
-                <Progress
-                  className="bg-zinc-200 dark:bg-zinc-700"
-                  indicatorColor={getHumidityColorProgress(
-                    calculatePercents(averageHumidity as number, 100)
-                  )}
-                  value={calculatePercents(averageHumidity as number, 100)}
-                  aria-label={`${calculatePercents(
-                    averageHumidity as number,
-                    100
-                  )}% increase`}
-                />
-                <span className="">100</span>
-              </div>
-            ) : (
-              <p className="text-base text-center font-semibold opacity-60 italic">
-                Data Not Available
-              </p>
-            )}
-          </CardContent>
-        </Card>
+              </CardContent>
+            </Card>
+          </>
+        )}
       </CardContent>
     </Card>
   );
@@ -212,7 +224,7 @@ const chartConfig = {
 
 export function EnvironmentPMChart({ data, isDashboardRoom }: PMProps) {
   return (
-    <Card className="transition bg-secondary/60 hover:bg-secondary/30">
+    <Card className="transition bg-secondary/80">
       <CardHeader>
         <CardTitle className="text-sm md:text-base text-left">PM 2.5</CardTitle>
       </CardHeader>
@@ -225,7 +237,7 @@ export function EnvironmentPMChart({ data, isDashboardRoom }: PMProps) {
               margin={{
                 top: 12,
                 right: isDashboardRoom ? 27 : 6,
-                left: isDashboardRoom ? 27 : 10,
+                left: isDashboardRoom ? 27 : -25,
               }}
             >
               <CartesianGrid vertical={false} />
@@ -235,6 +247,13 @@ export function EnvironmentPMChart({ data, isDashboardRoom }: PMProps) {
                 axisLine={false}
                 tickMargin={8}
                 tickFormatter={(value) => value}
+              />
+              <YAxis
+                tickLine={false}
+                axisLine={false}
+                tickMargin={5}
+                tickCount={5}
+                tickFormatter={(value) => suffixesNumber(value)}
               />
               <ChartTooltip cursor={false} content={<ChartTooltipContent />} />
               <Line

@@ -1,9 +1,10 @@
 "use client";
 import React from "react";
 import CanvasScreen from "./canvas";
-import EN124Building from "@/components/models/en124/building/en124-building";
-import FacultyAllBuilding from "@/components/models/faculty/faculty-all-building";
+
+import FacultyAllBuilding from "@/components/models/faculty/all";
 import EN12408Floor from "@/components/models/en124/floor-room/en12408-floor";
+import EN124Building from "@/components/models/en124/building/en124-building";
 
 export default function CanvasPanel() {
   return (
@@ -13,13 +14,13 @@ export default function CanvasPanel() {
           model={
             <FacultyAllBuilding isManage={true} castShadow receiveShadow />
           }
-          cameraPosition={[-5, 6, 12]}
-          planeSize={[2000, 2000]}
+          cameraPosition={[7, 13, 27]}
+          isUsePlane={false}
           controlSettings={{
             minPolarAngle: 0,
             maxPolarAngle: Math.PI / 2.25,
             // minDistance: 40,
-            maxDistance: 350,
+            maxDistance: 225,
             enablePan: false,
           }}
         />
@@ -28,6 +29,7 @@ export default function CanvasPanel() {
         <CanvasScreen
           model={<EN124Building castShadow receiveShadow isManage={true} />}
           cameraPosition={[0, 30, 45]}
+          isUsePlane={false}
           controlSettings={{
             minPolarAngle: 0,
             maxPolarAngle: Math.PI / 2.25,
@@ -44,8 +46,6 @@ export default function CanvasPanel() {
               isShowLamp={false}
               isShowAir={false}
               isManage={true}
-              castShadow
-              receiveShadow
             />
           }
           cameraPosition={[-5, 25, 12]}
@@ -65,8 +65,6 @@ export default function CanvasPanel() {
               isShowLamp={true}
               isShowAir={true}
               isManage={true}
-              castShadow
-              receiveShadow
             />
           }
           cameraPosition={[0, 0, 90]}

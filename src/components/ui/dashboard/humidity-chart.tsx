@@ -13,9 +13,10 @@ import {
   ChartTooltip,
   ChartTooltipContent,
 } from "@/components/shadcn-ui/chart";
+import { suffixesNumber } from "@/lib/utils";
 import { IEnvironmentLineChart } from "@/types/model";
 import React from "react";
-import { CartesianGrid, Line, LineChart, XAxis } from "recharts";
+import { CartesianGrid, Line, LineChart, XAxis, YAxis } from "recharts";
 
 const chartConfig = {
   min: {
@@ -42,7 +43,7 @@ export default function HumidityChart({
   isDashboardRoom,
 }: HumidityProps) {
   return (
-    <Card className="transition bg-secondary/60 hover:bg-secondary/30">
+    <Card className="transition bg-secondary/80">
       <CardHeader>
         <CardTitle className="text-sm md:text-base text-left">
           Humidity (%)
@@ -57,7 +58,7 @@ export default function HumidityChart({
               margin={{
                 top: 12,
                 right: isDashboardRoom ? 27 : 6,
-                left: isDashboardRoom ? 27 : 10,
+                left: isDashboardRoom ? 27 : -25,
               }}
             >
               <CartesianGrid vertical={false} />
@@ -67,6 +68,13 @@ export default function HumidityChart({
                 axisLine={false}
                 tickMargin={8}
                 tickFormatter={(value) => value}
+              />
+              <YAxis
+                tickLine={false}
+                axisLine={false}
+                tickMargin={5}
+                tickCount={5}
+                tickFormatter={(value) => suffixesNumber(value)}
               />
               <ChartTooltip cursor={false} content={<ChartTooltipContent />} />
               <Line

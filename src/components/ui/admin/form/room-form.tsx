@@ -52,6 +52,7 @@ export default function RoomForm({
     defaultValues: {
       roomCode: isFormEdit ? initData?.rm_id : undefined,
       building: isFormEdit ? initData?.bu_id : undefined,
+      building_abbr: isFormEdit ? initData?.bu_abbr : undefined,
       roomType: isFormEdit ? initData?.type : undefined,
       roomName: isFormEdit ? (initData?.rm_name as string) : undefined,
       airAmount: isFormEdit ? initData?.air_amount : 0,
@@ -68,9 +69,8 @@ export default function RoomForm({
 
   const clearAlert = () => {
     setShowAlert(null);
-    if (isFormEdit) {
-      router.push("/admin/management/rooms");
-    }
+    window.location.href = "/admin/management/rooms";
+    // router.push("/admin/management/rooms");
   };
 
   const validateFormData = (data: IRoomSchema): boolean => {
@@ -124,6 +124,7 @@ export default function RoomForm({
       roomName,
       roomType,
       building,
+      building_abbr,
       airAmount,
       lampAmount,
       switchAmount,
@@ -150,12 +151,14 @@ export default function RoomForm({
         response = await createData("addRoom", session.user.accessToken, {
           rm_id: roomCode,
           bu_id: building,
+          bu_abbr: building_abbr,
           rm_name: roomName,
           rm_type: roomType,
           air_amount: airAmount,
           lamp_amount: lampAmount,
         });
       }
+      console.log("🚀 ~ onSubmit ~ response:", response)
       if (response && response.status === 200) {
         setShowAlert({
           openModal: true,
@@ -264,6 +267,23 @@ export default function RoomForm({
                     {errors.building && (
                       <p className="text-sm text-red-500">
                         {errors.building.message}
+                      </p>
+                    )}
+                  </div>
+                  <div className="grid gap-3">
+                    <FormLabel required htmlFor="building_abbr">
+                      ชื่อย่ออาคาร
+                    </FormLabel>
+                    <Input
+                      {...register("building_abbr")}
+                      type="text"
+                      id="building_abbr"
+                      placeholder="ชื่อย่ออาคาร"
+                      // disabled
+                    />
+                    {errors.building_abbr && (
+                      <p className="text-sm text-red-500">
+                        {errors.building_abbr.message}
                       </p>
                     )}
                   </div>

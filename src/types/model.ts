@@ -120,6 +120,7 @@ export interface IRoom {
   rm_id: string;
   bu_id: string;
   bu_name: string;
+  bu_abbr: string;
   rm_name: string | null;
   type: string;
   air_amount: number;
@@ -167,6 +168,7 @@ export interface IBuilding {
   bu_info: string | null;
   fl_amount: number | null;
   rm_amount: number | null;
+  bu_abbr: string | null;
 }
 
 export interface IRoomTypes {

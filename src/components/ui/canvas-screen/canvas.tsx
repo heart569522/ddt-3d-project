@@ -34,6 +34,7 @@ interface Props {
   planeColor?: Color | number;
   outlineStrength?: number;
   outlineResolution?: number;
+  floorId?: string;
   isRoomPage?: boolean;
   isUsePlane?: boolean;
   onObjectHover?: (object: string | null) => void;
@@ -50,12 +51,18 @@ export default function CanvasScreen({
   planeColor = Color.NAMES.seagreen,
   outlineStrength = 3,
   outlineResolution = 0.1,
+  floorId,
   isRoomPage = false,
   isUsePlane = true,
 }: Props) {
   // const pathname = usePathname();
   // const roomPath = pathname.split("/room/")[1]
-  // const { setSelect } = getFloorStore(roomPath.substring(0, 7));
+  let isSelectObject: boolean = false;
+  if (floorId) {
+    const { select } = getFloorStore(floorId?.toUpperCase() as string);
+    isSelectObject =
+      select?.includes("-L") || select?.includes("-A") ? true : false;
+  }
 
   // useEffect(() => {
   //   if (isRoomPage) {
@@ -99,11 +106,15 @@ export default function CanvasScreen({
             autoClear={false}
           >
             <Outline
-              blendFunction={BlendFunction.SCREEN}
+              blendFunction={BlendFunction.ALPHA}
               xRay={true}
               blur={false}
-              visibleEdgeColor={Color.NAMES.yellow}
-              hiddenEdgeColor={Color.NAMES.yellow}
+              visibleEdgeColor={
+                isSelectObject ? Color.NAMES.darkblue : Color.NAMES.yellow
+              }
+              hiddenEdgeColor={
+                isSelectObject ? Color.NAMES.darkblue : Color.NAMES.yellow
+              }
               edgeStrength={outlineStrength}
             />
           </EffectComposer>
@@ -135,7 +146,7 @@ export default function CanvasScreen({
           target={isRoomPage ? setDefaultPosition : 0}
         />
         <Environment preset="city" blur={1} />
-        {/* <Sky inclination={0.6} /> */}
+        <Sky inclination={0.55} />
       </Suspense>
     </Canvas>
   );

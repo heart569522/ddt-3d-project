@@ -65,7 +65,7 @@ export default function CardDetail({ buildingData, electricUsageData }: Props) {
   }, [value]);
 
   return (
-    <Card className="max-w-80 xl:max-w-full">
+    <Card className="max-w-80 xl:max-w-full bg-background/60">
       <CardHeader>
         <CardTitle className="text-base md:text-lg">
           Building Infomation
@@ -73,7 +73,7 @@ export default function CardDetail({ buildingData, electricUsageData }: Props) {
       </CardHeader>
       <CardContent>
         {data ? (
-          <Table className="border rounded-md">
+          <Table className="rounded-lg border-none bg-secondary/80">
             <TableBody>
               <TableRow>
                 <TableCell className="p-2">Building Code</TableCell>

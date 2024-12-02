@@ -17,6 +17,7 @@ export type FacultyBuilding =
   | "EN117"
   | "EN120"
   | "EN124"
+  | "EN125"
   | "EN126"
   | "EN161"
   | "EN202"

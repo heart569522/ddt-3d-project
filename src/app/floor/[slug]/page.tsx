@@ -13,7 +13,10 @@ import {
 } from "@/components/ui/dashboard/electric-chart";
 import { EnvironmentAverage } from "@/components/ui/dashboard/environment-chart";
 import Navigation from "@/components/ui/navigation";
-import { formatFacultyElectricTodayUsage, formatFloorElectricTodayUsage } from "@/lib/formats";
+import {
+  formatFacultyElectricTodayUsage,
+  formatFloorElectricTodayUsage,
+} from "@/lib/formats";
 import { Droplets, FileDown, MapPin, Thermometer, UndoDot } from "lucide-react";
 import { IconFaceMask } from "@tabler/icons-react";
 import TooltipHover from "@/components/ui/tooltip-hover";
@@ -25,7 +28,8 @@ import { notFound } from "next/navigation";
 import React from "react";
 import { Color } from "three";
 import CardSelectRoom from "@/components/ui/dashboard/card-select-room";
-import ModalDownload from "@/components/ui/modal-download";
+import ModalPDFDownload from "@/components/ui/modal-download";
+import ButtonControlContour from "@/components/ui/button-control-contour";
 
 export async function generateMetadata({
   params,
@@ -40,7 +44,7 @@ export async function generateMetadata({
 export default async function Floor({ params }: { params: { slug: string } }) {
   const buildingId = params.slug.toLowerCase().substring(0, 5);
   const floorId = params.slug.toLowerCase();
-  const floorDetail = await getData(`floorDetail/${floorId.toUpperCase()}`)
+  const floorDetail = await getData(`floorDetail/${floorId.toUpperCase()}`);
 
   const renderCanvas = async () => {
     try {
@@ -73,11 +77,12 @@ export default async function Floor({ params }: { params: { slug: string } }) {
           }}
           outlineResolution={0.5}
           outlineStrength={15}
-          // planeColor={Color.NAMES.black}
+          floorId={floorId}
+          planeColor={Color.NAMES.gray}
         />
       );
     } catch (error) {
-      notFound();
+      // notFound();
     }
   };
 
@@ -88,7 +93,10 @@ export default async function Floor({ params }: { params: { slug: string } }) {
     `UseRateRoomPerMonth/${params.slug.toLowerCase()}99`
   );
   const electricUsage = await getData(`RoomUseHour`);
-  const electricUsageData = formatFloorElectricTodayUsage(electricUsage, floorId.toUpperCase());
+  const electricUsageData = formatFloorElectricTodayUsage(
+    electricUsage,
+    floorId.toUpperCase()
+  );
   const pmTempHmdData = await getData(
     `RhtpmPerMonth/${params.slug.toLowerCase()}99`
   );
@@ -116,63 +124,17 @@ export default async function Floor({ params }: { params: { slug: string } }) {
           <div className="hidden xl:block">
             <CardSelectRoom room={params.slug.toUpperCase()} />
           </div>
-          <ElectricFloorRoomChart data={electricUsageData} floorId={floorId.toUpperCase()}/>
+          <ElectricFloorRoomChart
+            data={electricUsageData as any}
+            floorId={floorId.toUpperCase()}
+          />
           <AverageElectricUsage data={avgElectricUsage} isFloorRoom={true} />
         </div>
       }
       toolbar={
         <>
-          <TooltipHover
-            content={"Reset"}
-            position={"top"}
-            isUseMediaQuery={true}
-            mediaQuerySize="md"
-            positionMediaQuery="right"
-          >
-            <Button variant="outline" size="icon">
-              <UndoDot className="h-5 w-5" />
-            </Button>
-          </TooltipHover>
-          <TooltipHover
-            content={"Temperature"}
-            position="top"
-            isUseMediaQuery={true}
-            mediaQuerySize="md"
-            positionMediaQuery="right"
-          >
-            <Link target="_blank" href={"/contour/temperature"}>
-              <Button variant="outline" size="icon">
-                <Thermometer className="h-5 w-5" />
-              </Button>
-            </Link>
-          </TooltipHover>
-          <TooltipHover
-            content={"Humidity"}
-            position="top"
-            isUseMediaQuery={true}
-            mediaQuerySize="md"
-            positionMediaQuery="right"
-          >
-            <Link target="_blank" href={"/contour/humidity"}>
-              <Button variant="outline" size="icon">
-                <Droplets className="h-5 w-5" />
-              </Button>
-            </Link>
-          </TooltipHover>
-          <TooltipHover
-            content={"PM 2.5"}
-            position="top"
-            isUseMediaQuery={true}
-            mediaQuerySize="md"
-            positionMediaQuery="right"
-          >
-            <Link target="_blank" href={"/contour/pm25"}>
-              <Button variant="outline" size="icon">
-                <IconFaceMask className="h-5 w-5" />
-              </Button>
-            </Link>
-          </TooltipHover>
-          <ModalDownload>
+          <ButtonControlContour />
+          <ModalPDFDownload floorId={floorId}>
             <TooltipHover
               content={"File Download"}
               position="top"
@@ -184,14 +146,12 @@ export default async function Floor({ params }: { params: { slug: string } }) {
                 <FileDown className="h-5 w-5" />
               </div>
             </TooltipHover>
-          </ModalDownload>
+          </ModalPDFDownload>
         </>
       }
       useCardSelectFloorRoom={true}
     >
-      <div className="w-full h-dvh">
-        {await renderCanvas()}
-      </div>
+      <div className="w-full h-dvh">{await renderCanvas()}</div>
     </Navigation>
   );
 }

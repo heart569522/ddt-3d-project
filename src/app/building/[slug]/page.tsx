@@ -53,17 +53,20 @@ export default async function Building({
 
       return (
         <CanvasScreen
+          antialias={true}
           model={
             <BuildingComponent castShadow receiveShadow isManage={false} />
           }
           cameraPosition={[0, 30, 45]}
+          dpr={[0.5, 0.95]}
           controlSettings={{
             minPolarAngle: 0,
             maxPolarAngle: Math.PI / 2.25,
             minDistance: 30,
-            maxDistance: 130,
+            maxDistance: 100,
             enablePan: true,
           }}
+          isUsePlane={false}
         />
       );
     } catch (error) {

@@ -10,6 +10,7 @@ export type IRoomSchema = z.infer<typeof roomSchema>;
 export const roomSchema = z.object({
   roomCode: z.string({ message: "กรุณากรอกรหัสห้อง" }),
   building: z.string({ message: "กรุณาเลือกอาคาร" }),
+  building_abbr: z.string().optional(),
   roomName: z.string({ message: "กรุณากรอกชื่อห้อง" }),
   roomType: z.string({ message: "กรุณาเลือกประเภทห้อง" }),
   airAmount: z.number().min(0),

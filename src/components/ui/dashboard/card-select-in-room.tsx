@@ -77,7 +77,7 @@ export default function CardSelectInRoom({ room }: Props) {
   }, [airs, lights, room]);
 
   return (
-    <Card className="max-w-80 xl:max-w-full">
+    <Card className="max-w-80 xl:max-w-full bg-background/60">
       <CardHeader className="flex flex-row justify-between gap-1">
         <CardTitle className="text-base md:text-lg">Select Room</CardTitle>
         {select && (
@@ -98,7 +98,10 @@ export default function CardSelectInRoom({ room }: Props) {
               key={item.value}
               variant={select === item.value ? "default" : "outline"}
               onClick={() => setSelect(item.value as any)}
-              className="w-full h-8"
+              className={cn(
+                "w-full h-8",
+                select === item.value ? "bg-primary/80" : "bg-background/80"
+              )}
             >
               <span className="text-sm">{item.title}</span>
             </Button>

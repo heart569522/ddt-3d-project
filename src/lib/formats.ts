@@ -29,14 +29,12 @@ export function formatFacultyElectricTodayUsage(data: IElectricTodayUsage[]) {
   });
 
   const formatData = Object.values(buildingUsageMap)
-    .sort((a, b) => {
-      return a.buildingId.localeCompare(b.buildingId);
-    })
     .map((item) => ({
       ...item,
       value: parseFloat(item.useToday.toFixed(configs.numberOfDecimal)),
       total: parseFloat(item.useTotal.toFixed(configs.numberOfDecimal)),
-    }));
+    }))
+    .sort((a, b) => b.value - a.value);
 
   return formatData;
 }
@@ -71,14 +69,12 @@ export function formatBuildingElectricTodayUsage(
   });
 
   const formatData = Object.values(floorUsageMap)
-    .sort((a, b) => {
-      return a.buildingId.localeCompare(b.buildingId);
-    })
     .map((item) => ({
       ...item,
       value: parseFloat(item.useToday.toFixed(configs.numberOfDecimal)),
       total: parseFloat(item.useTotal.toFixed(configs.numberOfDecimal)),
-    }));
+    }))
+    .sort((a, b) => b.value - a.value);
 
   return formatData;
 }
@@ -91,31 +87,37 @@ export function formatFloorElectricTodayUsage(
 
   let totalUseRateRoom = 0;
 
-  const formattedData = floorData.map((item) => {
-    const roomName = item.room.substring(6, 9);
-    const useRateRoom = Math.abs(item.UseRateRoom || 0);
+  const formattedData = floorData
+    .map((item) => {
+      const useRateRoom = Math.abs(item.UseRateRoom);
+      const roomName = useRateRoom ? item.room.substring(6, 9) : "";
 
-    // Accumulate the total UseRateRoom
-    totalUseRateRoom += useRateRoom;
+      // Accumulate the total UseRateRoom
+      totalUseRateRoom += useRateRoom;
 
-    return {
-      name: roomName,
-      value: useRateRoom.toFixed(configs.numberOfDecimal),
-      total: "0",
-      fill: `var(--color-${roomName})`,
-    };
-  });
+      const data = {
+        name: roomName,
+        value: useRateRoom
+          ? useRateRoom.toFixed(configs.numberOfDecimal)
+          : null,
+        total: "0",
+        fill: useRateRoom ? `var(--color-${roomName})` : "",
+      };
+
+      return useRateRoom ? data : null;
+    })
+    .filter((item): item is NonNullable<typeof item> => item !== null);
 
   // Update each entry's total field with the accumulated total
   const totalAsString = totalUseRateRoom.toFixed(configs.numberOfDecimal);
   formattedData.forEach((entry) => {
-    entry.total = totalAsString;
+    entry.total = totalUseRateRoom ? totalAsString : "";
   });
 
-  console.log(
-    "🚀 ~ formatRoomElectricTodayUsage ~ formattedData:",
-    formattedData
-  );
+  // console.log(
+  //   "🚀 ~ formatRoomElectricTodayUsage ~ formattedData:",
+  //   formattedData
+  // );
   return formattedData;
 }
 
@@ -169,10 +171,10 @@ export function formatRoomElectricTodayUsage(data: IFloorRoomUseHour[]) {
     roomUsageMap[roomNumber] = formattedData;
   });
 
-  console.log(
-    "🚀 ~ formatRoomElectricTodayUsage ~ roomUsageMap:",
-    roomUsageMap
-  );
+  // console.log(
+  //   "🚀 ~ formatRoomElectricTodayUsage ~ roomUsageMap:",
+  //   roomUsageMap
+  // );
   return roomUsageMap;
 }
 
@@ -197,14 +199,12 @@ export function formatFacultyElectric24Usage(data: IElectric24Usage[]) {
   });
 
   const formatData = Object.values(buildingUsageMap)
-    .sort((a, b) => {
-      return a.buildingId.localeCompare(b.buildingId);
-    })
     .map((item) => ({
       ...item,
       value: parseFloat(item.useYesterday.toFixed(configs.numberOfDecimal)),
       total: parseFloat(item.useTotal.toFixed(configs.numberOfDecimal)),
-    }));
+    }))
+    .sort((a, b) => b.value - a.value);
 
   return formatData;
 }
@@ -236,14 +236,12 @@ export function formatBuildingElectric24Usage(
   });
 
   const formatData = Object.values(floorUsageMap)
-    .sort((a, b) => {
-      return a.buildingId.localeCompare(b.buildingId);
-    })
     .map((item) => ({
       ...item,
       value: parseFloat(item.useYesterday.toFixed(configs.numberOfDecimal)),
       total: parseFloat(item.useTotal.toFixed(configs.numberOfDecimal)),
-    }));
+    }))
+    .sort((a, b) => b.value - a.value);
 
   return formatData;
 }
@@ -255,25 +253,31 @@ export function formatFloorElectric24Usage(
   const floorData = data.filter((item) => item.room.startsWith(floorId));
   let totalUseRateRoom = 0;
 
-  const formattedData = floorData.map((item) => {
-    const roomName = item.room.substring(6, 9);
-    const useRateRoom = item.UseRateRoom || 0;
+  const formattedData = floorData
+    .map((item) => {
+      const useRateRoom = Math.abs(item.UseRateRoom);
+      const roomName = useRateRoom ? item.room.substring(6, 9) : "";
 
-    // Accumulate the total UseRateRoom
-    totalUseRateRoom += useRateRoom;
+      // Accumulate the total UseRateRoom
+      totalUseRateRoom += useRateRoom;
 
-    return {
-      name: roomName,
-      value: useRateRoom.toFixed(configs.numberOfDecimal),
-      total: "0",
-      fill: `var(--color-${roomName})`,
-    };
-  });
+      const data = {
+        name: roomName,
+        value: useRateRoom
+          ? useRateRoom.toFixed(configs.numberOfDecimal)
+          : null,
+        total: "0",
+        fill: useRateRoom ? `var(--color-${roomName})` : "",
+      };
+
+      return useRateRoom ? data : null;
+    })
+    .filter((item): item is NonNullable<typeof item> => item !== null);
 
   // Update each entry's total field with the accumulated total
   const totalAsString = totalUseRateRoom.toFixed(configs.numberOfDecimal);
   formattedData.forEach((entry) => {
-    entry.total = totalAsString;
+    entry.total = totalUseRateRoom ? totalAsString : "";
   });
 
   return formattedData;
@@ -289,25 +293,25 @@ export function formatRoomElectric24Usage(data: IRoomUse24[], roomId: string) {
     const formattedData = [
       {
         name: "Air",
-        value: roomData.Air?.toFixed(configs.numberOfDecimal) || "0",
+        value: roomData.Air?.toFixed(configs.numberOfDecimal) || null,
         total: "0",
         fill: `var(--color-Air)`,
       },
       {
         name: "Rec",
-        value: roomData.Rec?.toFixed(configs.numberOfDecimal) || "0",
+        value: roomData.Rec?.toFixed(configs.numberOfDecimal) || null,
         total: "0",
         fill: `var(--color-Rec)`,
       },
       {
         name: "Switch",
-        value: roomData.Switch?.toFixed(configs.numberOfDecimal) || "0",
+        value: roomData.Switch?.toFixed(configs.numberOfDecimal) || null,
         total: "0",
         fill: `var(--color-Switch)`,
       },
       {
         name: "Other",
-        value: roomData.Other?.toFixed(configs.numberOfDecimal) || "0",
+        value: roomData.Other?.toFixed(configs.numberOfDecimal) || null,
         total: "0",
         fill: `var(--color-Other)`,
       },

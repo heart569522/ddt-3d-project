@@ -57,7 +57,6 @@ export default async function Room({ params }: { params: { slug: string } }) {
   );
   const electricUsage = await getData(`RoomUseHour/${roomId}`);
   const electricUsageData = formatRoomElectricTodayUsage(electricUsage);
-  console.log("🚀 ~ Room ~ electricUsageData:", electricUsageData);
   const pmTempHmdData = await getData(`RhtpmPerMonth/${roomId}`);
   const roomDetail = await getData(`floorDetail/${roomId.toUpperCase()}`);
 
@@ -100,6 +99,7 @@ export default async function Room({ params }: { params: { slug: string } }) {
           }}
           outlineResolution={0.5}
           outlineStrength={15}
+          floorId={floorId}
           isRoomPage={true}
         />
       );
@@ -148,7 +148,7 @@ export default async function Room({ params }: { params: { slug: string } }) {
             positionMediaQuery="right"
           >
             <Link href={`/room-dashboard/${roomId.toUpperCase()}`} target="_blank">
-              <Button variant="outline" size="icon">
+              <Button variant="outline" className="bg-background/80" size="icon">
                 <LayoutDashboard className="h-5 w-5" />
               </Button>
             </Link>

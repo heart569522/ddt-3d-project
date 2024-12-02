@@ -13,7 +13,7 @@ type Props = {
 
 export default function CardInfo({ title, detail }: Props) {
   return (
-    <Card>
+    <Card className="bg-background/60">
       <CardHeader>
         <CardTitle className="text-lg">{title}</CardTitle>
       </CardHeader>

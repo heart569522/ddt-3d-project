@@ -286,7 +286,7 @@ export default function AdminNavigation({
               <DropdownMenuItem
                 onClick={() =>
                   signOut({ redirect: false }).then(() => {
-                    window.location.replace("/overview");
+                    window.location.replace("/faculty");
                   })
                 }
               >

@@ -37,7 +37,7 @@ export default function CardSelectRoom({ room }: Props) {
   }, [room]);
 
   return (
-    <Card className="max-w-80 xl:max-w-full">
+    <Card className="max-w-80 xl:max-w-full bg-background/60">
       <CardHeader className="flex flex-row justify-between gap-1">
         <CardTitle className="text-base md:text-lg">Select Room</CardTitle>
         {select && (
@@ -58,10 +58,13 @@ export default function CardSelectRoom({ room }: Props) {
               key={room}
               variant={select === room ? "default" : "outline"}
               onClick={() => setSelect(room as any)}
-              className="w-full h-8"
+              className={cn(
+                "w-full h-8",
+                select === room ? "bg-primary/80" : "bg-background/80"
+              )}
             >
               <span className="text-sm">
-                {"Room " + room.substring(7, 9)}
+                {"Room " + room.substring(6, 9)}
               </span>
             </Button>
           ))}
@@ -69,7 +72,7 @@ export default function CardSelectRoom({ room }: Props) {
       </CardContent>
       <CardFooter className="mt-4">
         <Button
-          className="w-full"
+          className="w-full bg-primary/80"
           onClick={() => window.open(`/room/${select}`, "_blank")}
           disabled={!select}
         >
