@@ -55,7 +55,7 @@ export default function Navigation({
   const [isNavOpen, setIsNavOpen] = useState(false);
   const [isShowDashboard, setIsShowDashboard] = useState(true);
 
-  const { click } = useFacultyStore((state) => state);
+  const { select: click } = useFacultyStore((state) => state);
 
   const toggleShowHideDashboard = () => {
     setIsShowDashboard(!isShowDashboard);

@@ -24,7 +24,7 @@ type Props = {
 };
 
 export default function CardDetail({ buildingData, electricUsageData }: Props) {
-  const { click: value } = useFacultyStore((state) => state);
+  const { select: value } = useFacultyStore((state) => state);
   const [data, setData] = useState<any>(null);
 
   const mapTableDetails = () => {

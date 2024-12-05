@@ -28,15 +28,15 @@ export type FacultyBuilding =
   | "EN509";
 
 export interface ClickFacultyState {
-  click: FacultyBuilding | null; // เก็บชื่อของโมเดลที่ถูกคลิกล่าสุด หรือ null ถ้าไม่มี
-  setClick: (building: FacultyBuilding | null) => void;
+  select: FacultyBuilding | null; // เก็บชื่อของโมเดลที่ถูกคลิกล่าสุด หรือ null ถ้าไม่มี
+  setSelect: (building: FacultyBuilding | null) => void;
 }
 
 const useFacultyStore = create<ClickFacultyState>((set, get) => ({
-  click: null, // เริ่มต้นเป็น null แสดงว่ายังไม่มีโมเดลไหนถูกคลิก
-  setClick: (building) => {
+  select: null, // เริ่มต้นเป็น null แสดงว่ายังไม่มีโมเดลไหนถูกคลิก
+  setSelect: (building) => {
     set((state) => ({
-      click: state.click === building ? null : building,
+      select: state.select === building ? null : building,
     }));
   },
 }));

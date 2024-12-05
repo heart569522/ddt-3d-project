@@ -22,6 +22,8 @@ interface Configs {
             [key: string]: {
               active: boolean;
               cameraPosition: [number, number, number];
+              airCount: number;
+              lampCount: number;
             };
           };
         };
@@ -99,6 +101,8 @@ export const configs: Configs = {
             en1240818: {
               active: true,
               cameraPosition: [-20, 2, 5.4],
+              airCount: 3,
+              lampCount: 9
             },
           },
         },

@@ -1,82 +1,124 @@
 "use client";
-import React from "react";
+import React, { ComponentType, useEffect, useState } from "react";
 import CanvasScreen from "./canvas";
 
 import FacultyAllBuilding from "@/components/models/faculty/all";
 import EN12408Floor from "@/components/models/en124/floor-room/en12408-floor";
 import EN124Building from "@/components/models/en124/building/en124-building";
+import useFacultyStore from "@/stores/use-faculty-store";
+import { Button } from "@/components/shadcn-ui/button";
+import { X } from "lucide-react";
+import { getBuildingStore } from "@/stores/get-building-store";
+import FloorArea from "./floor-area";
+import RoomArea from "./room-area";
 
 export default function CanvasPanel() {
+  const { select: selectBuilding, setSelect: setSelectBuilding } =
+    useFacultyStore((state) => state);
+
+  const [BuildingComponent, setBuildingComponent] = useState<ComponentType<{
+    isManage: boolean;
+  }> | null>(null);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
+
+  const [selectedFloor, setSelectedFloor] = useState<string | null>(null);
+
+  useEffect(() => {
+    const loadBuildingComponent = async () => {
+      if (selectBuilding) {
+        try {
+          const component = (
+            await import(
+              `../../../components/models/${selectBuilding?.toLowerCase()}/building/${selectBuilding?.toLowerCase()}-building`
+            )
+          ).default;
+          setBuildingComponent(() => component);
+        } catch (error) {
+          console.error("Failed to load building component:", error);
+          setErrorMessage(`Model ${selectBuilding} not avaliable.`);
+          setBuildingComponent(null);
+        }
+      } else {
+        setErrorMessage(null);
+      }
+    };
+
+    loadBuildingComponent();
+  }, [selectBuilding]);
+
   return (
     <div className="grid grid-cols-1 grid-rows-1 lg:grid-cols-2 lg:grid-rows-2 h-full w-full gap-4">
-      <div className="h-full">
+      <div className="h-full relative bg-background/50">
+        <div className="absolute z-10 px-3 py-2 bg-background/50 rounded-sm m-1 font-semibold bg text-xl">
+          คณะ
+        </div>
         <CanvasScreen
-          model={
-            <FacultyAllBuilding isManage={true} castShadow receiveShadow />
-          }
+          model={<FacultyAllBuilding isManage={true} />}
           cameraPosition={[7, 13, 27]}
+          dpr={[0.4, 0.75]}
           isUsePlane={false}
           controlSettings={{
             minPolarAngle: 0,
             maxPolarAngle: Math.PI / 2.25,
-            // minDistance: 40,
-            maxDistance: 225,
-            enablePan: false,
-          }}
-        />
-      </div>
-      <div className="h-full">
-        <CanvasScreen
-          model={<EN124Building castShadow receiveShadow isManage={true} />}
-          cameraPosition={[0, 30, 45]}
-          isUsePlane={false}
-          controlSettings={{
-            minPolarAngle: 0,
-            maxPolarAngle: Math.PI / 2.25,
-            minDistance: 30,
-            maxDistance: 80,
-            enablePan: false,
-          }}
-        />
-      </div>
-      <div className="h-full">
-        <CanvasScreen
-          model={
-            <EN12408Floor
-              isShowLamp={false}
-              isShowAir={false}
-              isManage={true}
-            />
-          }
-          cameraPosition={[-5, 25, 12]}
-          controlSettings={{
-            minPolarAngle: 0,
-            maxPolarAngle: Math.PI / 4,
-            minDistance: 20,
-            maxDistance: 50,
+            maxDistance: 200,
             enablePan: true,
           }}
         />
       </div>
-      <div className="h-full">
-        <CanvasScreen
-          model={
-            <EN12408Floor
-              isShowLamp={true}
-              isShowAir={true}
-              isManage={true}
+      <div className="h-full relative bg-background/50">
+        {BuildingComponent ? (
+          <>
+            <div className="absolute left-0 z-10 px-3 py-2 bg-background/50 rounded-sm m-1 font-semibold bg text-xl">
+              อาคาร {selectBuilding}
+            </div>
+            <Button
+              size={"icon"}
+              onClick={() => {
+                setBuildingComponent(null), setSelectBuilding(null);
+              }}
+              className="size-7 absolute right-0 z-10 bg-destructive/50 hover:bg-destructive/80 m-1"
+            >
+              <X className="size-5" />
+            </Button>
+            <CanvasScreen
+              model={
+                BuildingComponent ? <BuildingComponent isManage={true} /> : null
+              }
+              cameraPosition={[0, 30, 45]}
+              isUsePlane={false}
+              controlSettings={{
+                minPolarAngle: 0,
+                maxPolarAngle: Math.PI / 2.25,
+                minDistance: 30,
+                maxDistance: 80,
+                enablePan: false,
+              }}
             />
-          }
-          cameraPosition={[0, 0, 90]}
-          controlSettings={{
-            minPolarAngle: 0,
-            maxPolarAngle: 0,
-            minDistance: 10,
-            maxDistance: 25,
-            enablePan: true,
-            enableRotate: false,
-          }}
-        />
+          </>
+        ) : (
+          <div className="flex justify-center items-center h-full">
+            <p className="text-lg font-semibold opacity-80">
+              {selectBuilding ? errorMessage : null}
+            </p>
+          </div>
+        )}
+      </div>
+      <div className="h-full relative bg-background/50">
+        {selectBuilding && (
+          <FloorArea
+            buildingId={selectBuilding}
+            onSelectFloor={setSelectedFloor}
+          />
+        )}
+      </div>
+      <div className="h-full relative bg-background/50">
+        {selectBuilding && selectedFloor && (
+          <RoomArea
+            buildingId={selectBuilding}
+            floorId={selectedFloor}
+            // onSelectFloor={setSelectedFloor}
+          />
+        )}
       </div>
     </div>
   );

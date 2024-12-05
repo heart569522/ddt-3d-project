@@ -18,7 +18,10 @@ interface Props {
 
 export default function CardSelectFloor({ building }: Props) {
   const [floors, setFloors] = useState<string[]>([]);
-  const { select, setSelect } = getBuildingStore(building);
+  const buildingStore  = getBuildingStore(building);
+
+  const select = buildingStore?.select || null;
+  const setSelect = buildingStore?.setSelect || null;
 
   useEffect(() => {
     const loadFloors = async () => {
@@ -45,7 +48,7 @@ export default function CardSelectFloor({ building }: Props) {
             className={cn(
               "text-sm opacity-70 cursor-pointer hover:underline hover:opacity-100"
             )}
-            onClick={() => setSelect(null)}
+            onClick={() => setSelect?.(null)}
           >
             reset
           </span>
@@ -57,7 +60,7 @@ export default function CardSelectFloor({ building }: Props) {
             <Button
               key={floor}
               variant={select === floor ? "default" : "outline"}
-              onClick={() => setSelect(floor as any)}
+              onClick={() => setSelect?.(floor as any)}
               className={cn(
                 "w-full h-8",
                 select === floor ? "bg-primary/80" : "bg-background/80"

@@ -3035,7 +3035,7 @@ type Props = JSX.IntrinsicElements["group"] & {
 export default function FacultyAllBuilding(props: Props) {
   const { nodes, materials } = useGLTF("/models/faculty/all.glb") as GLTFResult;
   const [hover, setHover] = useState<FacultyBuilding | null>(null);
-  const { click, setClick } = useFacultyStore((state) => state);
+  const { select: click, setSelect: setClick } = useFacultyStore((state) => state);
 
   const handleObjectHover = useCallback((object: FacultyBuilding | null) => {
     setHover(object);
