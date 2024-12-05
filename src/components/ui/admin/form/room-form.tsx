@@ -10,7 +10,7 @@ import {
 import { IRoomSchema, roomSchema } from "@/types/form";
 import { IBuilding, IRoom, IRoomTypes } from "@/types/model";
 import { zodResolver } from "@hookform/resolvers/zod";
-import React, { useState } from "react";
+import React, { ComponentType, useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import Combobox from "../../combobox";
 import ButtonLoading from "../../button-loading";
@@ -19,10 +19,11 @@ import { cn } from "@/lib/utils";
 import { AlertModal, AlertProps } from "../../alert-modal";
 import { Session } from "next-auth";
 import { createData, updateData } from "@/actions/actions";
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import FormLabel from "../../form-label";
 import CanvasScreen from "../../canvas-screen/canvas";
 import EN12408Floor from "@/components/models/en124/floor-room/en12408-floor";
+import { configs } from "@/lib/configs";
 
 interface Props {
   roomTypes: IRoomTypes[];
@@ -62,10 +63,53 @@ export default function RoomForm({
     },
   });
 
+  const searchParams = useSearchParams();
+  const pathname = usePathname();
+  const segments = pathname.split("/");
+  const roomId = isFormEdit
+    ? segments[segments.length - 1]
+    : searchParams.get("roomid");
+
   const [showAlert, setShowAlert] = useState<AlertProps | null>(null);
-  const router = useRouter();
   const [triggerResetCombobox, setTriggerResetCombobox] =
     useState<boolean>(false);
+
+  const [RoomComponent, setRoomComponent] = useState<ComponentType<{
+    isManage: boolean;
+    isShowLamp: boolean;
+    isShowAir: boolean;
+  }> | null>(null);
+  const [modelErrorMessage, setModelErrorMessage] = useState<string | null>(
+    null
+  );
+  const cameraPosition = configs.building[
+    roomId?.substring(0, 5).toLowerCase() as string
+  ]?.floor?.[roomId?.substring(0, 7).toLowerCase() as string]?.room?.[
+    roomId?.toLowerCase() as string
+  ]?.cameraPosition || [0, 0, 0];
+
+  useEffect(() => {
+    const loadRoomComponent = async () => {
+      try {
+        const component = (
+          await import(
+            `../../../../components/models/${roomId
+              ?.substring(0, 5)
+              .toLowerCase()}/floor-room/${roomId
+              ?.substring(0, 7)
+              .toLowerCase()}-floor`
+          )
+        ).default;
+        setRoomComponent(() => component);
+      } catch (error) {
+        console.error("Failed to load room component:", error);
+        setModelErrorMessage(`Model not avaliable.`);
+        setRoomComponent(null);
+      }
+    };
+
+    loadRoomComponent();
+  }, [roomId]);
 
   const clearAlert = () => {
     setShowAlert(null);
@@ -158,7 +202,7 @@ export default function RoomForm({
           lamp_amount: lampAmount,
         });
       }
-      console.log("🚀 ~ onSubmit ~ response:", response)
+      console.log("🚀 ~ onSubmit ~ response:", response);
       if (response && response.status === 200) {
         setShowAlert({
           openModal: true,
@@ -198,27 +242,38 @@ export default function RoomForm({
     <div className="flex flex-1 items-start justify-start">
       <div className="grid gap-4 grid-cols-12 w-full relative">
         <div className="col-span-12 lg:col-span-6 xl:col-span-5">
-          <div className="h-[500px]">
-            <CanvasScreen
-              model={
-                <EN12408Floor
-                  isShowLamp={true}
-                  isShowAir={true}
-                  isManage={true}
-                  castShadow
-                  receiveShadow
-                />
-              }
-              cameraPosition={[0, 0, 90]}
-              controlSettings={{
-                minPolarAngle: 0,
-                maxPolarAngle: 0,
-                minDistance: 15,
-                maxDistance: 35,
-                enablePan: true,
-                enableRotate: false,
-              }}
-            />
+          <div className="h-[500px] bg-background/50">
+            {RoomComponent ? (
+              <CanvasScreen
+                model={
+                  RoomComponent ? (
+                    <RoomComponent
+                      isManage={true}
+                      isShowLamp={true}
+                      isShowAir={true}
+                    />
+                  ) : null
+                }
+                cameraPosition={cameraPosition}
+                controlSettings={{
+                  minPolarAngle: 0,
+                  maxPolarAngle: 0,
+                  minDistance: 10,
+                  maxDistance: 13,
+                  enablePan: false,
+                }}
+                outlineResolution={0.5}
+                outlineStrength={15}
+                floorId={roomId?.substring(0, 7)}
+                isRoomPage={true}
+              />
+            ) : (
+              <div className="flex justify-center items-center h-full">
+                <p className="text-lg font-semibold opacity-80">
+                  {modelErrorMessage}
+                </p>
+              </div>
+            )}
           </div>
         </div>
         <div className="col-span-12 lg:col-span-6 xl:col-span-7">

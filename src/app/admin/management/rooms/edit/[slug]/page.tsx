@@ -40,7 +40,6 @@ export default async function EditRoom({
         type="static"
         className="-mt-4"
       />
-
       <RoomForm
         roomTypes={roomType}
         building={buiding}

@@ -75,9 +75,12 @@ export default function RoomArea({ buildingId, floorId }: Props) {
     const roomlist = await getData(`getRoomById/${selectRoom}`);
 
     if (roomlist[0].rm_id === null) {
-      window.location.href = `/admin/management/rooms/add?roomid=${selectRoom}`;
+      window.open(`/admin/management/rooms/add?roomid=${selectRoom}`, "_blank");
     } else if (roomlist[0].rm_id == selectRoom?.toUpperCase()) {
-      window.location.href = `/admin/management/rooms/edit/${selectRoom?.toUpperCase()}`;
+      window.open(
+        `/admin/management/rooms/edit/${selectRoom?.toUpperCase()}`,
+        "_blank"
+      );
     }
   };
 
@@ -89,11 +92,17 @@ export default function RoomArea({ buildingId, floorId }: Props) {
     );
 
     if (airData) {
-      window.location.href = `/admin/management/air-conditioners/edit/${selectRoom?.toUpperCase()}/${
-        airData.a_id
-      }`;
+      window.open(
+        `/admin/management/air-conditioners/edit/${selectRoom?.toUpperCase()}/${
+          airData.a_id
+        }`,
+        "_blank"
+      );
     } else {
-      window.location.href = `/admin/management/air-conditioners/add?roomid=${selectRoom}`;
+      window.open(
+        `/admin/management/air-conditioners/add?roomid=${selectRoom}`,
+        "_blank"
+      );
     }
   };
 
@@ -103,11 +112,17 @@ export default function RoomArea({ buildingId, floorId }: Props) {
     );
 
     if (lampData) {
-      window.location.href = `/admin/management/lamp-plug/edit/${selectRoom?.toUpperCase()}/${
-        lampData.l_id
-      }`;
+      window.open(
+        `/admin/management/lamp-plug/edit/${selectRoom?.toUpperCase()}/${
+          lampData.l_id
+        }`,
+        "_blank"
+      );
     } else {
-      window.location.href = `/admin/management/lamp-plug/add?roomid=${selectRoom}`;
+      window.open(
+        `/admin/management/lamp-plug/add?roomid=${selectRoom}`,
+        "_blank"
+      );
     }
   };
 
