@@ -99,11 +99,14 @@ export default function AirForm({
   const roomId = isFormEdit
     ? segments[segments.length - 2]
     : searchParams.get("roomid");
+  const airId = isFormEdit && segments[segments.length - 1];
 
   const [RoomComponent, setRoomComponent] = useState<ComponentType<{
     isManage: boolean;
     isShowLamp: boolean;
     isShowAir: boolean;
+    isFloorColorChange: boolean;
+    activeAirId: string | null;
   }> | null>(null);
   const [modelErrorMessage, setModelErrorMessage] = useState<string | null>(
     null
@@ -399,6 +402,12 @@ export default function AirForm({
                       isManage={true}
                       isShowLamp={true}
                       isShowAir={true}
+                      isFloorColorChange={true}
+                      activeAirId={
+                        airId
+                          ? airId.slice(0, -3) + "-" + airId.slice(-3)
+                          : null
+                      }
                     />
                   ) : null
                 }

@@ -18,6 +18,7 @@ import { Select } from '@react-three/postprocessing'
 import { formatDate, formatDatetoISOStringWithoutTime } from '@/lib/formats'
 import { useContourMenuStore } from '@/stores/use-contour-menu-store'
 import { configs } from '@/lib/configs'
+import { usePathname } from 'next/navigation'
 
 type GLTFResult = GLTF & {
   nodes: {
@@ -963,6 +964,7 @@ export const en12408Light = [
   "EN1240899-L15",
   "EN1240899-L17",
   "EN1240899-L19",
+  "EN1240899-L10",
   "EN1240899-L09",
   "EN1240899-L05",
   "EN1240899-L06",
@@ -994,15 +996,25 @@ type Props = JSX.IntrinsicElements["group"] & {
   isShowLamp?: boolean;
   isShowAir?: boolean;
   isManage?: boolean;
+  isFloorPage?: boolean;
   isRoomPage?: boolean;
   roomData? : any[];
   pathname?: string;
+  isFloorColorChange?: boolean;
+  activeAirId?: string | null;
+  activeLampId?: string | null;
 };
 
 export default function EN12408Floor(props: Props) {
+
+  const { isShowLamp, isShowAir, isManage, isFloorPage, isRoomPage, roomData, pathname, isFloorColorChange, activeAirId, activeLampId } = props;
+
   const groupRef = useRef<any>();
-  const floorId = props.pathname;
-  // console.log("isRoomPage : ", props.isRoomPage);
+  const floorId = pathname;
+
+  const path = usePathname();
+  const roomId = path.split('/room/')[1];
+  // console.log("isRoomPage : ", isRoomPage);
   // console.log("roomData : ", props.roomData);
   // console.log("🚀 ~ EN12408Floor ~ group:", group)
   
@@ -1015,6 +1027,8 @@ export default function EN12408Floor(props: Props) {
   const [modalRoomDetail, setModalRoomDetail] = useState<any>(null);
   const [modalLampDetail, setModalLampDetail] = useState<any>(null);
   const [modalAirDetail, setModalAirDetail] = useState<any>(null);
+
+  const modalDistance = configs.building[roomId?.substring(0, 5).toLowerCase()]?.floor?.[roomId?.substring(0, 7).toLowerCase()]?.room?.[roomId?.toLowerCase()]?.modalDistance
 
   const handleObjectHover = useCallback((object: EN124Floor8 | EN12408Air | EN12408Light | null | any) => {
     setHover(object);
@@ -1071,7 +1085,7 @@ export default function EN12408Floor(props: Props) {
             }
   
             if (averages) {
-              console.log(`Averages for ${groupChild.name}:`, averages);
+              // console.log(`Averages for ${groupChild.name}:`, averages);
   
               // Handle menuState
               if (menuState === null) {
@@ -1148,8 +1162,124 @@ export default function EN12408Floor(props: Props) {
     };
   
     floorContourColor();
-  }, [props.roomData, menuState]);
+  }, [roomData, menuState]);
+
+  useEffect(() => {
+    const changeFloorColor = () => {
+      if (!groupRef.current || !isFloorColorChange) return;
   
+      groupRef.current.traverse((groupChild: any) => {
+        groupChild.traverse((meshChild: any) => {
+          if (meshChild.isMesh || meshChild.isInstancedMesh) {
+            if (
+              meshChild.material &&
+              (meshChild.material.name?.includes('ผิวคอนกรีต ขัดมัน') ||
+                meshChild.material.name?.includes('กระเบื้องห้องน้ำ'))
+            ) {
+              // Save original color if not saved yet
+              if (!meshChild.material.userData.originalColor) {
+                meshChild.material.userData.originalColor = meshChild.material.color.getHex();
+              }
+  
+              // Change to gray color
+              const grayColor = 0x959595; // Hex for gray
+              if (Array.isArray(meshChild.material)) {
+                meshChild.material.forEach((mat: any) => {
+                  mat.color.set(grayColor);
+                  mat.needsUpdate = true;
+                });
+              } else {
+                meshChild.material.color.set(grayColor);
+                meshChild.material.needsUpdate = true;
+              }
+            }
+          }
+        });
+      });
+    };
+    changeFloorColor();
+  }, [isFloorColorChange]);
+
+  // useEffect(() => {
+  //   const activeAirLampColor = () => {
+  //     if (!groupRef.current || (!activeAirId && !activeLampId && !isManage)) return;
+  
+  //     groupRef.current.traverse((groupChild: any) => {
+  //       // ตรวจสอบว่าเป็น Group และมีชื่อที่ตรงกับ activeAirId หรือ activeLampId
+  //       if (
+  //         groupChild.isGroup && // ตรวจสอบว่าเป็น Group
+  //         (groupChild.name === activeAirId || groupChild.name === activeLampId) // ตรวจสอบชื่อ
+  //       ) {
+  //         console.log(`Matching Group found: ${groupChild.name}`);
+  
+  //         // Traverse ภายใน Group นี้เพื่อเปลี่ยนสีของ mesh
+  //         groupChild.traverse((meshChild: any) => {
+  //           if (meshChild.isMesh || meshChild.isInstancedMesh) {
+  //             if (meshChild.material) {
+  //               console.log(`Changing color for mesh: ${meshChild.name} in Group: ${groupChild.name}`);
+  
+  //               // Save original color if not saved yet
+  //               if (!meshChild.material.userData.originalColor) {
+  //                 meshChild.material.userData.originalColor = meshChild.material.color.getHex();
+  //               }
+  
+  //               // เปลี่ยนเป็นสีน้ำเงิน
+  //               if (Array.isArray(meshChild.material)) {
+  //                 meshChild.material.forEach((mat: any) => {
+  //                   mat.color.set(THREE.Color.NAMES.blue);
+  //                   mat.needsUpdate = true;
+  //                 });
+  //               } else {
+  //                 meshChild.material.color.set(THREE.Color.NAMES.blue);
+  //                 meshChild.material.needsUpdate = true;
+  //               }
+  //             }
+  //           }
+  //         });
+  //       }
+  //     });
+  //   };
+  
+  //   activeAirLampColor();
+  // }, [activeAirId, activeLampId]);
+  const activeAirLampColor = () => {
+    if (!groupRef.current || (!activeAirId && !activeLampId && !isManage)) return;
+
+    groupRef.current.traverse((groupChild: any) => {
+      // ตรวจสอบว่าเป็น Group และมีชื่อที่ตรงกับ activeAirId หรือ activeLampId
+      if (
+        groupChild.isGroup && // ตรวจสอบว่าเป็น Group
+        (groupChild.name === activeAirId || groupChild.name === activeLampId) // ตรวจสอบชื่อ
+      ) {
+        console.log(`Matching Group found: ${groupChild.name}`);
+
+        // Traverse ภายใน Group นี้เพื่อเปลี่ยนสีของ mesh
+        groupChild.traverse((meshChild: any) => {
+          if (meshChild.isMesh || meshChild.isInstancedMesh) {
+            if (meshChild.material) {
+              console.log(`Changing color for mesh: ${meshChild.name} in Group: ${groupChild.name}`);
+
+              // Save original color if not saved yet
+              if (!meshChild.material.userData.originalColor) {
+                meshChild.material.userData.originalColor = meshChild.material.color.getHex();
+              }
+
+              // เปลี่ยนเป็นสีน้ำเงิน
+              if (Array.isArray(meshChild.material)) {
+                meshChild.material.forEach((mat: any) => {
+                  mat.color.set(THREE.Color.NAMES.blue);
+                  mat.needsUpdate = true;
+                });
+              } else {
+                meshChild.material.color.set(THREE.Color.NAMES.blue);
+                meshChild.material.needsUpdate = true;
+              }
+            }
+          }
+        });
+      }
+    });
+  };
 
   const getColorFromScale = (value: number, scale: Array<[number, string]>) => {
     for (let i = 0; i < scale.length - 1; i++) {
@@ -1184,7 +1314,7 @@ export default function EN12408Floor(props: Props) {
 
   useEffect(() => {
     const fetchFloorRoomDetail = async () => {
-      if (props.isRoomPage) {
+      if (isRoomPage) {
         if (select?.includes("L")) {
           const formattedSelect = select.replace("-", "");
           const lampData = await getData(`getLampById/${formattedSelect.toUpperCase()}`);
@@ -1207,13 +1337,13 @@ export default function EN12408Floor(props: Props) {
   }, [select]);
 
   const renderModalDetail = (roomCode: string) => {
-    if (select === roomCode && !props.isManage) {
+    if (select === roomCode && !isManage) {
       return (
         <Html distanceFactor={50}>
           <div className="pt-[10px] transform z-0 translate-x-[30%] bg-secondary text-left p-[10px_15px] rounded-md w-[320px] relative before:content-[''] before:absolute before:top-[25px] before:-left-10 before:h-[2px] before:w-[40px] before:bg-secondary">
             <div className="flex justify-between items-center">
               <label className="font-bold text-xl">
-                {`ห้อง ${roomCode.substring(7, 9)} - ${roomCode}`}
+                {`ห้อง ${roomCode.substring(6, 9)} - ${roomCode}`}
               </label>
               <Link href={`/room/${roomCode.toUpperCase()}`} target="_blank">
                 <Button variant={"ghost"} size={"icon"}>
@@ -1280,13 +1410,13 @@ export default function EN12408Floor(props: Props) {
   }
 
   const renderModalRoomDetail = (roomCode: string) => {
-    if (select === roomCode && !props.isManage) {
+    if (select === roomCode && select === roomId?.toUpperCase() && !isManage) {
       return (
-        <Html distanceFactor={20}>
+        <Html distanceFactor={modalDistance || 20}>
           <div className="pt-[10px] transform z-0 translate-x-[30%] bg-secondary text-left p-[10px_15px] rounded-md w-[320px] relative before:content-[''] before:absolute before:top-[25px] before:-left-10 before:h-[2px] before:w-[40px] before:bg-secondary">
             <div className="flex justify-between items-center">
               <label className="font-bold text-xl">
-                {`ห้อง ${roomCode.substring(7, 9)} - ${roomCode}`}
+                {`ห้อง ${roomCode.substring(6, 9)} - ${roomCode}`}
               </label>
             </div>
             <Table className="border rounded-md">
@@ -1306,7 +1436,7 @@ export default function EN12408Floor(props: Props) {
                 <TableRow>
                   <TableCell className="p-2">Room</TableCell>
                   <TableCell className="p-2">
-                    {roomCode.substring(7, 9) || "-"}
+                    {roomCode.substring(6, 9) || "-"}
                   </TableCell>
                 </TableRow>
                 <TableRow>
@@ -1318,8 +1448,10 @@ export default function EN12408Floor(props: Props) {
                 <TableRow>
                   <TableCell className="p-2">Number of Lamps</TableCell>
                   <TableCell className="p-2">
-                    {/* {modalRoomDetail?.lightingStatus?.length as number || "-"} */}
-                    9
+                    {
+                      configs.building[roomId.substring(0, 5).toLowerCase()]?.floor?.[roomId.substring(0, 7).toLowerCase()]?.room?.[roomId.toLowerCase()]
+                      ?.lampCount || "-"
+                    }
                   </TableCell>
                 </TableRow>
                 <TableRow>
@@ -1343,13 +1475,13 @@ export default function EN12408Floor(props: Props) {
                 <TableRow>
                   <TableCell className="p-2">Average Temperature</TableCell>
                   <TableCell className="p-2">
-                    {`${modalRoomDetail?.roomTemp} °C` || "-"}
+                    {modalRoomDetail?.roomTemp ? `${modalRoomDetail?.roomTemp} °C` : "-"}
                   </TableCell>
                 </TableRow>
                 <TableRow>
                   <TableCell className="p-2">Average Humidity</TableCell>
                   <TableCell className="p-2">
-                    {`${modalRoomDetail?.roomHumidity} %` || "-"}
+                    {modalRoomDetail?.roomHumidity ? `${modalRoomDetail?.roomHumidity} %` : "-"}
                   </TableCell>
                 </TableRow>
               </TableBody>
@@ -1361,7 +1493,7 @@ export default function EN12408Floor(props: Props) {
   }
 
   const renderModalLampDetail = (lampId: string) => {
-    if (select === lampId && !props.isManage) {
+    if (select === lampId && !isManage) {
       return (
         <Html distanceFactor={12}>
           <div className="pt-[10px] transform z-0 translate-x-[30%] bg-secondary text-left p-[10px_15px] rounded-md w-[320px] relative before:content-[''] before:absolute before:top-[25px] before:-left-10 before:h-[2px] before:w-[40px] before:bg-secondary">
@@ -1429,13 +1561,13 @@ export default function EN12408Floor(props: Props) {
   }
 
   const renderModalAirDetail = (airId: string) => {
-    if (select === airId && !props.isManage) {
+    if (select === airId && !isManage) {
       return (
         <Html distanceFactor={12}>
           <div className="pt-[10px] transform z-0 translate-x-[30%] bg-secondary text-left p-[10px_15px] rounded-md w-[320px] relative before:content-[''] before:absolute before:top-[25px] before:-left-10 before:h-[2px] before:w-[40px] before:bg-secondary">
             <div className="flex justify-between items-center">
               <label className="font-bold text-xl">
-                {`หลอดไฟ ${airId.slice(-2)}`}
+                {`แอร์ ${airId.slice(-2)}`}
               </label>
             </div>
             <Table className="border rounded-md">
@@ -1443,11 +1575,11 @@ export default function EN12408Floor(props: Props) {
                 <TableRow>
                   <TableCell className="p-2">Air ID</TableCell>
                   <TableCell className="p-2 text-nowrap">
-                    {modalAirDetail?.a_id || "-"}
+                    {modalAirDetail?.a_id || airId}
                   </TableCell>
                 </TableRow>
                 <TableRow>
-                  <TableCell className="p-2">Lamp Code</TableCell>
+                  <TableCell className="p-2">Air Code</TableCell>
                   <TableCell className="p-2">
                     {modalAirDetail?.a_code || "-"}
                   </TableCell>
@@ -1467,13 +1599,13 @@ export default function EN12408Floor(props: Props) {
                 <TableRow>
                   <TableCell className="p-2">Order Date</TableCell>
                   <TableCell className="p-2">
-                    {formatDate(modalAirDetail?.order_date) || "-"}
+                    {modalAirDetail?.order_date ? formatDate(modalAirDetail?.order_date) : "-"}
                   </TableCell>
                 </TableRow>
                 <TableRow>
                   <TableCell className="p-2">Warranty Period</TableCell>
                   <TableCell className="p-2">
-                    {formatDate(modalAirDetail?.warranty_period) || "-"}
+                    {modalAirDetail?.warranty_period ? formatDate(modalAirDetail?.warranty_period) : "-"}
                   </TableCell>
                 </TableRow>
                 <TableRow>
@@ -1485,7 +1617,7 @@ export default function EN12408Floor(props: Props) {
                 <TableRow>
                   <TableCell className="p-2">Install Date</TableCell>
                   <TableCell className="p-2">
-                    {formatDate(modalAirDetail?.a_install_date) || "-"}
+                    {modalAirDetail?.a_install_date ? formatDate(modalAirDetail?.a_install_date) : "-"}
                   </TableCell>
                 </TableRow>
               </TableBody>
@@ -1497,53 +1629,74 @@ export default function EN12408Floor(props: Props) {
   }
 
   const createAirMaterial =  (materialName: keyof typeof materials, room: string, airNumber: number) => {
-    const material = materials[materialName].clone();
+    if (!activeAirId && !activeLampId) {
+      if (!isManage) {
+      const material = materials[materialName].clone();
 
-    const airStatus = props.roomData?.[room.toUpperCase() as any]?.Airconditioner[`AIR0${airNumber.toString()}`]?.Status
+      const airStatus = roomData?.[room.toUpperCase() as any]?.Airconditioner[`AIR0${airNumber.toString()}`]?.Status
 
-    if (airStatus == "On") {
-      material.color.set(THREE.Color.NAMES.blue);
-    } else if (airStatus == "Off") {
-      material.color.set(THREE.Color.NAMES.gray);
+      if (airStatus == "On") {
+        material.color.set(THREE.Color.NAMES.blue);
+      } else if (airStatus == "Off") {
+        material.color.set(THREE.Color.NAMES.gray);
+      }
+      
+      return material;
+      } else {
+        const material = materials[materialName].clone();
+        return material
+      }
+    } else {
+      activeAirLampColor();
     }
-    
-    return material;
   };
 
   const createLightMaterial =  (materialName: keyof typeof materials, room: string, lightNumber: number) => {
-    const material = materials[materialName].clone();
+    if (!activeAirId && !activeLampId) {
+      if (!isManage) {
+        const material = materials[materialName].clone();
 
-    if (room.toUpperCase() == "EN1240818") {
-      const switchStatus1 = props.roomData?.[room.toUpperCase() as any]?.Lighting_Switch.LSW01.Status
-      const switchStatus2 = props.roomData?.[room.toUpperCase() as any]?.Lighting_Switch.LSW02.Status
-  
-      if (lightNumber <= 3) {
-        if (switchStatus1 == "Open") {
-          material.color.set(THREE.Color.NAMES.yellow);
-        } else if (switchStatus1 == "Close") {
-          material.color.set(THREE.Color.NAMES.gray);
+        if (room.toUpperCase() == "EN1240818") {
+          const switchStatus1 = roomData?.[room.toUpperCase() as any]?.Lighting_Switch.LSW01.Status
+          const switchStatus2 = roomData?.[room.toUpperCase() as any]?.Lighting_Switch.LSW02.Status
+      
+          if (lightNumber <= 3) {
+            if (switchStatus1 == "Open") {
+              material.color.set(THREE.Color.NAMES.yellow);
+            } else if (switchStatus1 == "Close") {
+              material.color.set(THREE.Color.NAMES.gray);
+            }
+          } else {
+            if (switchStatus2 == "Open") {
+              material.color.set(THREE.Color.NAMES.yellow);
+            } else if (switchStatus2 == "Close") {
+              material.color.set(THREE.Color.NAMES.gray);
+            }
+          }
         }
+        
+        return material;
       } else {
-        if (switchStatus2 == "Open") {
-          material.color.set(THREE.Color.NAMES.yellow);
-        } else if (switchStatus2 == "Close") {
-          material.color.set(THREE.Color.NAMES.gray);
-        }
+        const material = materials[materialName].clone();
+        return material
       }
+    } else {
+      activeAirLampColor();
     }
-    
-    return material;
   };
 
   return (
     <group 
-      onPointerOver={(e) => 
-        handleObjectHover(e.object.parent?.name)
-      } 
-      onPointerOut={(e) => 
+      onPointerOver={(e) => {
+        e.stopPropagation();
+        handleObjectHover(e.object.parent?.name);
+      }} 
+      onPointerOut={(e) => {
+        e.stopPropagation();
         handleObjectHover(null)
-      }
+      }}
       onClick={(e) => {
+        e.stopPropagation();
         handleObjectSelect(e.object.parent?.name, e.object.parent as THREE.Group)
       }}
       ref={groupRef} 
@@ -1557,8 +1710,8 @@ export default function EN12408Floor(props: Props) {
         rotation={[-Math.PI / 2, 0, 0]} 
         scale={0.305}
       >
-        {!props.isManage && !props.isRoomPage && renderModalDetail("EN1240801")}
-        {!props.isManage && props.isRoomPage && renderModalRoomDetail("EN1240801")}
+        {!isManage && !isRoomPage && renderModalDetail("EN1240801")}
+        {!isManage && isRoomPage && renderModalRoomDetail("EN1240801")}
         <mesh name="SW5" geometry={nodes.SW5.geometry} material={materials['กระจกใสหนา 1 1/2 หุน']} />
         <mesh name="SW5_1" geometry={nodes.SW5_1.geometry} material={materials['กรอบประตูหน้าต่าง ตาม']} />
         <mesh name="SW5_2" geometry={nodes.SW5_2.geometry} material={materials.ผนังทดลอง} />
@@ -1571,9 +1724,9 @@ export default function EN12408Floor(props: Props) {
         <mesh name="SW5_9" geometry={nodes.SW5_9.geometry} material={materials['ไม้อัดยาง ทาสี']} />
         <mesh name="SW5_10" geometry={nodes.SW5_10.geometry} material={materials['ไม้เนื้อแข็ง 2"x4" ทาสี']} />
       </Select>
-      <group name="EN1240802" position={[-6.739, 1.281, -20.349]} rotation={[-Math.PI / 2, 0, 0]} scale={0.305}>
-        {!props.isManage && !props.isRoomPage && renderModalDetail("EN1240802")}
-        {!props.isManage && props.isRoomPage && renderModalRoomDetail("EN1240802")}
+      <Select name="EN1240802" enabled={hover === "EN1240802" || select === "EN1240802"} position={[-6.739, 1.281, -20.349]} rotation={[-Math.PI / 2, 0, 0]} scale={0.305}>
+        {!isManage && !isRoomPage && renderModalDetail("EN1240802")}
+        {!isManage && isRoomPage && renderModalRoomDetail("EN1240802")}
         <mesh name="SW4" geometry={nodes.SW4.geometry} material={materials['กระจกใสหนา 1 1/2 หุน.001']} />
         <mesh name="SW4_1" geometry={nodes.SW4_1.geometry} material={materials['กรอบประตูหน้าต่าง ตา']} />
         <mesh name="SW4_2" geometry={nodes.SW4_2.geometry} material={materials['ผนังทดลอง.001']} />
@@ -1582,10 +1735,10 @@ export default function EN12408Floor(props: Props) {
         <mesh name="SW4_5" geometry={nodes.SW4_5.geometry} material={materials['Aluminum.001']} />
         <mesh name="SW4_6" geometry={nodes.SW4_6.geometry} material={materials['ไม้อัดยางทาสี.001']} />
         <mesh name="SW4_7" geometry={nodes.SW4_7.geometry} material={materials['ไม้เนื้อแข็ง 2" x 4" ทาสี.001']} />
-      </group>
-      <group name="EN1240803" position={[-2.757, 1.169, -19.992]} rotation={[-Math.PI / 2, 0, 0]} scale={0.305}>
-        {!props.isManage && !props.isRoomPage && renderModalDetail("EN1240803")}
-        {!props.isManage && props.isRoomPage && renderModalRoomDetail("EN1240803")}
+      </Select>
+      <Select name="EN1240803" enabled={hover === "EN1240803" || select === "EN1240803"} position={[-2.757, 1.169, -19.992]} rotation={[-Math.PI / 2, 0, 0]} scale={0.305}>
+        {!isManage && !isRoomPage && renderModalDetail("EN1240803")}
+        {!isManage && isRoomPage && renderModalRoomDetail("EN1240803")}
         <mesh name="SW4001" geometry={nodes.SW4001.geometry} material={materials['กระจกใสหนา 1 1/2 หุน.002']} />
         <mesh name="SW4001_1" geometry={nodes.SW4001_1.geometry} material={materials['กรอบประตูหน้าต่าง ตา.001']} />
         <mesh name="SW4001_2" geometry={nodes.SW4001_2.geometry} material={materials['ผนังทดลอง.002']} />
@@ -1597,10 +1750,10 @@ export default function EN12408Floor(props: Props) {
         <mesh name="SW4001_8" geometry={nodes.SW4001_8.geometry} material={materials['ไม้เนื้อแข็ง 2" x 4" ทาสี.002']} />
         <mesh name="SW4001_9" geometry={nodes.SW4001_9.geometry} material={materials['ไม้อัดยาง ทาสี.001']} />
         <mesh name="SW4001_10" geometry={nodes.SW4001_10.geometry} material={materials['ไม้เนื้อแข็ง 2"x4" ทาสี.001']} />
-      </group>
-      <group name="EN1240804" position={[4.924, 1.474, -17.092]} rotation={[-Math.PI / 2, 0, 0]} scale={0.305}>
-        {!props.isManage && !props.isRoomPage && renderModalDetail("EN1240804")}
-        {!props.isManage && props.isRoomPage && renderModalRoomDetail("EN1240804")}
+      </Select>
+      <Select name="EN1240804" enabled={hover === "EN1240804" || select === "EN1240804"} position={[4.924, 1.474, -17.092]} rotation={[-Math.PI / 2, 0, 0]} scale={0.305}>
+        {!isManage && !isRoomPage && renderModalDetail("EN1240804")}
+        {!isManage && isRoomPage && renderModalRoomDetail("EN1240804")}
         <mesh name="SW8" geometry={nodes.SW8.geometry} material={materials['กรอบประตูหน้าต่าง ตา.002']} />
         <mesh name="SW8_1" geometry={nodes.SW8_1.geometry} material={materials['กระจกใสหนา 1 1/2 หุน.003']} />
         <mesh name="SW8_2" geometry={nodes.SW8_2.geometry} material={materials['ผนังทดลอง.003']} />
@@ -1611,10 +1764,10 @@ export default function EN12408Floor(props: Props) {
         <mesh name="SW8_7" geometry={nodes.SW8_7.geometry} material={materials['Aluminum.003']} />
         <mesh name="SW8_8" geometry={nodes.SW8_8.geometry} material={materials['ไม้อัดยางทาสี.003']} />
         <mesh name="SW8_9" geometry={nodes.SW8_9.geometry} material={materials['ไม้เนื้อแข็ง 2" x 4" ทาสี.003']} />
-      </group>
-      <group name="EN1240805" position={[12.042, 1.548, -14.494]} rotation={[-Math.PI / 2, 0, 0]} scale={0.305}>
-        {!props.isManage && !props.isRoomPage && renderModalDetail("EN1240805")}
-        {!props.isManage && props.isRoomPage && renderModalRoomDetail("EN1240805")}
+      </Select>
+      <Select name="EN1240805" enabled={hover === "EN1240805" || select === "EN1240805"} position={[12.042, 1.548, -14.494]} rotation={[-Math.PI / 2, 0, 0]} scale={0.305}>
+        {!isManage && !isRoomPage && renderModalDetail("EN1240805")}
+        {!isManage && isRoomPage && renderModalRoomDetail("EN1240805")}
         <mesh name="SD2" geometry={nodes.SD2.geometry} material={materials['Aluminum.004']} />
         <mesh name="SD2_1" geometry={nodes.SD2_1.geometry} material={materials['กระจกใสหนา 2 หุน']} />
         <mesh name="SD2_2" geometry={nodes.SD2_2.geometry} material={materials['เหล็ก ตามมาตราฐาน Decoradoor S-']} />
@@ -1626,10 +1779,10 @@ export default function EN12408Floor(props: Props) {
         <mesh name="SD2_8" geometry={nodes.SD2_8.geometry} material={materials['Glass.001']} />
         <mesh name="SD2_9" geometry={nodes.SD2_9.geometry} material={materials['กรอบประตูหน้าต่าง ตา.003']} />
         <mesh name="SD2_10" geometry={nodes.SD2_10.geometry} material={materials['กระจกใสหนา 1 1/2 หุน.004']} />
-      </group>
-      <group name="EN1240806" position={[20.573, 1.604, -14.562]} rotation={[-Math.PI / 2, 0, 0]} scale={0.305}>
-        {!props.isManage && !props.isRoomPage && renderModalDetail("EN1240806")}
-        {!props.isManage && props.isRoomPage && renderModalRoomDetail("EN1240806")}
+      </Select>
+      <Select name="EN1240806" enabled={hover === "EN1240806" || select === "EN1240806"} position={[20.573, 1.604, -14.562]} rotation={[-Math.PI / 2, 0, 0]} scale={0.305}>
+        {!isManage && !isRoomPage && renderModalDetail("EN1240806")}
+        {!isManage && isRoomPage && renderModalRoomDetail("EN1240806")}
         <mesh name="SD2001" geometry={nodes.SD2001.geometry} material={materials['Aluminum.005']} />
         <mesh name="SD2001_1" geometry={nodes.SD2001_1.geometry} material={materials['กระจกใสหนา 2 หุน.001']} />
         <mesh name="SD2001_2" geometry={nodes.SD2001_2.geometry} material={materials['เหล็ก ตามมาตราฐาน Decoradoo.001']} />
@@ -1639,20 +1792,20 @@ export default function EN12408Floor(props: Props) {
         <mesh name="SD2001_6" geometry={nodes.SD2001_6.geometry} material={materials['Default Wall.005']} />
         <mesh name="SD2001_7" geometry={nodes.SD2001_7.geometry} material={materials['ผิวคอนกรีต ขัดมัน.002']} />
         <mesh name="SD2001_8" geometry={nodes.SD2001_8.geometry} material={materials['Glass.002']} />
-      </group>
-      <group name="EN1240807" position={[-10.961, 1.206, -17.663]} rotation={[-Math.PI / 2, 0, 0]} scale={0.305}>
-        {!props.isManage && !props.isRoomPage && renderModalDetail("EN1240807")}
-        {!props.isManage && props.isRoomPage && renderModalRoomDetail("EN1240807")}
+      </Select>
+      <Select name="EN1240807" enabled={hover === "EN1240807" || select === "EN1240807"} position={[-10.961, 1.206, -17.663]} rotation={[-Math.PI / 2, 0, 0]} scale={0.305}>
+        {!isManage && !isRoomPage && renderModalDetail("EN1240807")}
+        {!isManage && isRoomPage && renderModalRoomDetail("EN1240807")}
         <mesh name="WD1001" geometry={nodes.WD1001.geometry} material={materials['Aluminum.006']} />
         <mesh name="WD1001_1" geometry={nodes.WD1001_1.geometry} material={materials['ไม้อัดยางทาสี.004']} />
         <mesh name="WD1001_2" geometry={nodes.WD1001_2.geometry} material={materials['ไม้เนื้อแข็ง 2" x 4" ทาสี.004']} />
         <mesh name="WD1001_3" geometry={nodes.WD1001_3.geometry} material={materials['ผนังทดลอง.006']} />
         <mesh name="WD1001_4" geometry={nodes.WD1001_4.geometry} material={materials['Default Wall.006']} />
         <mesh name="WD1001_5" geometry={nodes.WD1001_5.geometry} material={materials['ผนังก่ออิฐ ทาสี.005']} />
-      </group>
-      <group name="EN1240808" position={[-3.782, 1.112, -16.455]} rotation={[-Math.PI / 2, 0, 0]} scale={0.305}>
-        {!props.isManage && !props.isRoomPage && renderModalDetail("EN1240808")}
-        {!props.isManage && props.isRoomPage && renderModalRoomDetail("EN1240808")}
+      </Select>
+      <Select name="EN1240808" enabled={hover === "EN1240808" || select === "EN1240808"} position={[-3.782, 1.112, -16.455]} rotation={[-Math.PI / 2, 0, 0]} scale={0.305}>
+        {!isManage && !isRoomPage && renderModalDetail("EN1240808")}
+        {!isManage && isRoomPage && renderModalRoomDetail("EN1240808")}
         <mesh name="SD7" geometry={nodes.SD7.geometry} material={materials['Aluminum.007']} />
         <mesh name="SD7_1" geometry={nodes.SD7_1.geometry} material={materials['เหล็ก ตามมาตราฐาน Decoradoo.003']} />
         <mesh name="SD7_2" geometry={nodes.SD7_2.geometry} material={materials['เหล็ก ตามมาตราฐาน Decoradoo.004']} />
@@ -1660,10 +1813,10 @@ export default function EN12408Floor(props: Props) {
         <mesh name="SD7_4" geometry={nodes.SD7_4.geometry} material={materials['Default Wall.007']} />
         <mesh name="SD7_5" geometry={nodes.SD7_5.geometry} material={materials['ผิวคอนกรีต ขัดมัน.003']} />
         <mesh name="SD7_6" geometry={nodes.SD7_6.geometry} material={materials['ผนังก่ออิฐ ทาสี.006']} />
-      </group>
-      <group name="EN1240809" position={[-3.808, 1.103, -14.624]} rotation={[-Math.PI / 2, 0, 0]} scale={0.305}>
-        {!props.isManage && !props.isRoomPage && renderModalDetail("EN1240809")}
-        {!props.isManage && props.isRoomPage && renderModalRoomDetail("EN1240809")}
+      </Select>
+      <Select name="EN1240809" enabled={hover === "EN1240809" || select === "EN1240809"} position={[-3.808, 1.103, -14.624]} rotation={[-Math.PI / 2, 0, 0]} scale={0.305}>
+        {!isManage && !isRoomPage && renderModalDetail("EN1240809")}
+        {!isManage && isRoomPage && renderModalRoomDetail("EN1240809")}
         <mesh name="SD7001" geometry={nodes.SD7001.geometry} material={materials['Aluminum.008']} />
         <mesh name="SD7001_1" geometry={nodes.SD7001_1.geometry} material={materials['เหล็ก ตามมาตราฐาน Decoradoo.005']} />
         <mesh name="SD7001_2" geometry={nodes.SD7001_2.geometry} material={materials['เหล็ก ตามมาตราฐาน Decoradoo.006']} />
@@ -1671,10 +1824,10 @@ export default function EN12408Floor(props: Props) {
         <mesh name="SD7001_4" geometry={nodes.SD7001_4.geometry} material={materials['Default Wall.008']} />
         <mesh name="SD7001_5" geometry={nodes.SD7001_5.geometry} material={materials['ผิวคอนกรีต ขัดมัน.004']} />
         <mesh name="SD7001_6" geometry={nodes.SD7001_6.geometry} material={materials['ผนังก่ออิฐ ทาสี.007']} />
-      </group>
-      <group name="EN1240810" position={[5.603, 1.189, -12.167]} rotation={[-Math.PI / 2, 0, 0]} scale={0.305}>
-        {!props.isManage && !props.isRoomPage && renderModalDetail("EN1240810")}
-        {!props.isManage && props.isRoomPage && renderModalRoomDetail("EN1240810")}
+      </Select>
+      <Select name="EN1240810" enabled={hover === "EN1240810" || select === "EN1240810"} position={[5.603, 1.189, -12.167]} rotation={[-Math.PI / 2, 0, 0]} scale={0.305}>
+        {!isManage && !isRoomPage && renderModalDetail("EN1240810")}
+        {!isManage && isRoomPage && renderModalRoomDetail("EN1240810")}
         <mesh name="SD4" geometry={nodes.SD4.geometry} material={materials['Aluminum.009']} />
         <mesh name="SD4_1" geometry={nodes.SD4_1.geometry} material={materials['เหล็ก ตามมาตราฐาน Decoradoo.007']} />
         <mesh name="SD4_2" geometry={nodes.SD4_2.geometry} material={materials['เหล็ก ตามมาตราฐาน Decoradoo.008']} />
@@ -1684,10 +1837,10 @@ export default function EN12408Floor(props: Props) {
         <mesh name="SD4_6" geometry={nodes.SD4_6.geometry} material={materials['ผิวคอนกรีต ขัดมัน.005']} />
         <mesh name="SD4_7" geometry={nodes.SD4_7.geometry} material={materials['ไม้อัดยางทาสี.005']} />
         <mesh name="SD4_8" geometry={nodes.SD4_8.geometry} material={materials['ไม้เนื้อแข็ง 2" x 4" ทาสี.005']} />
-      </group>
-      <group name="EN1240811" position={[19.2, 1.445, -8.323]} rotation={[-Math.PI / 2, 0, 0]} scale={0.305}>
-        {!props.isManage && !props.isRoomPage && renderModalDetail("EN1240811")}
-        {!props.isManage && props.isRoomPage && renderModalRoomDetail("EN1240811")}
+      </Select>
+      <Select name="EN1240811" enabled={hover === "EN1240811" || select === "EN1240811"} position={[19.2, 1.445, -8.323]} rotation={[-Math.PI / 2, 0, 0]} scale={0.305}>
+        {!isManage && !isRoomPage && renderModalDetail("EN1240811")}
+        {!isManage && isRoomPage && renderModalRoomDetail("EN1240811")}
         <mesh name="SD2002" geometry={nodes.SD2002.geometry} material={materials['Aluminum.010']} />
         <mesh name="SD2002_1" geometry={nodes.SD2002_1.geometry} material={materials['กระจกใสหนา 2 หุน.002']} />
         <mesh name="SD2002_2" geometry={nodes.SD2002_2.geometry} material={materials['เหล็ก ตามมาตราฐาน Decoradoo.009']} />
@@ -1700,10 +1853,10 @@ export default function EN12408Floor(props: Props) {
         <mesh name="SD2002_9" geometry={nodes.SD2002_9.geometry} material={materials['กระจกใสหนา 1 1/2 หุน.005']} />
         <mesh name="SD2002_10" geometry={nodes.SD2002_10.geometry} material={materials['ไม้อัดยางทาสี.006']} />
         <mesh name="SD2002_11" geometry={nodes.SD2002_11.geometry} material={materials['ไม้เนื้อแข็ง 2" x 4" ทาสี.006']} />
-      </group>
-      <group name="EN1240812" position={[-9.388, 1.308, 0.863]} rotation={[-Math.PI / 2, 0, 0]} scale={0.305}>
-      {!props.isManage && !props.isRoomPage && renderModalDetail("EN1240812")}
-      {!props.isManage && props.isRoomPage && renderModalRoomDetail("EN1240812")}
+      </Select>
+      <Select name="EN1240812" enabled={hover === "EN1240812" || select === "EN1240812"} position={[-9.388, 1.308, 0.863]} rotation={[-Math.PI / 2, 0, 0]} scale={0.305}>
+      {!isManage && !isRoomPage && renderModalDetail("EN1240812")}
+      {!isManage && isRoomPage && renderModalRoomDetail("EN1240812")}
         <mesh name="SD2003" geometry={nodes.SD2003.geometry} material={materials['Aluminum.011']} />
         <mesh name="SD2003_1" geometry={nodes.SD2003_1.geometry} material={materials['กระจกใสหนา 2 หุน.003']} />
         <mesh name="SD2003_2" geometry={nodes.SD2003_2.geometry} material={materials['เหล็ก ตามมาตราฐาน Decoradoo.011']} />
@@ -1713,10 +1866,10 @@ export default function EN12408Floor(props: Props) {
         <mesh name="SD2003_6" geometry={nodes.SD2003_6.geometry} material={materials['ผนังก่ออิฐ ทาสี.010']} />
         <mesh name="SD2003_7" geometry={nodes.SD2003_7.geometry} material={materials['ผิวคอนกรีต ขัดมัน.007']} />
         <mesh name="SD2003_8" geometry={nodes.SD2003_8.geometry} material={materials['Glass.004']} />
-      </group>
-      <group name="EN1240813" position={[11.159, 1.141, 0.917]} rotation={[-Math.PI / 2, 0, 0]} scale={0.305}>
-      {!props.isManage && !props.isRoomPage && renderModalDetail("EN1240813")}
-      {!props.isManage && props.isRoomPage && renderModalRoomDetail("EN1240813")}
+      </Select>
+      <Select name="EN1240813" enabled={hover === "EN1240813" || select === "EN1240813"} position={[11.159, 1.141, 0.917]} rotation={[-Math.PI / 2, 0, 0]} scale={0.305}>
+      {!isManage && !isRoomPage && renderModalDetail("EN1240813")}
+      {!isManage && isRoomPage && renderModalRoomDetail("EN1240813")}
         <mesh name="AD1" geometry={nodes.AD1.geometry} material={materials['กระจกใสหนา 2 หุน.004']} />
         <mesh name="AD1_1" geometry={nodes.AD1_1.geometry} material={materials.อลูมิเนียมสีเงินขนาดม} />
         <mesh name="AD1_2" geometry={nodes.AD1_2.geometry} material={materials['ผนังก่ออิฐ ทาสี.011']} />
@@ -1729,10 +1882,10 @@ export default function EN12408Floor(props: Props) {
         <mesh name="AD1_9" geometry={nodes.AD1_9.geometry} material={materials['ไม้เนื้อแข็ง 2" x 4" ทาสี.007']} />
         <mesh name="AD1_10" geometry={nodes.AD1_10.geometry} material={materials['Glass.005']} />
         <mesh name="AD1_11" geometry={nodes.AD1_11.geometry} material={materials.Default} />
-      </group>
-      <group name="EN1240814" position={[20.75, 1.501, -4.022]} rotation={[-Math.PI / 2, 0, 0]} scale={0.305}>
-      {!props.isManage && !props.isRoomPage && renderModalDetail("EN1240814")}
-      {!props.isManage && props.isRoomPage && renderModalRoomDetail("EN1240814")}
+      </Select>
+      <Select name="EN1240814" enabled={hover === "EN1240814" || select === "EN1240814"} position={[20.75, 1.501, -4.022]} rotation={[-Math.PI / 2, 0, 0]} scale={0.305}>
+      {!isManage && !isRoomPage && renderModalDetail("EN1240814")}
+      {!isManage && isRoomPage && renderModalRoomDetail("EN1240814")}
         <mesh name="SW12010" geometry={nodes.SW12010.geometry} material={materials['ผิวคอนกรีต ขัดมัน.009']} />
         <mesh name="SW12010_1" geometry={nodes.SW12010_1.geometry} material={materials['Glass.006']} />
         <mesh name="SW12010_2" geometry={nodes.SW12010_2.geometry} material={materials['ผนังทดลอง.013']} />
@@ -1742,10 +1895,10 @@ export default function EN12408Floor(props: Props) {
         <mesh name="SW12010_6" geometry={nodes.SW12010_6.geometry} material={materials['กระจกใสหนา 1 1/2 หุน.007']} />
         <mesh name="SW12010_7" geometry={nodes.SW12010_7.geometry} material={materials['ไม้อัดยางทาสี.008']} />
         <mesh name="SW12010_8" geometry={nodes.SW12010_8.geometry} material={materials['ไม้เนื้อแข็ง 2" x 4" ทาสี.008']} />
-      </group>
-      <group name="EN1240815" position={[12.474, 1.189, -0.578]} rotation={[-Math.PI / 2, 0, 0]} scale={0.305}>
-      {!props.isManage && !props.isRoomPage && renderModalDetail("EN1240815")}
-      {!props.isManage && props.isRoomPage && renderModalRoomDetail("EN1240815")}
+      </Select>
+      <Select name="EN1240815" enabled={hover === "EN1240815" || select === "EN1240815"} position={[12.474, 1.189, -0.578]} rotation={[-Math.PI / 2, 0, 0]} scale={0.305}>
+      {!isManage && !isRoomPage && renderModalDetail("EN1240815")}
+      {!isManage && isRoomPage && renderModalRoomDetail("EN1240815")}
         <mesh name="WD1003" geometry={nodes.WD1003.geometry} material={materials['Aluminum.014']} />
         <mesh name="WD1003_1" geometry={nodes.WD1003_1.geometry} material={materials['ไม้อัดยางทาสี.009']} />
         <mesh name="WD1003_2" geometry={nodes.WD1003_2.geometry} material={materials['ไม้เนื้อแข็ง 2" x 4" ทาสี.009']} />
@@ -1753,10 +1906,10 @@ export default function EN12408Floor(props: Props) {
         <mesh name="WD1003_4" geometry={nodes.WD1003_4.geometry} material={materials['ผนังทดลอง.014']} />
         <mesh name="WD1003_5" geometry={nodes.WD1003_5.geometry} material={materials['Default Wall.014']} />
         <mesh name="WD1003_6" geometry={nodes.WD1003_6.geometry} material={materials['ผิวคอนกรีต ขัดมัน.010']} />
-      </group>
-      <group name="EN1240816" position={[19.789, 1.592, 0.364]} rotation={[-Math.PI / 2, 0, 0]} scale={0.305}>
-      {!props.isManage && !props.isRoomPage && renderModalDetail("EN1240816")}
-      {!props.isManage && props.isRoomPage && renderModalRoomDetail("EN1240816")}
+      </Select>
+      <Select name="EN1240816" enabled={hover === "EN1240816" || select === "EN1240816"} position={[19.789, 1.592, 0.364]} rotation={[-Math.PI / 2, 0, 0]} scale={0.305}>
+      {!isManage && !isRoomPage && renderModalDetail("EN1240816")}
+      {!isManage && isRoomPage && renderModalRoomDetail("EN1240816")}
         <mesh name="SW12011" geometry={nodes.SW12011.geometry} material={materials['ผิวคอนกรีต ขัดมัน.011']} />
         <mesh name="SW12011_1" geometry={nodes.SW12011_1.geometry} material={materials['Glass.007']} />
         <mesh name="SW12011_2" geometry={nodes.SW12011_2.geometry} material={materials['ผนังทดลอง.015']} />
@@ -1766,10 +1919,10 @@ export default function EN12408Floor(props: Props) {
         <mesh name="SW12011_6" geometry={nodes.SW12011_6.geometry} material={materials['กระจกใสหนา 1 1/2 หุน.008']} />
         <mesh name="SW12011_7" geometry={nodes.SW12011_7.geometry} material={materials['ไม้อัดยางทาสี.010']} />
         <mesh name="SW12011_8" geometry={nodes.SW12011_8.geometry} material={materials['ไม้เนื้อแข็ง 2" x 4" ทาสี.010']} />
-      </group>
-      <group name="EN1240817" position={[13.326, 1.343, 2.978]} rotation={[-Math.PI / 2, 0, 0]} scale={0.305}>
-      {!props.isManage && !props.isRoomPage && renderModalDetail("EN1240817")}
-      {!props.isManage && props.isRoomPage && renderModalRoomDetail("EN1240817")}
+      </Select>
+      <Select name="EN1240817" enabled={hover === "EN1240817" || select === "EN1240817"} position={[13.326, 1.343, 2.978]} rotation={[-Math.PI / 2, 0, 0]} scale={0.305}>
+      {!isManage && !isRoomPage && renderModalDetail("EN1240817")}
+      {!isManage && isRoomPage && renderModalRoomDetail("EN1240817")}
         <mesh name="SW11" geometry={nodes.SW11.geometry} material={materials['ผิวคอนกรีต ขัดมัน.012']} />
         <mesh name="SW11_1" geometry={nodes.SW11_1.geometry} material={materials['Glass.008']} />
         <mesh name="SW11_2" geometry={nodes.SW11_2.geometry} material={materials['ผนังก่ออิฐ ทาสี.015']} />
@@ -1779,7 +1932,7 @@ export default function EN12408Floor(props: Props) {
         <mesh name="SW11_6" geometry={nodes.SW11_6.geometry} material={materials['กระจกใสหนา 1 1/2 หุน.009']} />
         <mesh name="SW11_7" geometry={nodes.SW11_7.geometry} material={materials['ไม้อัดยางทาสี.011']} />
         <mesh name="SW11_8" geometry={nodes.SW11_8.geometry} material={materials['ไม้เนื้อแข็ง 2" x 4" ทาสี.011']} />
-      </group>
+      </Select>
       <Select 
         name="EN1240818" 
         enabled={hover === "EN1240818" || select === "EN1240818"}
@@ -1787,8 +1940,8 @@ export default function EN12408Floor(props: Props) {
         rotation={[-Math.PI / 2, 0, 0]} 
         scale={0.305}
       >
-        {!props.isManage && !props.isRoomPage && renderModalDetail("EN1240818")}
-        {!props.isManage && props.isRoomPage && renderModalRoomDetail("EN1240818")}
+        {!isManage && !isRoomPage && renderModalDetail("EN1240818")}
+        {!isManage && isRoomPage && renderModalRoomDetail("EN1240818")}
         <mesh name="SD2005" geometry={nodes.SD2005.geometry} material={materials['Aluminum.017']} />
         <mesh name="SD2005_1" geometry={nodes.SD2005_1.geometry} material={materials['กระจกใสหนา 2 หุน.005']} />
         <mesh name="SD2005_2" geometry={nodes.SD2005_2.geometry} material={materials['เหล็ก ตามมาตราฐาน Decoradoo.013']} />
@@ -1799,9 +1952,9 @@ export default function EN12408Floor(props: Props) {
         <mesh name="SD2005_7" geometry={nodes.SD2005_7.geometry} material={materials['ผิวคอนกรีต ขัดมัน.013']}/>
         <mesh name="SD2005_8" geometry={nodes.SD2005_8.geometry} material={materials['Glass.009']} />
       </Select>
-      <group name="EN1240819" position={[-10.836, 1.23, 7.408]} rotation={[-Math.PI / 2, 0, 0]} scale={0.305}>
-        {!props.isManage && !props.isRoomPage && renderModalDetail("EN1240819")}
-        {!props.isManage && props.isRoomPage && renderModalRoomDetail("EN1240819")}
+      <Select name="EN1240819" enabled={hover === "EN1240819" || select === "EN1240819"} position={[-10.836, 1.23, 7.408]} rotation={[-Math.PI / 2, 0, 0]} scale={0.305}>
+        {!isManage && !isRoomPage && renderModalDetail("EN1240819")}
+        {!isManage && isRoomPage && renderModalRoomDetail("EN1240819")}
         <mesh name="AW1001" geometry={nodes.AW1001.geometry} material={materials['Glass.010']} />
         <mesh name="AW1001_1" geometry={nodes.AW1001_1.geometry} material={materials['Default.001']} />
         <mesh name="AW1001_2" geometry={nodes.AW1001_2.geometry} material={materials['ผนังก่ออิฐ ทาสี.017']} />
@@ -1812,10 +1965,10 @@ export default function EN12408Floor(props: Props) {
         <mesh name="AW1001_7" geometry={nodes.AW1001_7.geometry} material={materials['กระจกใสหนา 1 1/2 หุน.010']} />
         <mesh name="AW1001_8" geometry={nodes.AW1001_8.geometry} material={materials['ไม้อัดยางทาสี.012']} />
         <mesh name="AW1001_9" geometry={nodes.AW1001_9.geometry} material={materials['ไม้เนื้อแข็ง 2" x 4" ทาสี.012']} />
-      </group>
-      <group name="EN1240820" position={[8.504, 1.03, 7.918]} rotation={[-Math.PI / 2, 0, 0]} scale={0.305}>
-        {!props.isManage && !props.isRoomPage && renderModalDetail("EN1240820")}
-        {!props.isManage && props.isRoomPage && renderModalRoomDetail("EN1240820")}
+      </Select>
+      <Select name="EN1240820" enabled={hover === "EN1240820" || select === "EN1240820"} position={[8.504, 1.03, 7.918]} rotation={[-Math.PI / 2, 0, 0]} scale={0.305}>
+        {!isManage && !isRoomPage && renderModalDetail("EN1240820")}
+        {!isManage && isRoomPage && renderModalRoomDetail("EN1240820")}
         <mesh name="WD3004" geometry={nodes.WD3004.geometry} material={materials['Aluminum.019']} />
         <mesh name="WD3004_1" geometry={nodes.WD3004_1.geometry} material={materials['ไม้อัดยางทาสี.013']} />
         <mesh name="WD3004_2" geometry={nodes.WD3004_2.geometry} material={materials['ไม้เนื้อแข็ง 2" x 4" ทาสี.013']} />
@@ -1823,10 +1976,10 @@ export default function EN12408Floor(props: Props) {
         <mesh name="WD3004_4" geometry={nodes.WD3004_4.geometry} material={materials['Default Wall.019']} />
         <mesh name="WD3004_5" geometry={nodes.WD3004_5.geometry} material={materials['ผนังก่ออิฐ ทาสี.018']} />
         <mesh name="WD3004_6" geometry={nodes.WD3004_6.geometry} material={materials['ผิวคอนกรีต ขัดมัน.015']} />
-      </group>
-      <group name="EN1240821" position={[11.318, 1.192, 6.492]} rotation={[-Math.PI / 2, 0, 0]} scale={0.305}>
-        {!props.isManage && !props.isRoomPage && renderModalDetail("EN1240821")}
-        {!props.isManage && props.isRoomPage && renderModalRoomDetail("EN1240821")}
+      </Select>
+      <Select name="EN1240821" enabled={hover === "EN1240821" || select === "EN1240821"} position={[11.318, 1.192, 6.492]} rotation={[-Math.PI / 2, 0, 0]} scale={0.305}>
+        {!isManage && !isRoomPage && renderModalDetail("EN1240821")}
+        {!isManage && isRoomPage && renderModalRoomDetail("EN1240821")}
         <mesh name="SW4002" geometry={nodes.SW4002.geometry} material={materials['กระจกใสหนา 1 1/2 หุน.011']} />
         <mesh name="SW4002_1" geometry={nodes.SW4002_1.geometry} material={materials['กรอบประตูหน้าต่าง ตา.004']} />
         <mesh name="SW4002_2" geometry={nodes.SW4002_2.geometry} material={materials['ผนังทดลอง.020']} />
@@ -1835,10 +1988,10 @@ export default function EN12408Floor(props: Props) {
         <mesh name="SW4002_5" geometry={nodes.SW4002_5.geometry} material={materials['Aluminum.020']} />
         <mesh name="SW4002_6" geometry={nodes.SW4002_6.geometry} material={materials['ไม้อัดยางทาสี.014']} />
         <mesh name="SW4002_7" geometry={nodes.SW4002_7.geometry} material={materials['ไม้เนื้อแข็ง 2" x 4" ทาสี.014']} />
-      </group>
-      <group name="EN1240822" position={[11.416, 1.214, 8.212]} rotation={[-Math.PI / 2, 0, 0]} scale={0.305}>
-        {!props.isManage && !props.isRoomPage && renderModalDetail("EN1240822")}
-        {!props.isManage && props.isRoomPage && renderModalRoomDetail("EN1240822")}
+      </Select>
+      <Select name="EN1240822" enabled={hover === "EN1240822" || select === "EN1240822"} position={[11.416, 1.214, 8.212]} rotation={[-Math.PI / 2, 0, 0]} scale={0.305}>
+        {!isManage && !isRoomPage && renderModalDetail("EN1240822")}
+        {!isManage && isRoomPage && renderModalRoomDetail("EN1240822")}
         <mesh name="SW7" geometry={nodes.SW7.geometry} material={materials['กระจกใสหนา 1 1/2 หุน.012']} />
         <mesh name="SW7_1" geometry={nodes.SW7_1.geometry} material={materials['กรอบประตูหน้าต่าง ตา.005']} />
         <mesh name="SW7_2" geometry={nodes.SW7_2.geometry} material={materials['ผนังทดลอง.021']} />
@@ -1848,10 +2001,10 @@ export default function EN12408Floor(props: Props) {
         <mesh name="SW7_6" geometry={nodes.SW7_6.geometry} material={materials['Aluminum.021']} />
         <mesh name="SW7_7" geometry={nodes.SW7_7.geometry} material={materials['ไม้อัดยางทาสี.015']} />
         <mesh name="SW7_8" geometry={nodes.SW7_8.geometry} material={materials['ไม้เนื้อแข็ง 2" x 4" ทาสี.015']} />
-      </group>
-      <group name="EN1240823" position={[-19.143, 1.516, 15.926]} rotation={[-Math.PI / 2, 0, 0]} scale={0.305}>
-        {!props.isManage && !props.isRoomPage && renderModalDetail("EN1240823")}
-        {!props.isManage && props.isRoomPage && renderModalRoomDetail("EN1240823")}
+      </Select>
+      <Select name="EN1240823" enabled={hover === "EN1240823" || select === "EN1240823"} position={[-19.143, 1.516, 15.926]} rotation={[-Math.PI / 2, 0, 0]} scale={0.305}>
+        {!isManage && !isRoomPage && renderModalDetail("EN1240823")}
+        {!isManage && isRoomPage && renderModalRoomDetail("EN1240823")}
         <mesh name="SD2006" geometry={nodes.SD2006.geometry} material={materials['Aluminum.022']} />
         <mesh name="SD2006_1" geometry={nodes.SD2006_1.geometry} material={materials['กระจกใสหนา 2 หุน.006']} />
         <mesh name="SD2006_2" geometry={nodes.SD2006_2.geometry} material={materials['เหล็ก ตามมาตราฐาน Decoradoo.015']} />
@@ -1861,10 +2014,10 @@ export default function EN12408Floor(props: Props) {
         <mesh name="SD2006_6" geometry={nodes.SD2006_6.geometry} material={materials['Default Wall.022']} />
         <mesh name="SD2006_7" geometry={nodes.SD2006_7.geometry} material={materials['ผิวคอนกรีต ขัดมัน.016']} />
         <mesh name="SD2006_8" geometry={nodes.SD2006_8.geometry} material={materials['Glass.011']} />
-      </group>
-      <group name="EN1240824" position={[-10.823, 1.234, 12.529]} rotation={[-Math.PI / 2, 0, 0]} scale={0.305}>
-        {!props.isManage && !props.isRoomPage && renderModalDetail("EN1240824")}
-        {!props.isManage && props.isRoomPage && renderModalRoomDetail("EN1240824")}
+      </Select>
+      <Select name="EN1240824" enabled={hover === "EN1240824" || select === "EN1240824"} position={[-10.823, 1.234, 12.529]} rotation={[-Math.PI / 2, 0, 0]} scale={0.305}>
+        {!isManage && !isRoomPage && renderModalDetail("EN1240824")}
+        {!isManage && isRoomPage && renderModalRoomDetail("EN1240824")}
         <mesh name="AW1003" geometry={nodes.AW1003.geometry} material={materials['Glass.013']} />
         <mesh name="AW1003_1" geometry={nodes.AW1003_1.geometry} material={materials['Default.003']} />
         <mesh name="AW1003_2" geometry={nodes.AW1003_2.geometry} material={materials['ผนังก่ออิฐ ทาสี.022']} />
@@ -1875,10 +2028,10 @@ export default function EN12408Floor(props: Props) {
         <mesh name="AW1003_7" geometry={nodes.AW1003_7.geometry} material={materials['กระจกใสหนา 1 1/2 หุน.014']} />
         <mesh name="AW1003_8" geometry={nodes.AW1003_8.geometry} material={materials['ไม้อัดยางทาสี.017']} />
         <mesh name="AW1003_9" geometry={nodes.AW1003_9.geometry} material={materials['ไม้เนื้อแข็ง 2" x 4" ทาสี.017']} />
-      </group>
-      <group name="EN1240825" position={[9.302, 1.654, 11.904]} rotation={[-Math.PI / 2, 0, 0]} scale={0.305}>
-        {!props.isManage && !props.isRoomPage && renderModalDetail("EN1240825")}
-        {!props.isManage && props.isRoomPage && renderModalRoomDetail("EN1240825")}
+      </Select>
+      <Select name="EN1240825" enabled={hover === "EN1240825" || select === "EN1240825"} position={[9.302, 1.654, 11.904]} rotation={[-Math.PI / 2, 0, 0]} scale={0.305}>
+        {!isManage && !isRoomPage && renderModalDetail("EN1240825")}
+        {!isManage && isRoomPage && renderModalRoomDetail("EN1240825")}
         <mesh name="1100mm" geometry={nodes['1100mm'].geometry} material={materials['ผิวคอนกรีต ขัดมัน.019']} />
         <mesh name="1100mm_1" geometry={nodes['1100mm_1'].geometry} material={materials['ผนังทดลอง.025']} />
         <mesh name="1100mm_2" geometry={nodes['1100mm_2'].geometry} material={materials['Default Wall.025']} />
@@ -1891,10 +2044,10 @@ export default function EN12408Floor(props: Props) {
         <mesh name="1100mm_9" geometry={nodes['1100mm_9'].geometry} material={materials.AB_RAL3000_Red} />
         <mesh name="1100mm_10" geometry={nodes['1100mm_10'].geometry} material={materials.AB_Steel} />
         <mesh name="1100mm_11" geometry={nodes['1100mm_11'].geometry} material={materials['AB_Hose White']} />
-      </group>
-      <group name="EN1240826" position={[8.993, 1.385, 15.898]} rotation={[-Math.PI / 2, 0, 0]} scale={0.305}>
-        {!props.isManage && !props.isRoomPage && renderModalDetail("EN1240826")}
-        {!props.isManage && props.isRoomPage && renderModalRoomDetail("EN1240826")}
+      </Select>
+      <Select name="EN1240826" enabled={hover === "EN1240826" || select === "EN1240826"} position={[8.993, 1.385, 15.898]} rotation={[-Math.PI / 2, 0, 0]} scale={0.305}>
+        {!isManage && !isRoomPage && renderModalDetail("EN1240826")}
+        {!isManage && isRoomPage && renderModalRoomDetail("EN1240826")}
         <mesh name="SW12021" geometry={nodes.SW12021.geometry} material={materials['ผิวคอนกรีต ขัดมัน.020']} />
         <mesh name="SW12021_1" geometry={nodes.SW12021_1.geometry} material={materials['Glass.014']} />
         <mesh name="SW12021_2" geometry={nodes.SW12021_2.geometry} material={materials['ผนังก่ออิฐ ทาสี.024']} />
@@ -1904,10 +2057,10 @@ export default function EN12408Floor(props: Props) {
         <mesh name="SW12021_6" geometry={nodes.SW12021_6.geometry} material={materials['กระจกใสหนา 1 1/2 หุน.016']} />
         <mesh name="SW12021_7" geometry={nodes.SW12021_7.geometry} material={materials['ไม้อัดยางทาสี.018']} />
         <mesh name="SW12021_8" geometry={nodes.SW12021_8.geometry} material={materials['ไม้เนื้อแข็ง 2" x 4" ทาสี.018']} />
-      </group>
-      <group name="EN1240827" position={[13.865, 1.526, 15.652]} rotation={[-Math.PI / 2, 0, 0]} scale={0.305}>
-        {!props.isManage && !props.isRoomPage && renderModalDetail("EN1240827")}
-        {!props.isManage && props.isRoomPage && renderModalRoomDetail("EN1240827")}
+      </Select>
+      <Select name="EN1240827" enabled={hover === "EN1240827" || select === "EN1240827"} position={[13.865, 1.526, 15.652]} rotation={[-Math.PI / 2, 0, 0]} scale={0.305}>
+        {!isManage && !isRoomPage && renderModalDetail("EN1240827")}
+        {!isManage && isRoomPage && renderModalRoomDetail("EN1240827")}
         <mesh name="SW12022" geometry={nodes.SW12022.geometry} material={materials['ผิวคอนกรีต ขัดมัน.021']} />
         <mesh name="SW12022_1" geometry={nodes.SW12022_1.geometry} material={materials['Glass.015']} />
         <mesh name="SW12022_2" geometry={nodes.SW12022_2.geometry} material={materials['ผนังก่ออิฐ ทาสี.025']} />
@@ -1917,10 +2070,10 @@ export default function EN12408Floor(props: Props) {
         <mesh name="SW12022_6" geometry={nodes.SW12022_6.geometry} material={materials['กระจกใสหนา 1 1/2 หุน.017']} />
         <mesh name="SW12022_7" geometry={nodes.SW12022_7.geometry} material={materials['ไม้อัดยางทาสี.019']} />
         <mesh name="SW12022_8" geometry={nodes.SW12022_8.geometry} material={materials['ไม้เนื้อแข็ง 2" x 4" ทาสี.019']} />
-      </group>
-      <group name="EN1240828" position={[-12.977, 1.51, 21.114]} rotation={[-Math.PI / 2, 0, 0]} scale={0.305}>
-        {!props.isManage && !props.isRoomPage && renderModalDetail("EN1240828")}
-        {!props.isManage && props.isRoomPage && renderModalRoomDetail("EN1240828")}
+      </Select>
+      <Select name="EN1240828" enabled={hover === "EN1240828" || select === "EN1240828"} position={[-12.977, 1.51, 21.114]} rotation={[-Math.PI / 2, 0, 0]} scale={0.305}>
+        {!isManage && !isRoomPage && renderModalDetail("EN1240828")}
+        {!isManage && isRoomPage && renderModalRoomDetail("EN1240828")}
         <mesh name="SD2007" geometry={nodes.SD2007.geometry} material={materials['Aluminum.027']} />
         <mesh name="SD2007_1" geometry={nodes.SD2007_1.geometry} material={materials['กระจกใสหนา 2 หุน.007']} />
         <mesh name="SD2007_2" geometry={nodes.SD2007_2.geometry} material={materials['เหล็ก ตามมาตราฐาน Decoradoo.018']} />
@@ -1930,8 +2083,7 @@ export default function EN12408Floor(props: Props) {
         <mesh name="SD2007_6" geometry={nodes.SD2007_6.geometry} material={materials['Default Wall.028']} />
         <mesh name="SD2007_7" geometry={nodes.SD2007_7.geometry} material={materials['ผิวคอนกรีต ขัดมัน.022']} />
         <mesh name="SD2007_8" geometry={nodes.SD2007_8.geometry} material={materials['Glass.016']} />
-      </group>
-
+      </Select>
       <Select
         name="EN1240829"
         enabled={hover === "EN1240829" || select === "EN1240829"}
@@ -1939,8 +2091,8 @@ export default function EN12408Floor(props: Props) {
         rotation={[-Math.PI / 2, 0, 0]}
         scale={0.305}
       >
-        {!props.isManage && !props.isRoomPage && renderModalDetail("EN1240829")}
-        {!props.isManage && props.isRoomPage && renderModalRoomDetail("EN1240829")}
+        {!isManage && !isRoomPage && renderModalDetail("EN1240829")}
+        {!isManage && isRoomPage && renderModalRoomDetail("EN1240829")}
         <mesh name="SD2008" geometry={nodes.SD2008.geometry} material={materials['Aluminum.028']} />
         <mesh name="SD2008_1" geometry={nodes.SD2008_1.geometry} material={materials['กระจกใสหนา 2 หุน.008']} />
         <mesh name="SD2008_2" geometry={nodes.SD2008_2.geometry} material={materials['เหล็ก ตามมาตราฐาน Decoradoo.020']} />
@@ -1951,7 +2103,6 @@ export default function EN12408Floor(props: Props) {
         <mesh name="SD2008_7" geometry={nodes.SD2008_7.geometry} material={materials['Glass.017']} />
         <mesh name="SD2008_8" geometry={nodes.SD2008_8.geometry} material={materials['ผิวคอนกรีต ขัดมัน.023']} />
       </Select>
-
       <Select
         name="EN1240830"
         enabled={hover === "EN1240830" || select === "EN1240830"}
@@ -1959,8 +2110,8 @@ export default function EN12408Floor(props: Props) {
         rotation={[-Math.PI / 2, 0, 0]}
         scale={0.305}
       >
-        {!props.isManage && !props.isRoomPage && renderModalDetail("EN1240830")}
-        {!props.isManage && props.isRoomPage && renderModalRoomDetail("EN1240830")}
+        {!isManage && !isRoomPage && renderModalDetail("EN1240830")}
+        {!isManage && isRoomPage && renderModalRoomDetail("EN1240830")}
         <mesh name="WD1004" geometry={nodes.WD1004.geometry} material={materials['Aluminum.029']} />
         <mesh name="WD1004_1" geometry={nodes.WD1004_1.geometry} material={materials['ไม้อัดยางทาสี.020']} />
         <mesh name="WD1004_2" geometry={nodes.WD1004_2.geometry} material={materials['ไม้เนื้อแข็ง 2" x 4" ทาสี.020']} />
@@ -1969,10 +2120,9 @@ export default function EN12408Floor(props: Props) {
         <mesh name="WD1004_5" geometry={nodes.WD1004_5.geometry} material={materials['Default Wall.030']} />
         <mesh name="WD1004_6" geometry={nodes.WD1004_6.geometry} material={materials['ผิวคอนกรีต ขัดมัน.024']} />
       </Select>
-
-      <group name="EN1240831" position={[5.444, 1.336, 19.02]} rotation={[-Math.PI / 2, 0, 0]} scale={0.305}>
-        {!props.isManage && !props.isRoomPage && renderModalDetail("EN1240831")}
-        {!props.isManage && props.isRoomPage && renderModalRoomDetail("EN1240831")}
+      <Select name="EN1240831" enabled={hover === "EN1240831" || select === "EN1240831"} position={[5.444, 1.336, 19.02]} rotation={[-Math.PI / 2, 0, 0]} scale={0.305}>
+        {!isManage && !isRoomPage && renderModalDetail("EN1240831")}
+        {!isManage && isRoomPage && renderModalRoomDetail("EN1240831")}
         <mesh name="SW11002" geometry={nodes.SW11002.geometry} material={materials['ผิวคอนกรีต ขัดมัน.025']} />
         <mesh name="SW11002_1" geometry={nodes.SW11002_1.geometry} material={materials['Glass.018']} />
         <mesh name="SW11002_2" geometry={nodes.SW11002_2.geometry} material={materials['ผนังก่ออิฐ ทาสี.029']} />
@@ -1981,10 +2131,10 @@ export default function EN12408Floor(props: Props) {
         <mesh name="SW11002_5" geometry={nodes.SW11002_5.geometry} material={materials['Aluminum.030']} />
         <mesh name="SW11002_6" geometry={nodes.SW11002_6.geometry} material={materials['ไม้อัดยางทาสี.021']} />
         <mesh name="SW11002_7" geometry={nodes.SW11002_7.geometry} material={materials['ไม้เนื้อแข็ง 2" x 4" ทาสี.021']} />
-      </group>
-      <group name="EN1240832" position={[2.232, 1.396, 23.892]} rotation={[-Math.PI / 2, 0, 0]} scale={0.305}>
-        {!props.isManage && !props.isRoomPage && renderModalDetail("EN1240832")}
-        {!props.isManage && props.isRoomPage && renderModalRoomDetail("EN1240832")}
+      </Select>
+      <Select name="EN1240832" enabled={hover === "EN1240832" || select === "EN1240832"} position={[2.232, 1.396, 23.892]} rotation={[-Math.PI / 2, 0, 0]} scale={0.305}>
+        {!isManage && !isRoomPage && renderModalDetail("EN1240832")}
+        {!isManage && isRoomPage && renderModalRoomDetail("EN1240832")}
         <mesh name="SW12030" geometry={nodes.SW12030.geometry} material={materials['ผิวคอนกรีต ขัดมัน.026']} />
         <mesh name="SW12030_1" geometry={nodes.SW12030_1.geometry} material={materials['Glass.019']} />
         <mesh name="SW12030_2" geometry={nodes.SW12030_2.geometry} material={materials['ผนังก่ออิฐ ทาสี.030']} />
@@ -1994,10 +2144,10 @@ export default function EN12408Floor(props: Props) {
         <mesh name="SW12030_6" geometry={nodes.SW12030_6.geometry} material={materials['กระจกใสหนา 1 1/2 หุน.018']} />
         <mesh name="SW12030_7" geometry={nodes.SW12030_7.geometry} material={materials['ไม้อัดยางทาสี.022']} />
         <mesh name="SW12030_8" geometry={nodes.SW12030_8.geometry} material={materials['ไม้เนื้อแข็ง 2" x 4" ทาสี.022']} />
-      </group>
-      <group name="EN1240833" position={[5.714, 1.503, 23.932]} rotation={[-Math.PI / 2, 0, 0]} scale={0.305}>
-        {!props.isManage && !props.isRoomPage && renderModalDetail("EN1240833")}
-        {!props.isManage && props.isRoomPage && renderModalRoomDetail("EN1240833")}
+      </Select>
+      <Select name="EN1240833" enabled={hover === "EN1240833" || select === "EN1240833"} position={[5.714, 1.503, 23.932]} rotation={[-Math.PI / 2, 0, 0]} scale={0.305}>
+        {!isManage && !isRoomPage && renderModalDetail("EN1240833")}
+        {!isManage && isRoomPage && renderModalRoomDetail("EN1240833")}
         <mesh name="SW12031" geometry={nodes.SW12031.geometry} material={materials['ผิวคอนกรีต ขัดมัน.027']} />
         <mesh name="SW12031_1" geometry={nodes.SW12031_1.geometry} material={materials['Glass.020']} />
         <mesh name="SW12031_2" geometry={nodes.SW12031_2.geometry} material={materials['ผนังก่ออิฐ ทาสี.031']} />
@@ -2007,10 +2157,10 @@ export default function EN12408Floor(props: Props) {
         <mesh name="SW12031_6" geometry={nodes.SW12031_6.geometry} material={materials['กระจกใสหนา 1 1/2 หุน.019']} />
         <mesh name="SW12031_7" geometry={nodes.SW12031_7.geometry} material={materials['ไม้อัดยางทาสี.023']} />
         <mesh name="SW12031_8" geometry={nodes.SW12031_8.geometry} material={materials['ไม้เนื้อแข็ง 2" x 4" ทาสี.023']} />
-      </group>
-      <group name="EN1240899" position={[-3.835, 1.264, 0.539]} rotation={[-Math.PI / 2, 0, 0]} scale={0.305}>
-        {!props.isManage && !props.isRoomPage && renderModalDetail("EN1240899")}
-        {!props.isManage && props.isRoomPage && renderModalRoomDetail("EN1240899")}
+      </Select>
+      <Select name="EN1240899" enabled={hover === "EN1240899" || select === "EN1240899"} position={[-3.835, 1.264, 0.539]} rotation={[-Math.PI / 2, 0, 0]} scale={0.305}>
+        {!isManage && !isRoomPage && renderModalDetail("EN1240899")}
+        {!isManage && isRoomPage && renderModalRoomDetail("EN1240899")}
         <mesh name="1100mm004" geometry={nodes['1100mm004'].geometry} material={materials['ผิวคอนกรีต ขัดมัน.028']} />
         <mesh name="1100mm004_1" geometry={nodes['1100mm004_1'].geometry} material={materials['ผนังก่ออิฐ ทาสี.032']} />
         <mesh name="1100mm004_2" geometry={nodes['1100mm004_2'].geometry} material={materials['ผนังทดลอง.034']} />
@@ -2033,29 +2183,32 @@ export default function EN12408Floor(props: Props) {
         <mesh name="1100mm004_19" geometry={nodes['1100mm004_19'].geometry} material={materials['AB_RAL3000_Red.001']} />
         <mesh name="1100mm004_20" geometry={nodes['1100mm004_20'].geometry} material={materials['AB_Steel.001']} />
         <mesh name="1100mm004_21" geometry={nodes['1100mm004_21'].geometry} material={materials['AB_Hose White.001']} />
-      </group>
+      </Select>
 
-      {props.isShowAir && (
+      {isShowAir && (
         <>
-          <group name="EN1240812-A01" position={[-13.147, 3.651, -5.879]} rotation={[-Math.PI / 2, 0, 0]} scale={0.305}>
+          <Select name="EN1240812-A01" enabled={hover === "EN1240812-A01" || select === "EN1240812-A01"} position={[-13.147, 3.651, -5.879]} rotation={[-Math.PI / 2, 0, 0]} scale={0.305}>
+            {!isManage && isRoomPage && renderModalAirDetail("EN1240812-A01")}
             <mesh name="PCY-SM42KAL-TH" geometry={nodes['PCY-SM42KAL-TH'].geometry} material={materials['Gypsum Wall Board']} />
             <mesh name="PCY-SM42KAL-TH_1" geometry={nodes['PCY-SM42KAL-TH_1'].geometry} material={materials.Copper} />
             <mesh name="PCY-SM42KAL-TH_2" geometry={nodes['PCY-SM42KAL-TH_2'].geometry} material={materials.Plastic} />
             <mesh name="PCY-SM42KAL-TH_3" geometry={nodes['PCY-SM42KAL-TH_3'].geometry} material={materials['Wall Texture, Orange Peel']} />
             <mesh name="PCY-SM42KAL-TH_4" geometry={nodes['PCY-SM42KAL-TH_4'].geometry} material={materials['Plastic, Formed']} />
-          </group>
-          <group name="EN1240812-A02" position={[-10.072, 3.651, -5.879]} rotation={[-Math.PI / 2, 0, 0]} scale={0.305}>
+          </Select>
+          <Select name="EN1240812-A02" enabled={hover === "EN1240812-A02" || select === "EN1240812-A02"} position={[-10.072, 3.651, -5.879]} rotation={[-Math.PI / 2, 0, 0]} scale={0.305}>
+            {!isManage && isRoomPage && renderModalAirDetail("EN1240812-A02")}
             <mesh name="PCY-SM42KAL-TH001" geometry={nodes['PCY-SM42KAL-TH001'].geometry} material={materials.Plastic} />
             <mesh name="PCY-SM42KAL-TH001_1" geometry={nodes['PCY-SM42KAL-TH001_1'].geometry} material={materials.Copper} />
             <mesh name="PCY-SM42KAL-TH001_2" geometry={nodes['PCY-SM42KAL-TH001_2'].geometry} material={materials['Wall Texture, Orange Peel']} />
             <mesh name="PCY-SM42KAL-TH001_3" geometry={nodes['PCY-SM42KAL-TH001_3'].geometry} material={materials['Plastic, Formed']} />
-          </group>
-          <group name="EN1240812-A03" position={[-5.162, 3.651, -5.878]} rotation={[-Math.PI / 2, 0, 0]} scale={0.305}>
+          </Select>
+          <Select name="EN1240812-A03" enabled={hover === "EN1240812-A03" || select === "EN1240812-A03"} position={[-5.162, 3.651, -5.878]} rotation={[-Math.PI / 2, 0, 0]} scale={0.305}>
+            {!isManage && isRoomPage && renderModalAirDetail("EN1240812-A03")}
             <mesh name="PCY-SM42KAL-TH002" geometry={nodes['PCY-SM42KAL-TH002'].geometry} material={materials.Plastic} />
             <mesh name="PCY-SM42KAL-TH002_1" geometry={nodes['PCY-SM42KAL-TH002_1'].geometry} material={materials.Copper} />
             <mesh name="PCY-SM42KAL-TH002_2" geometry={nodes['PCY-SM42KAL-TH002_2'].geometry} material={materials['Wall Texture, Orange Peel']} />
             <mesh name="PCY-SM42KAL-TH002_3" geometry={nodes['PCY-SM42KAL-TH002_3'].geometry} material={materials['Plastic, Formed']} />
-          </group>
+          </Select>
           <Select 
             name="EN1240818-A01"
             enabled={hover === "EN1240818-A01" || select === "EN1240818-A01"}
@@ -2063,373 +2216,377 @@ export default function EN12408Floor(props: Props) {
             rotation={[-Math.PI / 2, 0, 0]} 
             scale={0.305}
           >
-            {!props.isManage && props.isRoomPage && renderModalAirDetail("EN1240818-A01")}
+            {!isManage && isRoomPage && renderModalAirDetail("EN1240818-A01")}
             <mesh name="PCY-SM42KAL-TH003" geometry={nodes['PCY-SM42KAL-TH003'].geometry} material={createAirMaterial("Plastic", "EN1240818", 1)} />
             <mesh name="PCY-SM42KAL-TH003_1" geometry={nodes['PCY-SM42KAL-TH003_1'].geometry} material={createAirMaterial("Copper", "EN1240818", 1)} />
             <mesh name="PCY-SM42KAL-TH003_2" geometry={nodes['PCY-SM42KAL-TH003_2'].geometry} material={createAirMaterial("Wall Texture, Orange Peel", "EN1240818", 1)} />
             <mesh name="PCY-SM42KAL-TH003_3" geometry={nodes['PCY-SM42KAL-TH003_3'].geometry} material={createAirMaterial("Plastic, Formed", "EN1240818", 1)} />
           </Select>
           <Select name="EN1240818-A02" enabled={hover === "EN1240818-A02" || select === "EN1240818-A02"} position={[-23.882, 3.651, 3.606]} rotation={[-Math.PI / 2, 0, 0]} scale={0.305}>
-            {!props.isManage && props.isRoomPage && renderModalAirDetail("EN1240818-A02")}
+            {!isManage && isRoomPage && renderModalAirDetail("EN1240818-A02")}
             <mesh name="PCY-SM42KAL-TH004" geometry={nodes['PCY-SM42KAL-TH004'].geometry} material={createAirMaterial("Plastic", "EN1240818", 2)}/>
             <mesh name="PCY-SM42KAL-TH004_1" geometry={nodes['PCY-SM42KAL-TH004_1'].geometry} material={createAirMaterial("Copper", "EN1240818", 2)} />
             <mesh name="PCY-SM42KAL-TH004_2" geometry={nodes['PCY-SM42KAL-TH004_2'].geometry} material={createAirMaterial("Wall Texture, Orange Peel", "EN1240818", 2)} />
             <mesh name="PCY-SM42KAL-TH004_3" geometry={nodes['PCY-SM42KAL-TH004_3'].geometry} material={createAirMaterial("Plastic, Formed", "EN1240818", 2)} />
           </Select>
           <Select name="EN1240818-A03" enabled={hover === "EN1240818-A03" || select === "EN1240818-A03"} position={[-23.882, 3.651, 7.606]} rotation={[-Math.PI / 2, 0, 0]} scale={0.305}>
-            {!props.isManage && props.isRoomPage && renderModalAirDetail("EN1240818-A03")}
+            {!isManage && isRoomPage && renderModalAirDetail("EN1240818-A03")}
             <mesh name="PCY-SM42KAL-TH005" geometry={nodes['PCY-SM42KAL-TH005'].geometry} material={createAirMaterial("Plastic", "EN1240818", 3)} />
             <mesh name="PCY-SM42KAL-TH005_1" geometry={nodes['PCY-SM42KAL-TH005_1'].geometry} material={createAirMaterial("Copper", "EN1240818", 3)} />
             <mesh name="PCY-SM42KAL-TH005_2" geometry={nodes['PCY-SM42KAL-TH005_2'].geometry} material={createAirMaterial("Wall Texture, Orange Peel", "EN1240818", 3)} />
             <mesh name="PCY-SM42KAL-TH005_3" geometry={nodes['PCY-SM42KAL-TH005_3'].geometry} material={createAirMaterial("Plastic, Formed", "EN1240818", 3)} />
           </Select>
-          <group name="EN1240829-A02" position={[-2.397, 3.651, 25.874]} rotation={[-Math.PI / 2, 0, 0]} scale={0.305}>
+          <Select name="EN1240829-A02" enabled={hover === "EN1240829-A02" || select === "EN1240829-A02"} position={[-2.397, 3.651, 25.874]} rotation={[-Math.PI / 2, 0, 0]} scale={0.305}>
+          {!isManage && isRoomPage && renderModalAirDetail("EN1240829-A02")}
             <mesh name="PCY-SM42KAL-TH006" geometry={nodes['PCY-SM42KAL-TH006'].geometry} material={createAirMaterial("Plastic", "EN1240829", 2)} />
             <mesh name="PCY-SM42KAL-TH006_1" geometry={nodes['PCY-SM42KAL-TH006_1'].geometry} material={createAirMaterial("Copper", "EN1240829", 2)} />
             <mesh name="PCY-SM42KAL-TH006_2" geometry={nodes['PCY-SM42KAL-TH006_2'].geometry} material={createAirMaterial("Wall Texture, Orange Peel", "EN1240829", 2)} />
             <mesh name="PCY-SM42KAL-TH006_3" geometry={nodes['PCY-SM42KAL-TH006_3'].geometry} material={createAirMaterial("Plastic, Formed", "EN1240829", 2)} />
-          </group>
-          <group name="EN1240829-A01" position={[-6.397, 3.651, 25.874]} rotation={[-Math.PI / 2, 0, 0]} scale={0.305}>
+          </Select>
+          <Select name="EN1240829-A01" enabled={hover === "EN1240829-A01" || select === "EN1240829-A01"} position={[-6.397, 3.651, 25.874]} rotation={[-Math.PI / 2, 0, 0]} scale={0.305}>
+            {!isManage && isRoomPage && renderModalAirDetail("EN1240829-A01")}
             <mesh name="PCY-SM42KAL-TH007" geometry={nodes['PCY-SM42KAL-TH007'].geometry} material={createAirMaterial("Plastic", "EN1240829", 1)} />
             <mesh name="PCY-SM42KAL-TH007_1" geometry={nodes['PCY-SM42KAL-TH007_1'].geometry} material={createAirMaterial("Copper", "EN1240829", 1)} />
             <mesh name="PCY-SM42KAL-TH007_2" geometry={nodes['PCY-SM42KAL-TH007_2'].geometry} material={createAirMaterial("Wall Texture, Orange Peel", "EN1240829", 1)} />
             <mesh name="PCY-SM42KAL-TH007_3" geometry={nodes['PCY-SM42KAL-TH007_3'].geometry} material={createAirMaterial("Plastic, Formed", "EN1240829", 1)} />
-          </group>
-          <group name="EN1240826-A01" position={[9.604, 3.651, 17.914]} rotation={[-Math.PI / 2, 0, 0]} scale={0.305}>
+          </Select>
+          <Select name="EN1240826-A01" enabled={hover === "EN1240826-A01" || select === "EN1240826-A01"} position={[9.604, 3.651, 17.914]} rotation={[-Math.PI / 2, 0, 0]} scale={0.305}>
+            {!isManage && isRoomPage && renderModalAirDetail("EN1240826-A01")}
             <mesh name="PCY-SM42KAL-TH008" geometry={nodes['PCY-SM42KAL-TH008'].geometry} material={createAirMaterial("Plastic", "EN1240826", 1)} />
             <mesh name="PCY-SM42KAL-TH008_1" geometry={nodes['PCY-SM42KAL-TH008_1'].geometry} material={createAirMaterial("Copper", "EN1240826", 1)} />
             <mesh name="PCY-SM42KAL-TH008_2" geometry={nodes['PCY-SM42KAL-TH008_2'].geometry} material={createAirMaterial("Wall Texture, Orange Peel", "EN1240826", 1)} />
             <mesh name="PCY-SM42KAL-TH008_3" geometry={nodes['PCY-SM42KAL-TH008_3'].geometry} material={createAirMaterial("Plastic, Formed", "EN1240826", 1)} />
-          </group>
-          <group name="EN1240827-A01" position={[13.605, 3.651, 17.914]} rotation={[-Math.PI / 2, 0, 0]} scale={0.305}>
+          </Select>
+          <Select name="EN1240827-A01" enabled={hover === "EN1240827-A01" || select === "EN1240827-A01"} position={[13.605, 3.651, 17.914]} rotation={[-Math.PI / 2, 0, 0]} scale={0.305}>
+          {!isManage && isRoomPage && renderModalAirDetail("EN1240827-A01")}
             <mesh name="ระดับพื้นหลังคา" geometry={nodes.ระดับพื้นหลังคา.geometry} material={createAirMaterial("Plastic", "EN1240827", 1)} />
             <mesh name="ระดับพื้นหลังคา_1" geometry={nodes.ระดับพื้นหลังคา_1.geometry} material={createAirMaterial("Copper", "EN1240827", 1)} />
             <mesh name="ระดับพื้นหลังคา_2" geometry={nodes.ระดับพื้นหลังคา_2.geometry} material={createAirMaterial("Wall Texture, Orange Peel", "EN1240827", 1)} />
             <mesh name="ระดับพื้นหลังคา_3" geometry={nodes.ระดับพื้นหลังคา_3.geometry} material={createAirMaterial("Plastic, Formed", "EN1240827", 1)} />
-          </group>
+          </Select>
         </>
       )}
 
-      {props.isShowLamp && (
+      {isShowLamp && (
         <>
-          <group name="EN1240829-L01" position={[-5.96, 3.89, 19.597]} rotation={[-Math.PI / 2, 0, 0]} scale={0.305}>
+          <Select name="EN1240829-L01" enabled={hover === "EN1240829-L01" || select === "EN1240829-L01"} position={[-5.96, 3.89, 19.597]} rotation={[-Math.PI / 2, 0, 0]} scale={0.305}>
             <mesh name="L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_3000K" geometry={nodes['L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_3000K'].geometry} material={materials['Glass.022']} />
             <mesh name="L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_3000K_1" geometry={nodes['L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_3000K_1'].geometry} material={materials['Mirror anodized aluminium']} />
             <mesh name="L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_3000K_2" geometry={nodes['L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_3000K_2'].geometry} material={materials['Die-formed cold roll steel']} />
-          </group>
-          <group name="EN1240829-L02" position={[-3.96, 3.89, 19.597]} rotation={[-Math.PI / 2, 0, 0]} scale={0.305}>
+          </Select>
+          <Select name="EN1240829-L02" enabled={hover === "EN1240829-L01" || select === "EN1240829-L01"} position={[-3.96, 3.89, 19.597]} rotation={[-Math.PI / 2, 0, 0]} scale={0.305}>
             <mesh name="L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300" geometry={nodes['L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300'].geometry} material={materials['Glass.022']} />
             <mesh name="L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300_1" geometry={nodes['L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300_1'].geometry} material={materials['Mirror anodized aluminium']} />
             <mesh name="L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300_2" geometry={nodes['L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300_2'].geometry} material={materials['Die-formed cold roll steel']} />
-          </group>
-          <group name="EN1240829-L03" position={[-1.96, 3.89, 19.597]} rotation={[-Math.PI / 2, 0, 0]} scale={0.305}>
+          </Select>
+          <Select name="EN1240829-L03" enabled={hover === "EN1240829-L03" || select === "EN1240829-L03"} position={[-1.96, 3.89, 19.597]} rotation={[-Math.PI / 2, 0, 0]} scale={0.305}>
             <mesh name="L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300001" geometry={nodes['L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300001'].geometry} material={materials['Glass.022']} />
             <mesh name="L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300001_1" geometry={nodes['L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300001_1'].geometry} material={materials['Mirror anodized aluminium']} />
             <mesh name="L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300001_2" geometry={nodes['L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300001_2'].geometry} material={materials['Die-formed cold roll steel']} />
-          </group>
-          <group name="EN1240829-L04" position={[-5.96, 3.89, 22.097]} rotation={[-Math.PI / 2, 0, 0]} scale={0.305}>
+          </Select>
+          <Select name="EN1240829-L04" enabled={hover === "EN1240829-L04" || select === "EN1240829-L04"} position={[-5.96, 3.89, 22.097]} rotation={[-Math.PI / 2, 0, 0]} scale={0.305}>
             <mesh name="L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300002" geometry={nodes['L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300002'].geometry} material={materials['Glass.022']} />
             <mesh name="L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300002_1" geometry={nodes['L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300002_1'].geometry} material={materials['Mirror anodized aluminium']} />
             <mesh name="L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300002_2" geometry={nodes['L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300002_2'].geometry} material={materials['Die-formed cold roll steel']} />
-          </group>
-          <group name="EN1240829-L05" position={[-3.96, 3.89, 22.097]} rotation={[-Math.PI / 2, 0, 0]} scale={0.305}>
+          </Select>
+          <Select name="EN1240829-L05" enabled={hover === "EN1240829-L05" || select === "EN1240829-L05"} position={[-3.96, 3.89, 22.097]} rotation={[-Math.PI / 2, 0, 0]} scale={0.305}>
             <mesh name="L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300003" geometry={nodes['L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300003'].geometry} material={materials['Glass.022']} />
             <mesh name="L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300003_1" geometry={nodes['L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300003_1'].geometry} material={materials['Mirror anodized aluminium']} />
             <mesh name="L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300003_2" geometry={nodes['L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300003_2'].geometry} material={materials['Die-formed cold roll steel']} />
-          </group>
-          <group name="EN1240829-L06" position={[-1.96, 3.89, 22.097]} rotation={[-Math.PI / 2, 0, 0]} scale={0.305}>
+          </Select>
+          <Select name="EN1240829-L06" enabled={hover === "EN1240829-L06" || select === "EN1240829-L06"} position={[-1.96, 3.89, 22.097]} rotation={[-Math.PI / 2, 0, 0]} scale={0.305}>
             <mesh name="L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300004" geometry={nodes['L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300004'].geometry} material={materials['Glass.022']} />
             <mesh name="L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300004_1" geometry={nodes['L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300004_1'].geometry} material={materials['Mirror anodized aluminium']} />
             <mesh name="L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300004_2" geometry={nodes['L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300004_2'].geometry} material={materials['Die-formed cold roll steel']} />
-          </group>
-          <group name="EN1240829-L07" position={[-5.96, 3.89, 24.597]} rotation={[-Math.PI / 2, 0, 0]} scale={0.305}>
+          </Select>
+          <Select name="EN1240829-L07" enabled={hover === "EN1240829-L07" || select === "EN1240829-L07"} position={[-5.96, 3.89, 24.597]} rotation={[-Math.PI / 2, 0, 0]} scale={0.305}>
             <mesh name="L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300005" geometry={nodes['L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300005'].geometry} material={materials['Glass.022']} />
             <mesh name="L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300005_1" geometry={nodes['L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300005_1'].geometry} material={materials['Mirror anodized aluminium']} />
             <mesh name="L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300005_2" geometry={nodes['L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300005_2'].geometry} material={materials['Die-formed cold roll steel']} />
-          </group>
-          <group name="EN1240829-L08" position={[-3.96, 3.89, 24.597]} rotation={[-Math.PI / 2, 0, 0]} scale={0.305}>
+          </Select>
+          <Select name="EN1240829-L08" enabled={hover === "EN1240829-L08" || select === "EN1240829-L08"} position={[-3.96, 3.89, 24.597]} rotation={[-Math.PI / 2, 0, 0]} scale={0.305}>
             <mesh name="L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300006" geometry={nodes['L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300006'].geometry} material={materials['Glass.022']} />
             <mesh name="L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300006_1" geometry={nodes['L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300006_1'].geometry} material={materials['Mirror anodized aluminium']} />
             <mesh name="L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300006_2" geometry={nodes['L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300006_2'].geometry} material={materials['Die-formed cold roll steel']} />
-          </group>
-          <group name="EN1240829-L09" position={[-1.96, 3.89, 24.597]} rotation={[-Math.PI / 2, 0, 0]} scale={0.305}>
+          </Select>
+          <Select name="EN1240829-L09" enabled={hover === "EN1240829-L09" || select === "EN1240829-L09"} position={[-1.96, 3.89, 24.597]} rotation={[-Math.PI / 2, 0, 0]} scale={0.305}>
             <mesh name="L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300007" geometry={nodes['L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300007'].geometry} material={materials['Glass.022']} />
             <mesh name="L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300007_1" geometry={nodes['L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300007_1'].geometry} material={materials['Mirror anodized aluminium']} />
             <mesh name="L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300007_2" geometry={nodes['L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300007_2'].geometry} material={materials['Die-formed cold roll steel']} />
-          </group>
+          </Select>
 
           <Select name="EN1240818-L01" enabled={hover === "EN1240818-L01" || select === "EN1240818-L01"} position={[-21.969, 3.89, 3.379]} rotation={[-Math.PI / 2, 0, 0]} scale={0.305}>
-            {!props.isManage && props.isRoomPage && renderModalLampDetail("EN1240818-L01")}
+            {!isManage && isRoomPage && renderModalLampDetail("EN1240818-L01")}
             <mesh name="L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300008" geometry={nodes['L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300008'].geometry} material={createLightMaterial('Glass.022', 'EN1240818', 1)} />
             <mesh name="L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300008_1" geometry={nodes['L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300008_1'].geometry} material={createLightMaterial('Mirror anodized aluminium', 'EN1240818', 1)} />
             <mesh name="L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300008_2" geometry={nodes['L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300008_2'].geometry} material={createLightMaterial('Die-formed cold roll steel', 'EN1240818', 1)} />
           </Select>
           <Select name="EN1240818-L02" enabled={hover === "EN1240818-L02" || select === "EN1240818-L02"} position={[-19.969, 3.89, 3.379]} rotation={[-Math.PI / 2, 0, 0]} scale={0.305}>
-            {!props.isManage && props.isRoomPage && renderModalLampDetail("EN1240818-L02")}
+            {!isManage && isRoomPage && renderModalLampDetail("EN1240818-L02")}
             <mesh name="L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300009" geometry={nodes['L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300009'].geometry} material={createLightMaterial('Glass.022', 'EN1240818', 2)} />
             <mesh name="L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300009_1" geometry={nodes['L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300009_1'].geometry} material={createLightMaterial('Glass.022', 'EN1240818', 2)} />
             <mesh name="L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300009_2" geometry={nodes['L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300009_2'].geometry} material={createLightMaterial('Die-formed cold roll steel', 'EN1240818', 2)} />
           </Select>
           <Select name="EN1240818-L03" enabled={hover === "EN1240818-L03" || select === "EN1240818-L03"} position={[-17.969, 3.89, 3.379]} rotation={[-Math.PI / 2, 0, 0]} scale={0.305}>
-            {!props.isManage && props.isRoomPage && renderModalLampDetail("EN1240818-L03")}
+            {!isManage && isRoomPage && renderModalLampDetail("EN1240818-L03")}
             <mesh name="L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300010" geometry={nodes['L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300010'].geometry} material={createLightMaterial('Glass.022', 'EN1240818', 3)} />
             <mesh name="L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300010_1" geometry={nodes['L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300010_1'].geometry} material={createLightMaterial('Glass.022', 'EN1240818', 3)} />
             <mesh name="L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300010_2" geometry={nodes['L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300010_2'].geometry} material={createLightMaterial('Die-formed cold roll steel', 'EN1240818', 3)} />
           </Select>
           <Select name="EN1240818-L04" enabled={hover === "EN1240818-L04" || select === "EN1240818-L04"} position={[-21.969, 3.89, 5.879]} rotation={[-Math.PI / 2, 0, 0]} scale={0.305}>
-            {!props.isManage && props.isRoomPage && renderModalLampDetail("EN1240818-L04")}
+            {!isManage && isRoomPage && renderModalLampDetail("EN1240818-L04")}
             <mesh name="L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300011" geometry={nodes['L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300011'].geometry} material={createLightMaterial('Glass.022', 'EN1240818', 4)} />
             <mesh name="L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300011_1" geometry={nodes['L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300011_1'].geometry} material={createLightMaterial('Glass.022', 'EN1240818', 4)} />
             <mesh name="L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300011_2" geometry={nodes['L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300011_2'].geometry} material={createLightMaterial('Die-formed cold roll steel', 'EN1240818', 4)} />
           </Select>
           <Select name="EN1240818-L05" enabled={hover === "EN1240818-L05" || select === "EN1240818-L05"} position={[-19.969, 3.89, 5.879]} rotation={[-Math.PI / 2, 0, 0]} scale={0.305}>
-            {!props.isManage && props.isRoomPage && renderModalLampDetail("EN1240818-L05")}
+            {!isManage && isRoomPage && renderModalLampDetail("EN1240818-L05")}
             <mesh name="L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300012" geometry={nodes['L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300012'].geometry} material={createLightMaterial('Glass.022', 'EN1240818', 5)} />
             <mesh name="L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300012_1" geometry={nodes['L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300012_1'].geometry} material={createLightMaterial('Glass.022', 'EN1240818', 5)} />
             <mesh name="L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300012_2" geometry={nodes['L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300012_2'].geometry} material={createLightMaterial('Die-formed cold roll steel', 'EN1240818', 5)} />
           </Select>
           <Select name="EN1240818-L06" enabled={hover === "EN1240818-L06" || select === "EN1240818-L06"} position={[-17.969, 3.89, 5.879]} rotation={[-Math.PI / 2, 0, 0]} scale={0.305}>
-            {!props.isManage && props.isRoomPage && renderModalLampDetail("EN1240818-L06")}
+            {!isManage && isRoomPage && renderModalLampDetail("EN1240818-L06")}
             <mesh name="L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300013" geometry={nodes['L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300013'].geometry} material={createLightMaterial('Glass.022', 'EN1240818', 6)} />
             <mesh name="L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300013_1" geometry={nodes['L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300013_1'].geometry} material={createLightMaterial('Glass.022', 'EN1240818', 6)} />
             <mesh name="L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300013_2" geometry={nodes['L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300013_2'].geometry} material={createLightMaterial('Die-formed cold roll steel', 'EN1240818', 6)} />
           </Select>
           <Select name="EN1240818-L07" enabled={hover === "EN1240818-L07" || select === "EN1240818-L07"} position={[-21.969, 3.89, 8.379]} rotation={[-Math.PI / 2, 0, 0]} scale={0.305}>
-            {!props.isManage && props.isRoomPage && renderModalLampDetail("EN1240818-L07")}
+            {!isManage && isRoomPage && renderModalLampDetail("EN1240818-L07")}
             <mesh name="L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300014" geometry={nodes['L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300014'].geometry} material={createLightMaterial('Glass.022', 'EN1240818', 7)} />
             <mesh name="L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300014_1" geometry={nodes['L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300014_1'].geometry} material={createLightMaterial('Glass.022', 'EN1240818', 7)} />
             <mesh name="L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300014_2" geometry={nodes['L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300014_2'].geometry} material={createLightMaterial('Die-formed cold roll steel', 'EN1240818', 7)} />
           </Select>
           <Select name="EN1240818-L08" enabled={hover === "EN1240818-L08" || select === "EN1240818-L08"} position={[-19.969, 3.89, 8.379]} rotation={[-Math.PI / 2, 0, 0]} scale={0.305}>
-            {!props.isManage && props.isRoomPage && renderModalLampDetail("EN1240818-L08")}
+            {!isManage && isRoomPage && renderModalLampDetail("EN1240818-L08")}
             <mesh name="L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300015" geometry={nodes['L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300015'].geometry} material={createLightMaterial('Glass.022', 'EN1240818', 8)} />
             <mesh name="L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300015_1" geometry={nodes['L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300015_1'].geometry} material={createLightMaterial('Glass.022', 'EN1240818', 8)} />
             <mesh name="L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300015_2" geometry={nodes['L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300015_2'].geometry} material={createLightMaterial('Die-formed cold roll steel', 'EN1240818', 8)} />
           </Select>
           <Select name="EN1240818-L09" enabled={hover === "EN1240818-L09" || select === "EN1240818-L09"} position={[-17.969, 3.89, 8.379]} rotation={[-Math.PI / 2, 0, 0]} scale={0.305}>
-            {!props.isManage && props.isRoomPage && renderModalLampDetail("EN1240818-L09")}
+            {!isManage && isRoomPage && renderModalLampDetail("EN1240818-L09")}
             <mesh name="L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300016" geometry={nodes['L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300016'].geometry} material={createLightMaterial('Glass.022', 'EN1240818', 9)} />
             <mesh name="L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300016_1" geometry={nodes['L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300016_1'].geometry} material={createLightMaterial('Glass.022', 'EN1240818', 9)} />
             <mesh name="L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300016_2" geometry={nodes['L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300016_2'].geometry} material={createLightMaterial('Die-formed cold roll steel', 'EN1240818', 9)} />
           </Select>
           
-          <group name="EN1240812-L01" position={[-14.008, 3.89, -4.626]} rotation={[-Math.PI / 2, 0, 0]} scale={0.305}>
+          <Select name="EN1240812-L01" enabled={hover === "EN1240812-L01" || select === "EN1240812-L01"} position={[-14.008, 3.89, -4.626]} rotation={[-Math.PI / 2, 0, 0]} scale={0.305}>
             <mesh name="L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300017" geometry={nodes['L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300017'].geometry} material={materials['Glass.022']} />
             <mesh name="L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300017_1" geometry={nodes['L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300017_1'].geometry} material={materials['Mirror anodized aluminium']} />
             <mesh name="L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300017_2" geometry={nodes['L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300017_2'].geometry} material={materials['Die-formed cold roll steel']} />
-          </group>
-          <group name="EN1240812-L02" position={[-12.008, 3.89, -4.626]} rotation={[-Math.PI / 2, 0, 0]} scale={0.305}>
+          </Select>
+          <Select name="EN1240812-L02" enabled={hover === "EN1240812-L02" || select === "EN1240812-L02"} position={[-12.008, 3.89, -4.626]} rotation={[-Math.PI / 2, 0, 0]} scale={0.305}>
             <mesh name="L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300018" geometry={nodes['L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300018'].geometry} material={materials['Glass.022']} />
             <mesh name="L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300018_1" geometry={nodes['L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300018_1'].geometry} material={materials['Mirror anodized aluminium']} />
             <mesh name="L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300018_2" geometry={nodes['L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300018_2'].geometry} material={materials['Die-formed cold roll steel']} />
-          </group>
-          <group name="EN1240812-L03" position={[-10.008, 3.89, -4.626]} rotation={[-Math.PI / 2, 0, 0]} scale={0.305}>
+          </Select>
+          <Select name="EN1240812-L03" enabled={hover === "EN1240812-L03" || select === "EN1240812-L03"} position={[-10.008, 3.89, -4.626]} rotation={[-Math.PI / 2, 0, 0]} scale={0.305}>
             <mesh name="L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300019" geometry={nodes['L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300019'].geometry} material={materials['Glass.022']} />
             <mesh name="L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300019_1" geometry={nodes['L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300019_1'].geometry} material={materials['Mirror anodized aluminium']} />
             <mesh name="L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300019_2" geometry={nodes['L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300019_2'].geometry} material={materials['Die-formed cold roll steel']} />
-          </group>
-          <group name="EN1240812-L06" position={[-14.008, 3.89, -2.126]} rotation={[-Math.PI / 2, 0, 0]} scale={0.305}>
+          </Select>
+          <Select name="EN1240812-L06" enabled={hover === "EN1240812-L06" || select === "EN1240812-L06"} position={[-14.008, 3.89, -2.126]} rotation={[-Math.PI / 2, 0, 0]} scale={0.305}>
             <mesh name="L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300020" geometry={nodes['L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300020'].geometry} material={materials['Glass.022']} />
             <mesh name="L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300020_1" geometry={nodes['L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300020_1'].geometry} material={materials['Mirror anodized aluminium']} />
             <mesh name="L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300020_2" geometry={nodes['L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300020_2'].geometry} material={materials['Die-formed cold roll steel']} />
-          </group>
-          <group name="EN1240812-L07" position={[-12.008, 3.89, -2.126]} rotation={[-Math.PI / 2, 0, 0]} scale={0.305}>
+          </Select>
+          <Select name="EN1240812-L07" enabled={hover === "EN1240812-L07" || select === "EN1240812-L07"} position={[-12.008, 3.89, -2.126]} rotation={[-Math.PI / 2, 0, 0]} scale={0.305}>
             <mesh name="L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300021" geometry={nodes['L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300021'].geometry} material={materials['Glass.022']} />
             <mesh name="L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300021_1" geometry={nodes['L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300021_1'].geometry} material={materials['Mirror anodized aluminium']} />
             <mesh name="L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300021_2" geometry={nodes['L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300021_2'].geometry} material={materials['Die-formed cold roll steel']} />
-          </group>
-          <group name="EN1240812-L08" position={[-10.008, 3.89, -2.126]} rotation={[-Math.PI / 2, 0, 0]} scale={0.305}>
+          </Select>
+          <Select name="EN1240812-L08" enabled={hover === "EN1240812-L08" || select === "EN1240812-L08"} position={[-10.008, 3.89, -2.126]} rotation={[-Math.PI / 2, 0, 0]} scale={0.305}>
             <mesh name="L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300022" geometry={nodes['L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300022'].geometry} material={materials['Glass.022']} />
             <mesh name="L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300022_1" geometry={nodes['L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300022_1'].geometry} material={materials['Mirror anodized aluminium']} />
             <mesh name="L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300022_2" geometry={nodes['L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300022_2'].geometry} material={materials['Die-formed cold roll steel']} />
-          </group>
-          <group name="EN1240812-L11" position={[-14.008, 3.89, 0.374]} rotation={[-Math.PI / 2, 0, 0]} scale={0.305}>
+          </Select>
+          <Select name="EN1240812-L11" enabled={hover === "EN1240812-L11" || select === "EN1240812-L11"} position={[-14.008, 3.89, 0.374]} rotation={[-Math.PI / 2, 0, 0]} scale={0.305}>
             <mesh name="L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300023" geometry={nodes['L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300023'].geometry} material={materials['Glass.022']} />
             <mesh name="L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300023_1" geometry={nodes['L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300023_1'].geometry} material={materials['Mirror anodized aluminium']} />
             <mesh name="L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300023_2" geometry={nodes['L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300023_2'].geometry} material={materials['Die-formed cold roll steel']} />
-          </group>
-          <group name="EN1240812-L12" position={[-12.008, 3.89, 0.374]} rotation={[-Math.PI / 2, 0, 0]} scale={0.305}>
+          </Select>
+          <Select name="EN1240812-L12" enabled={hover === "EN1240812-L12" || select === "EN1240812-L12"} position={[-12.008, 3.89, 0.374]} rotation={[-Math.PI / 2, 0, 0]} scale={0.305}>
             <mesh name="L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300024" geometry={nodes['L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300024'].geometry} material={materials['Glass.022']} />
             <mesh name="L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300024_1" geometry={nodes['L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300024_1'].geometry} material={materials['Mirror anodized aluminium']} />
             <mesh name="L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300024_2" geometry={nodes['L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300024_2'].geometry} material={materials['Die-formed cold roll steel']} />
-          </group>
-          <group name="EN1240812-L13" position={[-10.008, 3.89, 0.374]} rotation={[-Math.PI / 2, 0, 0]} scale={0.305}>
+          </Select>
+          <Select name="EN1240812-L13" enabled={hover === "EN1240812-L13" || select === "EN1240812-L13"} position={[-10.008, 3.89, 0.374]} rotation={[-Math.PI / 2, 0, 0]} scale={0.305}>
             <mesh name="L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300025" geometry={nodes['L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300025'].geometry} material={materials['Glass.022']} />
             <mesh name="L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300025_1" geometry={nodes['L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300025_1'].geometry} material={materials['Mirror anodized aluminium']} />
             <mesh name="L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300025_2" geometry={nodes['L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300025_2'].geometry} material={materials['Die-formed cold roll steel']} />
-          </group>
-          <group name="EN1240812-L04" position={[-6.014, 3.89, -4.626]} rotation={[-Math.PI / 2, 0, 0]} scale={0.305}>
+          </Select>
+          <Select name="EN1240812-L04" enabled={hover === "EN1240812-L04" || select === "EN1240812-L04"} position={[-6.014, 3.89, -4.626]} rotation={[-Math.PI / 2, 0, 0]} scale={0.305}>
             <mesh name="L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300026" geometry={nodes['L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300026'].geometry} material={materials['Glass.022']} />
             <mesh name="L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300026_1" geometry={nodes['L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300026_1'].geometry} material={materials['Mirror anodized aluminium']} />
             <mesh name="L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300026_2" geometry={nodes['L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300026_2'].geometry} material={materials['Die-formed cold roll steel']} />
-          </group>
-          <group name="EN1240812-L05" position={[-4.014, 3.89, -4.626]} rotation={[-Math.PI / 2, 0, 0]} scale={0.305}>
+          </Select>
+          <Select name="EN1240812-L05" enabled={hover === "EN1240812-L05" || select === "EN1240812-L05"} position={[-4.014, 3.89, -4.626]} rotation={[-Math.PI / 2, 0, 0]} scale={0.305}>
             <mesh name="L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300027" geometry={nodes['L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300027'].geometry} material={materials['Glass.022']} />
             <mesh name="L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300027_1" geometry={nodes['L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300027_1'].geometry} material={materials['Mirror anodized aluminium']} />
             <mesh name="L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300027_2" geometry={nodes['L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300027_2'].geometry} material={materials['Die-formed cold roll steel']} />
-          </group>
-          <group name="EN1240812-L09" position={[-6.014, 3.89, -2.126]} rotation={[-Math.PI / 2, 0, 0]} scale={0.305}>
+          </Select>
+          <Select name="EN1240812-L09" enabled={hover === "EN1240812-L09" || select === "EN1240812-L09"} position={[-6.014, 3.89, -2.126]} rotation={[-Math.PI / 2, 0, 0]} scale={0.305}>
             <mesh name="L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300028" geometry={nodes['L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300028'].geometry} material={materials['Glass.022']} />
             <mesh name="L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300028_1" geometry={nodes['L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300028_1'].geometry} material={materials['Mirror anodized aluminium']} />
             <mesh name="L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300028_2" geometry={nodes['L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300028_2'].geometry} material={materials['Die-formed cold roll steel']} />
-          </group>
-          <group name="EN1240812-L10" position={[-4.014, 3.89, -2.126]} rotation={[-Math.PI / 2, 0, 0]} scale={0.305}>
+          </Select>
+          <Select name="EN1240812-L10" enabled={hover === "EN1240812-L10" || select === "EN1240812-L10"} position={[-4.014, 3.89, -2.126]} rotation={[-Math.PI / 2, 0, 0]} scale={0.305}>
             <mesh name="L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300029" geometry={nodes['L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300029'].geometry} material={materials['Glass.022']} />
             <mesh name="L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300029_1" geometry={nodes['L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300029_1'].geometry} material={materials['Mirror anodized aluminium']} />
             <mesh name="L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300029_2" geometry={nodes['L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300029_2'].geometry} material={materials['Die-formed cold roll steel']} />
-          </group>
-          <group name="EN1240812-L14" position={[-6.014, 3.89, 0.374]} rotation={[-Math.PI / 2, 0, 0]} scale={0.305}>
+          </Select>
+          <Select name="EN1240812-L14" enabled={hover === "EN1240812-L14" || select === "EN1240812-L14"} position={[-6.014, 3.89, 0.374]} rotation={[-Math.PI / 2, 0, 0]} scale={0.305}>
             <mesh name="L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300030" geometry={nodes['L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300030'].geometry} material={materials['Glass.022']} />
             <mesh name="L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300030_1" geometry={nodes['L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300030_1'].geometry} material={materials['Mirror anodized aluminium']} />
             <mesh name="L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300030_2" geometry={nodes['L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300030_2'].geometry} material={materials['Die-formed cold roll steel']} />
-          </group>
-          <group name="EN1240812-L15" position={[-4.014, 3.89, 0.374]} rotation={[-Math.PI / 2, 0, 0]} scale={0.305}>
+          </Select>
+          <Select name="EN1240812-L15" enabled={hover === "EN1240812-L15" || select === "EN1240812-L15"} position={[-4.014, 3.89, 0.374]} rotation={[-Math.PI / 2, 0, 0]} scale={0.305}>
             <mesh name="L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300031" geometry={nodes['L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300031'].geometry} material={materials['Glass.022']} />
             <mesh name="L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300031_1" geometry={nodes['L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300031_1'].geometry} material={materials['Mirror anodized aluminium']} />
             <mesh name="L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300031_2" geometry={nodes['L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300031_2'].geometry} material={materials['Die-formed cold roll steel']} />
-          </group>
+          </Select>
           
-          <group name="EN1240827-L01" position={[14.362, 3.89, 15.848]} rotation={[-Math.PI / 2, 0, 0]} scale={0.305}>
+          <Select name="EN1240827-L01" enabled={hover === "EN1240827-L01" || select === "EN1240827-L01"} position={[14.362, 3.89, 15.848]} rotation={[-Math.PI / 2, 0, 0]} scale={0.305}>
             <mesh name="L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300032" geometry={nodes['L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300032'].geometry} material={materials['Glass.022']} />
             <mesh name="L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300032_1" geometry={nodes['L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300032_1'].geometry} material={materials['Mirror anodized aluminium']} />
             <mesh name="L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300032_2" geometry={nodes['L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300032_2'].geometry} material={materials['Die-formed cold roll steel']} />
-          </group>
-          <group name="EN1240826-L01" position={[9.737, 3.89, 16.233]} rotation={[-Math.PI / 2, 0, 0]} scale={0.305}>
+          </Select>
+          <Select name="EN1240826-L01" enabled={hover === "EN1240826-L01" || select === "EN1240826-L01"} position={[9.737, 3.89, 16.233]} rotation={[-Math.PI / 2, 0, 0]} scale={0.305}>
             <mesh name="L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300033" geometry={nodes['L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300033'].geometry} material={materials['Glass.022']} />
             <mesh name="L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300033_1" geometry={nodes['L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300033_1'].geometry} material={materials['Mirror anodized aluminium']} />
             <mesh name="L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300033_2" geometry={nodes['L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300033_2'].geometry} material={materials['Die-formed cold roll steel']} />
-          </group>
-          <group name="EN1240899-L20" position={[-13.84, 3.89, 16.078]} rotation={[-Math.PI / 2, 0, 0]} scale={0.305}>
+          </Select>
+          <Select name="EN1240899-L20" enabled={hover === "EN1240899-L20" || select === "EN1240899-L20"} position={[-13.84, 3.89, 16.078]} rotation={[-Math.PI / 2, 0, 0]} scale={0.305}>
             <mesh name="L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300034" geometry={nodes['L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300034'].geometry} material={materials['Glass.022']} />
             <mesh name="L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300034_1" geometry={nodes['L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300034_1'].geometry} material={materials['Mirror anodized aluminium']} />
             <mesh name="L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300034_2" geometry={nodes['L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300034_2'].geometry} material={materials['Die-formed cold roll steel']} />
-          </group>
-          <group name="EN1240899-L21" position={[-9.34, 3.89, 16.078]} rotation={[-Math.PI / 2, 0, 0]} scale={0.305}>
+          </Select>
+          <Select name="EN1240899-L21" enabled={hover === "EN1240899-L21" || select === "EN1240899-L21"} position={[-9.34, 3.89, 16.078]} rotation={[-Math.PI / 2, 0, 0]} scale={0.305}>
             <mesh name="L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300035" geometry={nodes['L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300035'].geometry} material={materials['Glass.022']} />
             <mesh name="L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300035_1" geometry={nodes['L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300035_1'].geometry} material={materials['Mirror anodized aluminium']} />
             <mesh name="L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300035_2" geometry={nodes['L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300035_2'].geometry} material={materials['Die-formed cold roll steel']} />
-          </group>
-          <group name="EN1240899-L22" position={[-4.34, 3.89, 16.078]} rotation={[-Math.PI / 2, 0, 0]} scale={0.305}>
+          </Select>
+          <Select name="EN1240899-L22" enabled={hover === "EN1240899-L22" || select === "EN1240899-L22"} position={[-4.34, 3.89, 16.078]} rotation={[-Math.PI / 2, 0, 0]} scale={0.305}>
             <mesh name="L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300036" geometry={nodes['L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300036'].geometry} material={materials['Glass.022']} />
             <mesh name="L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300036_1" geometry={nodes['L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300036_1'].geometry} material={materials['Mirror anodized aluminium']} />
             <mesh name="L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300036_2" geometry={nodes['L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300036_2'].geometry} material={materials['Die-formed cold roll steel']} />
-          </group>
-          <group name="EN1240899-L23" position={[2.16, 3.89, 16.078]} rotation={[-Math.PI / 2, 0, 0]} scale={0.305}>
+          </Select>
+          <Select name="EN1240899-L23" enabled={hover === "EN1240899-L23" || select === "EN1240899-L23"} position={[2.16, 3.89, 16.078]} rotation={[-Math.PI / 2, 0, 0]} scale={0.305}>
             <mesh name="L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300037" geometry={nodes['L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300037'].geometry} material={materials['Glass.022']} />
             <mesh name="L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300037_1" geometry={nodes['L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300037_1'].geometry} material={materials['Mirror anodized aluminium']} />
             <mesh name="L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300037_2" geometry={nodes['L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300037_2'].geometry} material={materials['Die-formed cold roll steel']} />
-          </group>
-          <group name="EN1240899-L24" position={[5.495, 3.89, 16.078]} rotation={[-Math.PI / 2, 0, 0]} scale={0.305}>
+          </Select>
+          <Select name="EN1240899-L24" enabled={hover === "EN1240899-L24" || select === "EN1240899-L24"} position={[5.495, 3.89, 16.078]} rotation={[-Math.PI / 2, 0, 0]} scale={0.305}>
             <mesh name="L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300038" geometry={nodes['L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300038'].geometry} material={materials['Glass.022']} />
             <mesh name="L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300038_1" geometry={nodes['L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300038_1'].geometry} material={materials['Mirror anodized aluminium']} />
             <mesh name="L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300038_2" geometry={nodes['L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300038_2'].geometry} material={materials['Die-formed cold roll steel']} />
-          </group>
-          <group name="EN1240899-L18" position={[-13.84, 3.89, 12.053]} rotation={[-Math.PI / 2, 0, 0]} scale={0.305}>
+          </Select>
+          <Select name="EN1240899-L18" enabled={hover === "EN1240899-L18" || select === "EN1240899-L18"} position={[-13.84, 3.89, 12.053]} rotation={[-Math.PI / 2, 0, 0]} scale={0.305}>
             <mesh name="L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300039" geometry={nodes['L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300039'].geometry} material={materials['Glass.022']} />
             <mesh name="L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300039_1" geometry={nodes['L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300039_1'].geometry} material={materials['Mirror anodized aluminium']} />
             <mesh name="L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300039_2" geometry={nodes['L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300039_2'].geometry} material={materials['Die-formed cold roll steel']} />
-          </group>
-          <group name="EN1240899-L16" position={[-13.84, 3.89, 7.415]} rotation={[-Math.PI / 2, 0, 0]} scale={0.305}>
+          </Select>
+          <Select name="EN1240899-L16" enabled={hover === "EN1240899-L16" || select === "EN1240899-L16"} position={[-13.84, 3.89, 7.415]} rotation={[-Math.PI / 2, 0, 0]} scale={0.305}>
             <mesh name="L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300040" geometry={nodes['L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300040'].geometry} material={materials['Glass.022']} />
             <mesh name="L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300040_1" geometry={nodes['L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300040_1'].geometry} material={materials['Mirror anodized aluminium']} />
             <mesh name="L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300040_2" geometry={nodes['L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300040_2'].geometry} material={materials['Die-formed cold roll steel']} />
-          </group>
-          <group name="EN1240899-L11" position={[-13.84, 3.89, 4.007]} rotation={[-Math.PI / 2, 0, 0]} scale={0.305}>
+          </Select>
+          <Select name="EN1240899-L11" enabled={hover === "EN1240899-L11" || select === "EN1240899-L11"} position={[-13.84, 3.89, 4.007]} rotation={[-Math.PI / 2, 0, 0]} scale={0.305}>
             <mesh name="L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300041" geometry={nodes['L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300041'].geometry} material={materials['Glass.022']} />
             <mesh name="L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300041_1" geometry={nodes['L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300041_1'].geometry} material={materials['Mirror anodized aluminium']} />
             <mesh name="L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300041_2" geometry={nodes['L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300041_2'].geometry} material={materials['Die-formed cold roll steel']} />
-          </group>
-          <group name="EN1240899-L12" position={[-9.34, 3.89, 4.007]} rotation={[-Math.PI / 2, 0, 0]} scale={0.305}>
+          </Select>
+          <Select name="EN1240899-L12" enabled={hover === "EN1240899-L12" || select === "EN1240899-L12"} position={[-9.34, 3.89, 4.007]} rotation={[-Math.PI / 2, 0, 0]} scale={0.305}>
             <mesh name="L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300042" geometry={nodes['L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300042'].geometry} material={materials['Glass.022']} />
             <mesh name="L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300042_1" geometry={nodes['L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300042_1'].geometry} material={materials['Mirror anodized aluminium']} />
             <mesh name="L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300042_2" geometry={nodes['L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300042_2'].geometry} material={materials['Die-formed cold roll steel']} />
-          </group>
-          <group name="EN1240899-L13" position={[-4.34, 3.89, 4.007]} rotation={[-Math.PI / 2, 0, 0]} scale={0.305}>
+          </Select>
+          <Select name="EN1240899-L13" enabled={hover === "EN1240899-L13" || select === "EN1240899-L13"} position={[-4.34, 3.89, 4.007]} rotation={[-Math.PI / 2, 0, 0]} scale={0.305}>
             <mesh name="L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300043" geometry={nodes['L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300043'].geometry} material={materials['Glass.022']} />
             <mesh name="L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300043_1" geometry={nodes['L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300043_1'].geometry} material={materials['Mirror anodized aluminium']} />
             <mesh name="L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300043_2" geometry={nodes['L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300043_2'].geometry} material={materials['Die-formed cold roll steel']} />
-          </group>
-          <group name="EN1240899-L14" position={[2.16, 3.89, 4.007]} rotation={[-Math.PI / 2, 0, 0]} scale={0.305}>
+          </Select>
+          <Select name="EN1240899-L14" enabled={hover === "EN1240899-L14" || select === "EN1240899-L14"} position={[2.16, 3.89, 4.007]} rotation={[-Math.PI / 2, 0, 0]} scale={0.305}>
             <mesh name="L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300044" geometry={nodes['L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300044'].geometry} material={materials['Glass.022']} />
             <mesh name="L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300044_1" geometry={nodes['L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300044_1'].geometry} material={materials['Mirror anodized aluminium']} />
             <mesh name="L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300044_2" geometry={nodes['L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300044_2'].geometry} material={materials['Die-formed cold roll steel']} />
-          </group>
-          <group name="EN1240899-L15" position={[5.495, 3.89, 4.007]} rotation={[-Math.PI / 2, 0, 0]} scale={0.305}>
+          </Select>
+          <Select name="EN1240899-L15" enabled={hover === "EN1240899-L15" || select === "EN1240899-L15"} position={[5.495, 3.89, 4.007]} rotation={[-Math.PI / 2, 0, 0]} scale={0.305}>
             <mesh name="L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300045" geometry={nodes['L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300045'].geometry} material={materials['Glass.022']} />
             <mesh name="L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300045_1" geometry={nodes['L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300045_1'].geometry} material={materials['Mirror anodized aluminium']} />
             <mesh name="L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300045_2" geometry={nodes['L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300045_2'].geometry} material={materials['Die-formed cold roll steel']} />
-          </group>
-          <group name="EN1240899-L17" position={[5.495, 3.89, 7.007]} rotation={[-Math.PI / 2, 0, 0]} scale={0.305}>
+          </Select>
+          <Select name="EN1240899-L17" enabled={hover === "EN1240899-L17" || select === "EN1240899-L17"} position={[5.495, 3.89, 7.007]} rotation={[-Math.PI / 2, 0, 0]} scale={0.305}>
             <mesh name="L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300046" geometry={nodes['L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300046'].geometry} material={materials['Glass.022']} />
             <mesh name="L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300046_1" geometry={nodes['L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300046_1'].geometry} material={materials['Mirror anodized aluminium']} />
             <mesh name="L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300046_2" geometry={nodes['L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300046_2'].geometry} material={materials['Die-formed cold roll steel']} />
-          </group>
-          <group name="EN1240899-L19" position={[5.495, 3.89, 11.507]} rotation={[-Math.PI / 2, 0, 0]} scale={0.305}>
+          </Select>
+          <Select name="EN1240899-L19" enabled={hover === "EN1240899-L19" || select === "EN1240899-L19"} position={[5.495, 3.89, 11.507]} rotation={[-Math.PI / 2, 0, 0]} scale={0.305}>
             <mesh name="L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300047" geometry={nodes['L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300047'].geometry} material={materials['Glass.022']} />
             <mesh name="L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300047_1" geometry={nodes['L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300047_1'].geometry} material={materials['Mirror anodized aluminium']} />
             <mesh name="L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300047_2" geometry={nodes['L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300047_2'].geometry} material={materials['Die-formed cold roll steel']} />
-          </group>
-          <group name="EN1240899-L10" position={[2.16, 3.89, 0.607]} rotation={[-Math.PI / 2, 0, 0]} scale={0.305}>
+          </Select>
+          <Select name="EN1240899-L10" enabled={hover === "EN1240899-L10" || select === "EN1240899-L10"} position={[2.16, 3.89, 0.607]} rotation={[-Math.PI / 2, 0, 0]} scale={0.305}>
             <mesh name="L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300048" geometry={nodes['L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300048'].geometry} material={materials['Glass.022']} />
             <mesh name="L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300048_1" geometry={nodes['L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300048_1'].geometry} material={materials['Mirror anodized aluminium']} />
             <mesh name="L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300048_2" geometry={nodes['L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300048_2'].geometry} material={materials['Die-formed cold roll steel']} />
-          </group>
-          <group name="EN1240899-L09" position={[2.16, 3.89, -2.893]} rotation={[-Math.PI / 2, 0, 0]} scale={0.305}>
+          </Select>
+          <Select name="EN1240899-L09" enabled={hover === "EN1240899-L09" || select === "EN1240899-L09"} position={[2.16, 3.89, -2.893]} rotation={[-Math.PI / 2, 0, 0]} scale={0.305}>
             <mesh name="L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300049" geometry={nodes['L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300049'].geometry} material={materials['Glass.022']} />
             <mesh name="L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300049_1" geometry={nodes['L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300049_1'].geometry} material={materials['Mirror anodized aluminium']} />
             <mesh name="L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300049_2" geometry={nodes['L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300049_2'].geometry} material={materials['Die-formed cold roll steel']} />
-          </group>
-          <group name="EN1240899-L05" position={[2.16, 3.89, -7.893]} rotation={[-Math.PI / 2, 0, 0]} scale={0.305}>
+          </Select>
+          <Select name="EN1240899-L05" enabled={hover === "EN1240899-L05" || select === "EN1240899-L05"} position={[2.16, 3.89, -7.893]} rotation={[-Math.PI / 2, 0, 0]} scale={0.305}>
             <mesh name="L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300050" geometry={nodes['L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300050'].geometry} material={materials['Glass.022']} />
             <mesh name="L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300050_1" geometry={nodes['L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300050_1'].geometry} material={materials['Mirror anodized aluminium']} />
             <mesh name="L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300050_2" geometry={nodes['L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300050_2'].geometry} material={materials['Die-formed cold roll steel']} />
-          </group>
-          <group name="EN1240899-L06" position={[6.36, 3.89, -7.893]} rotation={[-Math.PI / 2, 0, 0]} scale={0.305}>
+          </Select>
+          <Select name="EN1240899-L06" enabled={hover === "EN1240899-L06" || select === "EN1240899-L06"} position={[6.36, 3.89, -7.893]} rotation={[-Math.PI / 2, 0, 0]} scale={0.305}>
             <mesh name="L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300051" geometry={nodes['L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300051'].geometry} material={materials['Glass.022']} />
             <mesh name="L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300051_1" geometry={nodes['L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300051_1'].geometry} material={materials['Mirror anodized aluminium']} />
             <mesh name="L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300051_2" geometry={nodes['L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300051_2'].geometry} material={materials['Die-formed cold roll steel']} />
-          </group>
-          <group name="EN1240899-L07" position={[10.36, 3.89, -7.893]} rotation={[-Math.PI / 2, 0, 0]} scale={0.305}>
+          </Select>
+          <Select name="EN1240899-L07" enabled={hover === "EN1240899-L07" || select === "EN1240899-L07"} position={[10.36, 3.89, -7.893]} rotation={[-Math.PI / 2, 0, 0]} scale={0.305}>
             <mesh name="L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300052" geometry={nodes['L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300052'].geometry} material={materials['Glass.022']} />
             <mesh name="L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300052_1" geometry={nodes['L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300052_1'].geometry} material={materials['Mirror anodized aluminium']} />
             <mesh name="L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300052_2" geometry={nodes['L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300052_2'].geometry} material={materials['Die-formed cold roll steel']} />
-          </group>
-          <group name="EN1240899-L08" position={[13.86, 3.89, -7.893]} rotation={[-Math.PI / 2, 0, 0]} scale={0.305}>
+          </Select>
+          <Select name="EN1240899-L08" enabled={hover === "EN1240899-L08" || select === "EN1240899-L08"} position={[13.86, 3.89, -7.893]} rotation={[-Math.PI / 2, 0, 0]} scale={0.305}>
             <mesh name="L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300053" geometry={nodes['L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300053'].geometry} material={materials['Glass.022']} />
             <mesh name="L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300053_1" geometry={nodes['L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300053_1'].geometry} material={materials['Mirror anodized aluminium']} />
             <mesh name="L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300053_2" geometry={nodes['L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300053_2'].geometry} material={materials['Die-formed cold roll steel']} />
-          </group>
+          </Select>
           
-          <group name="EN1240811-L01" position={[17.86, 3.89, -7.893]} rotation={[-Math.PI / 2, 0, 0]} scale={0.305}>
+          <Select name="EN1240811-L01" enabled={hover === "EN1240811-L01" || select === "EN1240811-L01"} position={[17.86, 3.89, -7.893]} rotation={[-Math.PI / 2, 0, 0]} scale={0.305}>
             <mesh name="L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300054" geometry={nodes['L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300054'].geometry} material={materials['Glass.022']} />
             <mesh name="L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300054_1" geometry={nodes['L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300054_1'].geometry} material={materials['Mirror anodized aluminium']} />
             <mesh name="L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300054_2" geometry={nodes['L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300054_2'].geometry} material={materials['Die-formed cold roll steel']} />
-          </group>
-          <group name="EN1240811-L02" position={[21.86, 3.89, -7.893]} rotation={[-Math.PI / 2, 0, 0]} scale={0.305}>
+          </Select>
+          <Select name="EN1240811-L02" enabled={hover === "EN1240811-L02" || select === "EN1240811-L02"} position={[21.86, 3.89, -7.893]} rotation={[-Math.PI / 2, 0, 0]} scale={0.305}>
             <mesh name="L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300055" geometry={nodes['L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300055'].geometry} material={materials['Glass.022']} />
             <mesh name="L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300055_1" geometry={nodes['L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300055_1'].geometry} material={materials['Mirror anodized aluminium']} />
             <mesh name="L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300055_2" geometry={nodes['L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300055_2'].geometry} material={materials['Die-formed cold roll steel']} />
-          </group>
-          <group name="EN1240899-L01" position={[-13.993, 3.89, -8.199]} rotation={[-Math.PI / 2, 0, 0]} scale={0.305}>
+          </Select>
+          <Select name="EN1240899-L01" enabled={hover === "EN1240899-L01" || select === "EN1240899-L01"} position={[-13.993, 3.89, -8.199]} rotation={[-Math.PI / 2, 0, 0]} scale={0.305}>
             <mesh name="L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300056" geometry={nodes['L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300056'].geometry} material={materials['Glass.022']} />
             <mesh name="L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300056_1" geometry={nodes['L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300056_1'].geometry} material={materials['Mirror anodized aluminium']} />
             <mesh name="L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300056_2" geometry={nodes['L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300056_2'].geometry} material={materials['Die-formed cold roll steel']} />
-          </group>
-          <group name="EN1240899-L02" position={[-10.993, 3.89, -8.199]} rotation={[-Math.PI / 2, 0, 0]} scale={0.305}>
+          </Select>
+          <Select name="EN1240899-L02" enabled={hover === "EN1240899-L02" || select === "EN1240899-L02"} position={[-10.993, 3.89, -8.199]} rotation={[-Math.PI / 2, 0, 0]} scale={0.305}>
             <mesh name="L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300057" geometry={nodes['L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300057'].geometry} material={materials['Glass.022']} />
             <mesh name="L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300057_1" geometry={nodes['L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300057_1'].geometry} material={materials['Mirror anodized aluminium']} />
             <mesh name="L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300057_2" geometry={nodes['L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300057_2'].geometry} material={materials['Die-formed cold roll steel']} />
-          </group>
-          <group name="EN1240899-L03" position={[-6.493, 3.89, -8.199]} rotation={[-Math.PI / 2, 0, 0]} scale={0.305}>
+          </Select>
+          <Select name="EN1240899-L03" enabled={hover === "EN1240899-L03" || select === "EN1240899-L03"} position={[-6.493, 3.89, -8.199]} rotation={[-Math.PI / 2, 0, 0]} scale={0.305}>
             <mesh name="L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300058" geometry={nodes['L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300058'].geometry} material={materials['Glass.022']} />
             <mesh name="L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300058_1" geometry={nodes['L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300058_1'].geometry} material={materials['Mirror anodized aluminium']} />
             <mesh name="L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300058_2" geometry={nodes['L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300058_2'].geometry} material={materials['Die-formed cold roll steel']} />
-          </group>
-          <group name="EN1240899-L04" position={[-2.493, 3.89, -8.199]} rotation={[-Math.PI / 2, 0, 0]} scale={0.305}>
+          </Select>
+          <Select name="EN1240899-L04" enabled={hover === "EN1240899-L04" || select === "EN1240899-L04"} position={[-2.493, 3.89, -8.199]} rotation={[-Math.PI / 2, 0, 0]} scale={0.305}>
             <mesh name="ระดับพื้นหลังคา001" geometry={nodes.ระดับพื้นหลังคา001.geometry} material={materials['Glass.022']} />
             <mesh name="ระดับพื้นหลังคา001_1" geometry={nodes.ระดับพื้นหลังคา001_1.geometry} material={materials['Mirror anodized aluminium']} />
             <mesh name="ระดับพื้นหลังคา001_2" geometry={nodes.ระดับพื้นหลังคา001_2.geometry} material={materials['Die-formed cold roll steel']} />
-          </group>
+          </Select>
         </>
       )}
     </group>

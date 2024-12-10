@@ -17,6 +17,9 @@ export default function FloorArea({ buildingId, onSelectFloor }: Props) {
 
   const [FloorComponent, setFloorComponent] = useState<ComponentType<{
     isManage: boolean;
+    isFloorPage: boolean;
+    isRoomPage: boolean;
+    isFloorColorChange: boolean;
   }> | null>(null);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
@@ -64,7 +67,16 @@ export default function FloorArea({ buildingId, onSelectFloor }: Props) {
             <X className="size-5" />
           </Button>
           <CanvasScreen
-            model={FloorComponent ? <FloorComponent isManage={true} /> : null}
+            model={
+              FloorComponent ? (
+                <FloorComponent
+                  isManage={true}
+                  isFloorPage={true}
+                  isRoomPage={false}
+                  isFloorColorChange={true}
+                />
+              ) : null
+            }
             cameraPosition={[-5, 25, 12]}
             controlSettings={{
               minPolarAngle: 0,

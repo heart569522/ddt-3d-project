@@ -13,6 +13,7 @@ import {
   TableFooter,
   TableRow,
 } from "@/components/shadcn-ui/table";
+import { configs } from "@/lib/configs";
 import useFacultyStore from "@/stores/use-faculty-store";
 import { IBuilding, IElectricTodayUsage } from "@/types/model";
 import Link from "next/link";
@@ -24,13 +25,14 @@ type Props = {
 };
 
 export default function CardDetail({ buildingData, electricUsageData }: Props) {
-  const { select: value } = useFacultyStore((state) => state);
+  const { select } = useFacultyStore((state) => state);
   const [data, setData] = useState<any>(null);
+  const [disableButton, setDisableButton] = useState<boolean>(true);
 
   const mapTableDetails = () => {
     const tableDetail = {
-      buildingCode: value?.toUpperCase(),
-      buildingName: buildingData?.find((building) => building.bu_id === value)
+      buildingCode: select?.toUpperCase(),
+      buildingName: buildingData?.find((building) => building.bu_id === select)
         ?.bu_name,
       meters: [] as { meterID: string; useRateToday: string }[],
       totalEnergyConsumption: "",
@@ -38,7 +40,7 @@ export default function CardDetail({ buildingData, electricUsageData }: Props) {
 
     const filteredData =
       electricUsageData?.filter(
-        (item) => item.fl_id.substring(0, 5) === value
+        (item) => item.fl_id.substring(0, 5) === select
       ) || [];
 
     let totalEnergyConsumption = 0;
@@ -57,12 +59,25 @@ export default function CardDetail({ buildingData, electricUsageData }: Props) {
   };
 
   useEffect(() => {
-    if (value) {
+    if (select) {
       mapTableDetails();
+      handleCheckActiveBuilding();
     } else {
       setData(null);
     }
-  }, [value]);
+  }, [select]);
+
+  const handleCheckActiveBuilding = () => {
+    console.log(select);
+
+    const isBuidingActive =
+      configs.building[select?.toLowerCase() as string]?.active;
+    if (isBuidingActive) {
+      setDisableButton(false);
+    } else {
+      setDisableButton(true);
+    }
+  };
 
   return (
     <Card className="max-w-80 xl:max-w-full bg-background/60">
@@ -105,9 +120,13 @@ export default function CardDetail({ buildingData, electricUsageData }: Props) {
             <TableFooter>
               <TableRow>
                 <TableCell colSpan={2} className="p-2">
-                  <Link href={`/building/${value}`} target="_blank">
-                    <Button className="w-full">View</Button>
-                  </Link>
+                  <Button
+                    className="w-full"
+                    onClick={() => window.open(`/building/${select}`)}
+                    disabled={disableButton}
+                  >
+                    View
+                  </Button>
                 </TableCell>
               </TableRow>
             </TableFooter>

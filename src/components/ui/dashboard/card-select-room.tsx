@@ -7,6 +7,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/shadcn-ui/card";
+import { configs } from "@/lib/configs";
 import { cn } from "@/lib/utils";
 import { getFloorStore } from "@/stores/get-floor-store";
 import { notFound } from "next/navigation";
@@ -19,14 +20,23 @@ interface Props {
 export default function CardSelectRoom({ room }: Props) {
   const [rooms, setRooms] = useState<string[]>([]);
   const { select, setSelect } = getFloorStore(room);
+  const [disableButton, setDisableButton] = useState<boolean>(true);
 
   useEffect(() => {
     const loadRooms = async () => {
       try {
         const roomModule = await import(
-          `@/components/models/${room.toLowerCase().substring(0, 5)}/floor-room/${room.toLowerCase()}-floor`
+          `@/components/models/${room
+            .toLowerCase()
+            .substring(0, 5)}/floor-room/${room.toLowerCase()}-floor`
         );
-        setRooms(roomModule[`${room.toLowerCase().substring(0, 5)}Floors${room.toLowerCase().substring(5, 7)}`]);
+        setRooms(
+          roomModule[
+            `${room.toLowerCase().substring(0, 5)}Floors${room
+              .toLowerCase()
+              .substring(5, 7)}`
+          ]
+        );
       } catch (error) {
         console.error("Error loading floors:", error);
         notFound();
@@ -35,6 +45,25 @@ export default function CardSelectRoom({ room }: Props) {
 
     loadRooms();
   }, [room]);
+
+  useEffect(() => {
+    const handleCheckActiveRoom = () => {
+      if (select) {
+        const isRoomActive =
+          configs.building?.[select?.substring(0, 5).toLowerCase() as string]
+            ?.floor?.[select?.substring(0, 7).toLowerCase() as string]?.room?.[
+            select?.toLowerCase() as string
+          ]?.active ?? false;
+        if (isRoomActive) {
+          setDisableButton(false);
+        } else {
+          setDisableButton(true);
+        }
+      }
+    };
+
+    handleCheckActiveRoom();
+  }, [select]);
 
   return (
     <Card className="max-w-80 xl:max-w-full bg-background/60">
@@ -63,9 +92,7 @@ export default function CardSelectRoom({ room }: Props) {
                 select === room ? "bg-primary/80" : "bg-background/80"
               )}
             >
-              <span className="text-sm">
-                {"Room " + room.substring(6, 9)}
-              </span>
+              <span className="text-sm">{"Room " + room.substring(6, 9)}</span>
             </Button>
           ))}
         </div>
@@ -73,8 +100,8 @@ export default function CardSelectRoom({ room }: Props) {
       <CardFooter className="mt-4">
         <Button
           className="w-full bg-primary/80"
-          onClick={() => window.open(`/room/${select}`, "_blank")}
-          disabled={!select}
+          onClick={() => window.open(`/room/${select}`)}
+          disabled={!select || disableButton}
         >
           {select ? `View Room ${select.substring(7, 9)}` : "Select room..."}
         </Button>

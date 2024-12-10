@@ -16,6 +16,7 @@ import { getData } from '@/actions/actions';
 import Link from 'next/link';
 import { Button } from '@/components/shadcn-ui/button';
 import { ExternalLink } from 'lucide-react';
+import { getFloorActiveStatus } from '@/lib/utils';
 
 type GLTFResult = GLTF & {
   nodes: {
@@ -125,6 +126,10 @@ export default function EN106Building(props: Props) {
   }, [select]);
 
   const renderModalDetail = (floorCode: string) => {
+    const isFloorActive = getFloorActiveStatus(
+      select?.substring(0, 5),
+      select as string
+    );
     if (select === floorCode && !props.isManage) {
       return (
         <Html distanceFactor={60}>
@@ -133,11 +138,13 @@ export default function EN106Building(props: Props) {
               <label className="font-bold text-xl">
                 {`ชั้น ${floorCode.substring(5, 7)} - ${floorCode}`}
               </label>
-              <Link href={`/floor/${floorCode.toUpperCase()}`} target="_blank">
-                <Button variant={"ghost"} size={"icon"}>
-                  <ExternalLink className="size-5" />
-                </Button>
-              </Link>
+              {isFloorActive && (
+                <Link href={`/floor/${floorCode.toUpperCase()}`} target="_blank">
+                  <Button variant={"ghost"} size={"icon"}>
+                    <ExternalLink className="size-5" />
+                  </Button>
+                </Link>
+              )}
             </div>
             {renderFloorDetail()}
           </div>
@@ -147,70 +154,71 @@ export default function EN106Building(props: Props) {
   }
 
   const renderFloorDetail = () => {
-    if (floorDetail) {
-      return (
-        <Table className="border rounded-md">
-          <TableBody>
-            <TableRow>
-              <TableCell className="p-2">Building Code</TableCell>
-              <TableCell className="p-2">
-                {floorDetail?.buildingCode || "-"}
-              </TableCell>
-            </TableRow>
-            <TableRow>
-              <TableCell className="p-2">Floor</TableCell>
-              <TableCell className="p-2">
-                {floorDetail?.floorNumber || "-"}
-              </TableCell>
-            </TableRow>
-            <TableRow>
-              <TableCell className="p-2">Meter Energy</TableCell>
-              <TableCell className="p-2">
-                {floorDetail?.floorMeter || "-"}
-              </TableCell>
-            </TableRow>
-            <TableRow>
-              <TableCell className="p-2">Meter Power</TableCell>
-              <TableCell className="p-2">
-                {floorDetail?.floorPower || "-"}
-              </TableCell>
-            </TableRow>
-            <TableRow>
-              <TableCell className="p-2">Average PM 2.5</TableCell>
-              <TableCell className="p-2">
-                {floorDetail?.averagefloorPM25 || "-"}
-              </TableCell>
-            </TableRow>
-            <TableRow>
-              <TableCell className="p-2">Average Temperature</TableCell>
-              <TableCell className="p-2">
-                {floorDetail?.averagefloorTemp || "-"}
-              </TableCell>
-            </TableRow>
-            <TableRow>
-              <TableCell className="p-2">Average Humidity</TableCell>
-              <TableCell className="p-2">
-                {floorDetail?.averagefloorHumidity || "-"}
-              </TableCell>
-            </TableRow>
-          </TableBody>
-        </Table>
-      )
-    }
-  }
+    return (
+      <Table className="border rounded-md">
+        <TableBody>
+          <TableRow>
+            <TableCell className="p-2">Building Code</TableCell>
+            <TableCell className="p-2">
+              {floorDetail?.buildingCode || select?.substring(0, 5)}
+            </TableCell>
+          </TableRow>
+          <TableRow>
+            <TableCell className="p-2">Floor</TableCell>
+            <TableCell className="p-2">
+              {floorDetail?.floorNumber || select?.substring(5, 7)}
+            </TableCell>
+          </TableRow>
+          <TableRow>
+            <TableCell className="p-2">Meter Energy</TableCell>
+            <TableCell className="p-2">
+              {floorDetail?.floorMeter ? floorDetail?.floorMeter : "-"}
+            </TableCell>
+          </TableRow>
+          <TableRow>
+            <TableCell className="p-2">Meter Power</TableCell>
+            <TableCell className="p-2">
+              {floorDetail?.floorPower ? floorDetail?.floorPower : "-"}
+            </TableCell>
+          </TableRow>
+          <TableRow>
+            <TableCell className="p-2">Average PM 2.5</TableCell>
+            <TableCell className="p-2">
+              {floorDetail?.averagefloorPM25 ? floorDetail?.averagefloorPM25 : "-"}
+            </TableCell>
+          </TableRow>
+          <TableRow>
+            <TableCell className="p-2">Average Temperature</TableCell>
+            <TableCell className="p-2">
+              {floorDetail?.averagefloorTemp ? floorDetail?.averagefloorTemp : "-"}
+            </TableCell>
+          </TableRow>
+          <TableRow>
+            <TableCell className="p-2">Average Humidity</TableCell>
+            <TableCell className="p-2">
+              {floorDetail?.averagefloorHumidity ? floorDetail?.averagefloorHumidity : "-"}
+            </TableCell>
+          </TableRow>
+        </TableBody>
+      </Table>
+    );
+  };
   
   return (
     <group {...props} dispose={null} rotation={[0, 180, 0]}>
       <Select 
         name="EN10601" 
         enabled={hover === "EN10601" || select === "EN10601"}
-        onPointerOver={() => {
+        onPointerOver={(e) => {
+          e.stopPropagation();
           handleObjectHover("EN10601");
         }}
-        onPointerOut={() => {
+        onPointerOut={(e) => {
+          e.stopPropagation();
           handleObjectHover(null);
         }}
-        onClick={() => {
+        onClick={(e) => {
+          e.stopPropagation();
           handleObjectSelect("EN10601");
         }} 
         position={[3.275, 1.401, -0.823]} 
@@ -240,13 +248,16 @@ export default function EN106Building(props: Props) {
       <Select 
         name="EN10602" 
         enabled={hover === "EN10602" || select === "EN10602"}
-        onPointerOver={() => {
+        onPointerOver={(e) => {
+          e.stopPropagation();
           handleObjectHover("EN10602");
         }}
-        onPointerOut={() => {
+        onPointerOut={(e) => {
+          e.stopPropagation();
           handleObjectHover(null);
         }}
-        onClick={() => {
+        onClick={(e) => {
+          e.stopPropagation();
           handleObjectSelect("EN10602");
         }}  
         position={[-2.896, 5.454, -3.076]} 

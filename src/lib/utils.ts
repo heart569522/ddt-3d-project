@@ -1,5 +1,6 @@
 import { type ClassValue, clsx } from "clsx";
 import { twMerge } from "tailwind-merge";
+import { configs } from "./configs";
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -28,4 +29,18 @@ export const suffixesNumber = (num: number) => {
     num /= 1000;
   }
   return num.toFixed(0) + suffixes[suffixIndex];
+};
+
+export const getFloorActiveStatus = (buildingKey?: string, floorKey?: string): boolean => {
+  if (!buildingKey || !floorKey) {
+    return false; // Return false if keys are missing
+  }
+
+  const building = configs.building[buildingKey.toLowerCase()]; // Get the building
+  if (!building?.floor) {
+    return false; // Building or floors don't exist
+  }
+
+  const floor = building.floor[floorKey.toLowerCase()]; // Get the floor
+  return floor?.active ?? false; // Return floor active status or false
 };

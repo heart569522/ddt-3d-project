@@ -91,11 +91,14 @@ export default function LampForm({
   const roomId = isFormEdit
     ? segments[segments.length - 2]
     : searchParams.get("roomid");
+  const lampId = isFormEdit && segments[segments.length - 1];
 
   const [RoomComponent, setRoomComponent] = useState<ComponentType<{
     isManage: boolean;
     isShowLamp: boolean;
     isShowAir: boolean;
+    isFloorColorChange: boolean;
+    activeLampId: string | null;
   }> | null>(null);
   const [modelErrorMessage, setModelErrorMessage] = useState<string | null>(
     null
@@ -344,6 +347,12 @@ export default function LampForm({
                       isManage={true}
                       isShowLamp={true}
                       isShowAir={true}
+                      isFloorColorChange={true}
+                      activeLampId={
+                        lampId
+                          ? lampId.slice(0, -3) + "-" + lampId.slice(-3)
+                          : null
+                      }
                     />
                   ) : null
                 }

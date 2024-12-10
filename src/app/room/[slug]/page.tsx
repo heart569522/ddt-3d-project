@@ -35,6 +35,7 @@ import { notFound } from "next/navigation";
 import CardSelectRoom from "@/components/ui/dashboard/card-select-room";
 import { configs } from "@/lib/configs";
 import CardSelectInRoom from "@/components/ui/dashboard/card-select-in-room";
+import { Color } from "three";
 
 export async function generateMetadata({
   params,
@@ -59,6 +60,9 @@ export default async function Room({ params }: { params: { slug: string } }) {
   const electricUsageData = formatRoomElectricTodayUsage(electricUsage);
   const pmTempHmdData = await getData(`RhtpmPerMonth/${roomId}`);
   const roomDetail = await getData(`floorDetail/${roomId.toUpperCase()}`);
+
+  const minDistance = configs.building[buildingId]?.floor?.[floorId]?.room?.[roomId]?.minDistance
+  const maxDistance = configs.building[buildingId]?.floor?.[floorId]?.room?.[roomId]?.maxDistance
 
   const getCameraPosition = async () => {
     return (
@@ -93,14 +97,15 @@ export default async function Room({ params }: { params: { slug: string } }) {
           controlSettings={{
             minPolarAngle: 0,
             maxPolarAngle: 0,
-            minDistance: 10,
-            maxDistance: 12,
-            enablePan: false,
+            minDistance: minDistance || 10,
+            maxDistance: maxDistance || 12,
+            enablePan: true,
           }}
           outlineResolution={0.5}
           outlineStrength={15}
           floorId={floorId}
           isRoomPage={true}
+          planeColor={Color.NAMES.darkslategray}
         />
       );
     } catch (error) {
@@ -155,7 +160,7 @@ export default async function Room({ params }: { params: { slug: string } }) {
           </TooltipHover>
         </>
       }
-      useCardSelectFloorRoom={false}
+      useCardSelectInRoom={true}
     >
       <div className="w-full h-dvh">{await renderCanvas()}</div>
     </Navigation>

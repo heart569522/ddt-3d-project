@@ -30,23 +30,41 @@ export default function RoomArea({ buildingId, floorId }: Props) {
     isManage: boolean;
     isShowLamp: boolean;
     isShowAir: boolean;
+    isFloorPage: boolean;
+    isRoomPage: boolean;
+    isFloorColorChange: boolean;
   }> | null>(null);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
-  const cameraPosition = configs.building[buildingId?.toLowerCase() as string]
-    ?.floor?.[floorId?.toLowerCase() as string]?.room?.[
-    selectRoom?.toLowerCase() as string
-  ]?.cameraPosition || [0, 0, 0];
+  const [cameraPosition, setCameraPosition] = useState<
+    [number, number, number]
+  >([0, 0, 0]);
+  const [airCount, setAirCount] = useState<number>(0);
+  const [lampCount, setLampCount] = useState<number>(0);
 
-  const airCount =
-    configs.building[buildingId?.toLowerCase() as string]?.floor?.[
-      floorId?.toLowerCase() as string
-    ]?.room?.[selectRoom?.toLowerCase() as string]?.airCount || 0;
+  const getRoomConfig = (roomKey: string) => {
+    const room =
+      configs.building[buildingId?.toLowerCase() as string]?.floor?.[
+        floorId?.toLowerCase() as string
+      ]?.room?.[roomKey] || null;
+    return {
+      cameraPosition: room?.cameraPosition || [0, 0, 0],
+      airCount: room?.airCount || 0,
+      lampCount: room?.lampCount || 0,
+    };
+  };
 
-  const lampCount =
-    configs.building[buildingId?.toLowerCase() as string]?.floor?.[
-      floorId?.toLowerCase() as string
-    ]?.room?.[selectRoom?.toLowerCase() as string]?.lampCount || 0;
+  useEffect(() => {
+    const roomKey =
+      selectRoom?.includes("A") || selectRoom?.includes("L")
+        ? selectRoom?.substring(0, 9).toLowerCase()
+        : selectRoom?.toLowerCase();
+    const roomConfig = getRoomConfig(roomKey as string);
+
+    setCameraPosition(roomConfig.cameraPosition);
+    setAirCount(roomConfig.airCount);
+    setLampCount(roomConfig.lampCount);
+  }, [selectRoom]);
 
   useEffect(() => {
     const loadRoomComponent = async () => {
@@ -88,14 +106,17 @@ export default function RoomArea({ buildingId, floorId }: Props) {
     const airList = await getData(`getAircon`);
 
     const airData = airList.find(
-      (item: any) => (item.a_id = `${selectRoom?.toUpperCase()}A0${airNumber}`)
+      (item: any) =>
+        (item.a_id = `${selectRoom
+          ?.split("-")[0]
+          ?.toUpperCase()}A0${airNumber}`)
     );
 
     if (airData) {
       window.open(
-        `/admin/management/air-conditioners/edit/${selectRoom?.toUpperCase()}/${
-          airData.a_id
-        }`,
+        `/admin/management/air-conditioners/edit/${selectRoom
+          ?.split("-")[0]
+          ?.toUpperCase()}/${airData.a_id}`,
         "_blank"
       );
     } else {
@@ -108,14 +129,14 @@ export default function RoomArea({ buildingId, floorId }: Props) {
 
   const handleClickManageLamp = async (lampNumber: number) => {
     const lampData = await getData(
-      `getLampById/${selectRoom?.toUpperCase()}L0${lampNumber}`
+      `getLampById/${selectRoom?.split("-")[0]?.toUpperCase()}L0${lampNumber}`
     );
 
     if (lampData) {
       window.open(
-        `/admin/management/lamp-plug/edit/${selectRoom?.toUpperCase()}/${
-          lampData.l_id
-        }`,
+        `/admin/management/lamp-plug/edit/${selectRoom
+          ?.split("-")[0]
+          ?.toUpperCase()}/${lampData.l_id}`,
         "_blank"
       );
     } else {
@@ -149,6 +170,9 @@ export default function RoomArea({ buildingId, floorId }: Props) {
                   isManage={true}
                   isShowLamp={true}
                   isShowAir={true}
+                  isFloorPage={false}
+                  isRoomPage={true}
+                  isFloorColorChange={true}
                 />
               ) : null
             }
@@ -170,7 +194,7 @@ export default function RoomArea({ buildingId, floorId }: Props) {
               <Button
                 size={"sm"}
                 onClick={handleClickManageRoom}
-                className="rounded-sm bg-background/50 ring-0 outline-none w-28"
+                className="rounded-sm bg-background/50 ring-0 outline-none w-40"
               >
                 จัดการห้อง
               </Button>
@@ -179,9 +203,9 @@ export default function RoomArea({ buildingId, floorId }: Props) {
                   <DropdownMenuTrigger asChild>
                     <Button
                       size={"sm"}
-                      className="rounded-sm bg-background/50 ring-0 outline-none w-28"
+                      className="rounded-sm bg-background/50 ring-0 outline-none w-40"
                     >
-                      จัดการแอร์
+                      จัดการเครื่องปรับอากาศ
                     </Button>
                   </DropdownMenuTrigger>
                   <DropdownMenuContent
@@ -192,8 +216,20 @@ export default function RoomArea({ buildingId, floorId }: Props) {
                       <DropdownMenuItem
                         key={index + 1}
                         onClick={() => handleClickManageAir(index + 1)}
+                        onMouseOver={() =>
+                          setSelectRoom(
+                            `${selectRoom?.split("-")[0]?.toUpperCase()}-A0${
+                              index + 1
+                            }`
+                          )
+                        }
+                        onMouseOut={() =>
+                          setSelectRoom(
+                            `${selectRoom?.split("-")[0]?.toUpperCase()}`
+                          )
+                        }
                       >
-                        {`แอร์ ${index + 1}`}
+                        {`หมายเลข ${index + 1}`}
                       </DropdownMenuItem>
                     ))}
                   </DropdownMenuContent>
@@ -202,9 +238,9 @@ export default function RoomArea({ buildingId, floorId }: Props) {
                 <Button
                   size={"sm"}
                   onClick={() => handleClickManageAir(0)}
-                  className="rounded-sm bg-background/50 ring-0 outline-none w-28"
+                  className="rounded-sm bg-background/50 ring-0 outline-none w-40"
                 >
-                  จัดการแอร์
+                  จัดการเครื่องปรับอากาศ
                 </Button>
               )}
               {lampCount > 0 ? (
@@ -212,7 +248,7 @@ export default function RoomArea({ buildingId, floorId }: Props) {
                   <DropdownMenuTrigger asChild>
                     <Button
                       size={"sm"}
-                      className="rounded-sm bg-background/50 ring-0 outline-none w-28"
+                      className="rounded-sm bg-background/50 ring-0 outline-none w-40"
                     >
                       จัดการโคมไฟ
                     </Button>
@@ -225,6 +261,18 @@ export default function RoomArea({ buildingId, floorId }: Props) {
                       <DropdownMenuItem
                         key={index + 1}
                         onClick={() => handleClickManageLamp(index + 1)}
+                        onMouseOver={() =>
+                          setSelectRoom(
+                            `${selectRoom?.split("-")[0]?.toUpperCase()}-L0${
+                              index + 1
+                            }`
+                          )
+                        }
+                        onMouseOut={() =>
+                          setSelectRoom(
+                            `${selectRoom?.split("-")[0]?.toUpperCase()}`
+                          )
+                        }
                       >
                         {`โคมไฟ ${index + 1}`}
                       </DropdownMenuItem>
@@ -235,7 +283,7 @@ export default function RoomArea({ buildingId, floorId }: Props) {
                 <Button
                   size={"sm"}
                   onClick={() => handleClickManageLamp(0)}
-                  className="rounded-sm bg-background/50 ring-0 outline-none w-28"
+                  className="rounded-sm bg-background/50 ring-0 outline-none w-40"
                 >
                   จัดการโคมไฟ
                 </Button>

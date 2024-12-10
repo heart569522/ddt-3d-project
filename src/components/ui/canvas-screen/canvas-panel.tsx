@@ -11,10 +11,12 @@ import { X } from "lucide-react";
 import { getBuildingStore } from "@/stores/get-building-store";
 import FloorArea from "./floor-area";
 import RoomArea from "./room-area";
+import { configs } from "@/lib/configs";
 
 export default function CanvasPanel() {
   const { select: selectBuilding, setSelect: setSelectBuilding } =
     useFacultyStore((state) => state);
+  console.log("🚀 ~ CanvasPanel ~ selectBuilding:", selectBuilding);
 
   const [BuildingComponent, setBuildingComponent] = useState<ComponentType<{
     isManage: boolean;
@@ -23,28 +25,34 @@ export default function CanvasPanel() {
 
   const [selectedFloor, setSelectedFloor] = useState<string | null>(null);
 
-  useEffect(() => {
-    const loadBuildingComponent = async () => {
-      if (selectBuilding) {
-        try {
-          const component = (
-            await import(
-              `../../../components/models/${selectBuilding?.toLowerCase()}/building/${selectBuilding?.toLowerCase()}-building`
-            )
-          ).default;
-          setBuildingComponent(() => component);
-        } catch (error) {
-          console.error("Failed to load building component:", error);
-          setErrorMessage(`Model ${selectBuilding} not avaliable.`);
-          setBuildingComponent(null);
-        }
-      } else {
-        setErrorMessage(null);
-      }
-    };
+  const isBuidingActive =
+    configs.building[selectBuilding?.toLowerCase() as string]?.active;
+  console.log("🚀 ~ CanvasPanel ~ isBuidingActive:", isBuidingActive);
 
-    loadBuildingComponent();
-  }, [selectBuilding]);
+  useEffect(() => {
+    if (isBuidingActive) {
+      const loadBuildingComponent = async () => {
+        if (selectBuilding) {
+          try {
+            const component = (
+              await import(
+                `../../../components/models/${selectBuilding?.toLowerCase()}/building/${selectBuilding?.toLowerCase()}-building`
+              )
+            ).default;
+            setBuildingComponent(() => component);
+          } catch (error) {
+            console.error("Failed to load building component:", error);
+            setErrorMessage(`Model ${selectBuilding} not avaliable.`);
+            setBuildingComponent(null);
+          }
+        } else {
+          setErrorMessage(null);
+        }
+      };
+
+      loadBuildingComponent();
+    }
+  }, [selectBuilding, isBuidingActive]);
 
   return (
     <div className="grid grid-cols-1 grid-rows-1 lg:grid-cols-2 lg:grid-rows-2 h-full w-full gap-4">
@@ -66,7 +74,7 @@ export default function CanvasPanel() {
         />
       </div>
       <div className="h-full relative bg-background/50">
-        {BuildingComponent ? (
+        {isBuidingActive && BuildingComponent ? (
           <>
             <div className="absolute left-0 z-10 px-3 py-2 bg-background/50 rounded-sm m-1 font-semibold bg text-xl">
               อาคาร {selectBuilding}

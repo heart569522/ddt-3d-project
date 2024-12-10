@@ -78,7 +78,7 @@ export default async function Floor({ params }: { params: { slug: string } }) {
           outlineResolution={0.5}
           outlineStrength={15}
           floorId={floorId}
-          planeColor={Color.NAMES.gray}
+          planeColor={Color.NAMES.darkslategray}
         />
       );
     } catch (error) {

@@ -134,25 +134,25 @@ export function formatRoomElectricTodayUsage(data: IFloorRoomUseHour[]) {
     const formattedData = [
       {
         name: "Air",
-        value: item.air_en.toFixed(configs.numberOfDecimal) || null, // No Math.abs here
+        value: item?.air_en?.toFixed(configs.numberOfDecimal) || null, // No Math.abs here
         total: "0", // Placeholder for total
         fill: `var(--color-Air)`,
       },
       {
         name: "Rec",
-        value: item.rac_en.toFixed(configs.numberOfDecimal) || null, // No Math.abs here
+        value: item.rac_en?.toFixed(configs.numberOfDecimal) || null, // No Math.abs here
         total: "0",
         fill: `var(--color-Rec)`,
       },
       {
         name: "Switch",
-        value: item.sw_en.toFixed(configs.numberOfDecimal) || null, // No Math.abs here
+        value: item.sw_en?.toFixed(configs.numberOfDecimal) || null, // No Math.abs here
         total: "0",
         fill: `var(--color-Switch)`,
       },
       {
         name: "Other",
-        value: item.other_en.toFixed(configs.numberOfDecimal) || null, // No Math.abs here
+        value: item.other_en?.toFixed(configs.numberOfDecimal) || null, // No Math.abs here
         total: "0",
         fill: `var(--color-Other)`,
       },

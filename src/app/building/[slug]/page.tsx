@@ -27,6 +27,8 @@ import { Metadata } from "next/types";
 import { notFound } from "next/navigation";
 import React from "react";
 import CardSelectFloor from "@/components/ui/dashboard/card-select-floor";
+import { configs } from "@/lib/configs";
+import { Color } from "three";
 
 export async function generateMetadata({
   params,
@@ -43,6 +45,12 @@ export default async function Building({
 }: {
   params: { slug: string };
 }) {
+  const isHaveBGMap = configs.building[params.slug.toLowerCase()]?.bgMap ?? false
+  const position = configs.building[params.slug.toLowerCase()]?.camera.position
+  const minDistance = configs.building[params.slug.toLowerCase()]?.camera.minDistance
+  const maxDistance = configs.building[params.slug.toLowerCase()]?.camera.maxDistance
+  const isFloorActive = configs.building[params.slug.toLowerCase()]?.floor ?? null
+
   const renderCanvas = async () => {
     try {
       const BuildingComponent = (
@@ -55,18 +63,19 @@ export default async function Building({
         <CanvasScreen
           antialias={true}
           model={
-            <BuildingComponent castShadow receiveShadow isManage={false} />
+            <BuildingComponent isManage={false} />
           }
-          cameraPosition={[0, 30, 45]}
+          cameraPosition={position || [0, 30, 45]}
           dpr={[0.5, 0.95]}
           controlSettings={{
             minPolarAngle: 0,
             maxPolarAngle: Math.PI / 2.25,
-            minDistance: 30,
-            maxDistance: 100,
+            minDistance: minDistance || 20,
+            maxDistance: maxDistance || 50,
             enablePan: true,
           }}
-          isUsePlane={false}
+          isUsePlane={!isHaveBGMap}
+          // planeColor={Color.NAMES.darkslategray}
         />
       );
     } catch (error) {

@@ -22,7 +22,10 @@ interface Props {
   timeRange?: "7day" | "1month" | "6month" | string;
 }
 
-export default function EnvironmentInfoChart({ data, isFaculty = false }: Props) {
+export default function EnvironmentInfoChart({
+  data,
+  isFaculty = false,
+}: Props) {
   let PMData: IEnvironmentLineChart[] = [];
   let TempData: IEnvironmentLineChart[] = [];
   let HumidityData: IEnvironmentLineChart[] = [];
@@ -31,26 +34,32 @@ export default function EnvironmentInfoChart({ data, isFaculty = false }: Props)
     const [, month] = item.Month.split("-").map(Number);
     const monthName = monthNames[month - 1];
 
-    PMData.push({
-      title: monthName.slice(0, 3),
-      min: parseFloat(item.PM25Min.toFixed(configs.numberOfDecimal)),
-      max: parseFloat(item.PM25Max.toFixed(configs.numberOfDecimal)),
-      mean: parseFloat(item.PM25Month.toFixed(configs.numberOfDecimal)),
-    });
+    if (item.PM25Min || item.PM25Max || item.PM25Month) {
+      PMData.push({
+        title: monthName.slice(0, 3),
+        min: parseFloat(item.PM25Min.toFixed(configs.numberOfDecimal)),
+        max: parseFloat(item.PM25Max.toFixed(configs.numberOfDecimal)),
+        mean: parseFloat(item.PM25Month.toFixed(configs.numberOfDecimal)),
+      });
+    }
 
-    TempData.push({
-      title: monthName.slice(0, 3),
-      min: parseFloat(item.TempMin.toFixed(configs.numberOfDecimal)),
-      max: parseFloat(item.TempMax.toFixed(configs.numberOfDecimal)),
-      mean: parseFloat(item.TempMonth.toFixed(configs.numberOfDecimal)),
-    });
+    if (item.TempMin || item.TempMax || item.TempMonth) {
+      TempData.push({
+        title: monthName.slice(0, 3),
+        min: parseFloat(item.TempMin.toFixed(configs.numberOfDecimal)),
+        max: parseFloat(item.TempMax.toFixed(configs.numberOfDecimal)),
+        mean: parseFloat(item.TempMonth.toFixed(configs.numberOfDecimal)),
+      });
+    }
 
-    HumidityData.push({
-      title: monthName.slice(0, 3),
-      min: parseFloat(item.HumidMin.toFixed(configs.numberOfDecimal)),
-      max: parseFloat(item.HumidMax.toFixed(configs.numberOfDecimal)),
-      mean: parseFloat(item.HumidMonth.toFixed(configs.numberOfDecimal)),
-    });
+    if (item.HumidMin || item.HumidMax || item.HumidMonth) {
+      HumidityData.push({
+        title: monthName.slice(0, 3),
+        min: parseFloat(item.HumidMin?.toFixed(configs.numberOfDecimal)),
+        max: parseFloat(item.HumidMax?.toFixed(configs.numberOfDecimal)),
+        mean: parseFloat(item.HumidMonth?.toFixed(configs.numberOfDecimal)),
+      });
+    }
   });
 
   return (

@@ -7,6 +7,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/shadcn-ui/card";
+import { configs } from "@/lib/configs";
 import { cn } from "@/lib/utils";
 import { getBuildingStore } from "@/stores/get-building-store";
 import { notFound } from "next/navigation";
@@ -18,7 +19,8 @@ interface Props {
 
 export default function CardSelectFloor({ building }: Props) {
   const [floors, setFloors] = useState<string[]>([]);
-  const buildingStore  = getBuildingStore(building);
+  const buildingStore = getBuildingStore(building);
+  const [disableButton, setDisableButton] = useState<boolean>(true);
 
   const select = buildingStore?.select || null;
   const setSelect = buildingStore?.setSelect || null;
@@ -38,6 +40,23 @@ export default function CardSelectFloor({ building }: Props) {
 
     loadFloors();
   }, [building]);
+
+  useEffect(() => {
+    const handleCheckActiveFloor = () => {
+      if (select) {
+        const isFloorActive =
+          configs.building[select?.substring(0, 5).toLowerCase() as string]
+            ?.floor?.[select?.toLowerCase() as string]?.active;
+        if (isFloorActive) {
+          setDisableButton(false);
+        } else {
+          setDisableButton(true);
+        }
+      }
+    };
+
+    handleCheckActiveFloor();
+  }, [select]);
 
   return (
     <Card className="max-w-80 xl:max-w-full bg-background/60">
@@ -76,8 +95,8 @@ export default function CardSelectFloor({ building }: Props) {
       <CardFooter>
         <Button
           className="w-full bg-primary/80"
-          onClick={() => window.open(`/floor/${select}`, "_blank")}
-          disabled={!select}
+          onClick={() => window.open(`/floor/${select}`)}
+          disabled={!select || disableButton}
         >
           {select ? `View Floor ${select.substring(5, 7)}` : "Select floor..."}
         </Button>

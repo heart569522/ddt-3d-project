@@ -78,6 +78,7 @@ export default function RoomForm({
     isManage: boolean;
     isShowLamp: boolean;
     isShowAir: boolean;
+    isFloorColorChange: boolean;
   }> | null>(null);
   const [modelErrorMessage, setModelErrorMessage] = useState<string | null>(
     null
@@ -251,6 +252,7 @@ export default function RoomForm({
                       isManage={true}
                       isShowLamp={true}
                       isShowAir={true}
+                      isFloorColorChange={true}
                     />
                   ) : null
                 }

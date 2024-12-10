@@ -43,7 +43,6 @@ interface PMProps {
 }
 
 export function EnvironmentAverage({ data, isFaculty = false }: AverageProps) {
-  console.log("🚀 ~ EnvironmentAverage ~ data:", data)
   const {
     averagePM25 = null,
     averageTemp = null,

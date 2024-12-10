@@ -50,7 +50,7 @@ export default function HumidityChart({
         </CardTitle>
       </CardHeader>
       <CardContent>
-        {data.length !== 0 ? (
+        {data && data.length !== 0 ? (
           <ChartContainer config={chartConfig}>
             <LineChart
               accessibilityLayer

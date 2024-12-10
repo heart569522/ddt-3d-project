@@ -22,6 +22,9 @@ import { IBuilding, IElectricTodayUsage } from "@/types/model";
 import useFacultyStore from "@/stores/use-faculty-store";
 import CardSelectFloor from "./dashboard/card-select-floor";
 import CardSelectRoom from "./dashboard/card-select-room";
+import { useContourMenuStore } from "@/stores/use-contour-menu-store";
+import ContourLegend from "./contour-legend";
+import CardSelectInRoom from "./dashboard/card-select-in-room";
 
 type Props = {
   children: React.ReactNode;
@@ -35,6 +38,7 @@ type Props = {
   useCardBuildingDetail?: boolean;
   useCardSelectBuildingFloor?: boolean;
   useCardSelectFloorRoom?: boolean;
+  useCardSelectInRoom?: boolean;
 };
 
 export default function Navigation({
@@ -49,6 +53,7 @@ export default function Navigation({
   useCardBuildingDetail = false,
   useCardSelectBuildingFloor = false,
   useCardSelectFloorRoom = false,
+  useCardSelectInRoom = false
 }: Props) {
   const pathname = usePathname();
   const router = useRouter();
@@ -56,6 +61,7 @@ export default function Navigation({
   const [isShowDashboard, setIsShowDashboard] = useState(true);
 
   const { select: click } = useFacultyStore((state) => state);
+  const { menuState } = useContourMenuStore();
 
   const toggleShowHideDashboard = () => {
     setIsShowDashboard(!isShowDashboard);
@@ -108,6 +114,11 @@ export default function Navigation({
         </Toolbar>
       )}
 
+      <ContourLegend
+        isShowDashboard={isShowDashboard}
+        contourMenu={menuState}
+      />
+
       {useCardBuildingDetail && click && (
         <div className="-right-6 md:right-3 hidden max-xl:block xl:right-[350px] gap-2 items-center absolute top-8 md:top-[4.25rem] z-50 scale-[0.8] md:scale-100">
           <CardDetail
@@ -126,6 +137,12 @@ export default function Navigation({
       {useCardSelectFloorRoom && (
         <div className="right-3 hidden max-xl:block gap-2 items-center absolute top-[4.25rem] z-50">
           <CardSelectRoom room={pathname.split("/floor/")[1]} />
+        </div>
+      )}
+
+      {useCardSelectInRoom && (
+        <div className="right-3 hidden max-xl:block gap-2 items-center absolute top-[4.25rem] z-50">
+          <CardSelectInRoom room={pathname.split("/room/")[1]} />
         </div>
       )}
 

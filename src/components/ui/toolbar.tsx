@@ -48,7 +48,7 @@ export default function Toolbar({
         {children}
       </motion.div>
 
-      {/* Mobile */}
+      {/* Mobile
       <motion.div
         className={cn(
           "md:hidden flex gap-2 items-center absolute bg-background/60 p-2 rounded-lg bottom-2 justify-center left-1/2 transform -translate-x-1/2 z-50"
@@ -56,7 +56,7 @@ export default function Toolbar({
         transition={{ duration: 0.5, ease: "easeInOut" }}
       >
         {children}
-      </motion.div>
+      </motion.div> */}
     </>
   );
 }

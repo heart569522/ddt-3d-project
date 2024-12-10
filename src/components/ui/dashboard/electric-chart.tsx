@@ -269,7 +269,6 @@ export function ElectricFloorRoomChart({
   const [chartData, setChartData] =
     useState<IElectricFloorRoomUsageChart[]>(data);
   const [selectedTimeRange, setSelectedTimeRange] = useState("today");
-  console.log("🚀 ~ chartData:", chartData);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -291,7 +290,7 @@ export function ElectricFloorRoomChart({
 
         case "today":
         default:
-          if (data.length === 0) {
+          if (data?.length === 0) {
             if (roomId) {
               const response = await getData(`RoomUseHour/${roomId}`);
               newData = formatRoomElectricTodayUsage(response);
@@ -383,7 +382,7 @@ export function ElectricFloorRoomChart({
               </>
             )}
           </div>
-          {chartData.length !== 0 ? (
+          {chartData && chartData?.length !== 0 ? (
             <ChartContainer config={chartConfig}>
               <BarChart
                 accessibilityLayer
@@ -429,7 +428,7 @@ export function ElectricFloorRoomChart({
           <h3 className="text-base md:text-lg font-semibold text-left">
             {selectedTimeRange === "today" ? "Today" : "24 Hour"} Usage (%)
           </h3>
-          {chartData.length !== 0 ? (
+          {chartData && chartData?.length !== 0 ? (
             <ChartContainer
               config={chartConfig}
               className="mx-auto aspect-square max-h-[300px]"
@@ -515,7 +514,7 @@ export function AverageElectricUsage({ data, isFloorRoom = false }: Props) {
         <CardDescription>Last 6 Month</CardDescription>
       </CardHeader>
       <CardContent>
-        {chartData?.length !== 0 ? (
+        {chartData && chartData?.length !== 0 ? (
           <ChartContainer
             className="bg-secondary/80 rounded-md p-2"
             config={averageChartConfig}
