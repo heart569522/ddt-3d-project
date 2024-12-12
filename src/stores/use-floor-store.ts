@@ -2,7 +2,8 @@ import { EN104Floor1 } from "@/components/models/en104/floor-room/en10401-floor"
 import { EN104Floor2 } from "@/components/models/en104/floor-room/en10402-floor";
 import { EN12408Air, EN12408Light, EN124Floor8 } from "@/components/models/en124/floor-room/en12408-floor";
 import { EN202Floor1 } from "@/components/models/en202/floor-room/en20201-floor";
-import { EN202FloorB1 } from "@/components/models/en202/floor-room/en202b1-floor copy";
+import { EN202FloorB1 } from "@/components/models/en202/floor-room/en202b1-floor";
+
 import { create } from "zustand";
 
 export interface EN10401State {
