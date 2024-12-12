@@ -31,7 +31,10 @@ export const suffixesNumber = (num: number) => {
   return num.toFixed(0) + suffixes[suffixIndex];
 };
 
-export const getFloorActiveStatus = (buildingKey?: string, floorKey?: string): boolean => {
+export const getFloorActiveStatus = (
+  buildingKey?: string,
+  floorKey?: string
+): boolean => {
   if (!buildingKey || !floorKey) {
     return false; // Return false if keys are missing
   }
@@ -43,4 +46,37 @@ export const getFloorActiveStatus = (buildingKey?: string, floorKey?: string): b
 
   const floor = building.floor[floorKey.toLowerCase()]; // Get the floor
   return floor?.active ?? false; // Return floor active status or false
+};
+
+export const getColorFromScale = (value: number, scale: Array<[number, string]>) => {
+  for (let i = 0; i < scale.length - 1; i++) {
+    const [start, startColor] = scale[i];
+    const [end, endColor] = scale[i + 1];
+
+    if (value >= start && value <= end) {
+      const ratio = (value - start) / (end - start);
+      return interpolateColor(startColor, endColor, ratio);
+    }
+  }
+  return scale[scale.length - 1][1];
+};
+
+export const interpolateColor = (color1: string, color2: string, ratio: number) => {
+  const hexToRgb = (hex: string) =>
+    hex
+      .replace(/^#/, "")
+      .match(/.{2}/g)
+      ?.map((x) => parseInt(x, 16)) || [0, 0, 0];
+
+  const rgbToHex = (rgb: number[]) =>
+    `#${rgb.map((x) => x.toString(16).padStart(2, "0")).join("")}`;
+
+  const rgb1 = hexToRgb(color1);
+  const rgb2 = hexToRgb(color2);
+
+  const interpolatedRgb = rgb1.map((c, i) =>
+    Math.round(c + (rgb2[i] - c) * ratio)
+  );
+
+  return rgbToHex(interpolatedRgb);
 };

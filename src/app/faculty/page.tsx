@@ -20,6 +20,7 @@ import CanvasScreen from "@/components/ui/canvas-screen/canvas";
 import React from "react";
 import CardDetail from "@/components/ui/dashboard/card-detail";
 import FacultyAllBuilding from "@/components/models/faculty/all";
+import ButtonControlShowMap from "@/components/ui/button-control-showmap";
 
 export default async function Faculty () {
   const avgEnvironment = await getData("gaugeOutdoorDustboy");
@@ -41,7 +42,7 @@ export default async function Faculty () {
                   Area: 1,234 Square meters
                 </p>
                 <p className="text-base text-card-foreground">
-                  Number of Buildings: 12 units
+                  Number of Buildings: 25 units
                 </p>
               </>
             }
@@ -64,17 +65,7 @@ export default async function Faculty () {
       }
       toolbar={
         <>
-          <TooltipHover
-            content={"View Map"}
-            position={"top"}
-            isUseMediaQuery={true}
-            mediaQuerySize="md"
-            positionMediaQuery="right"
-          >
-            <Button variant="outline" className="bg-background/80" size="icon">
-              <MapPin className="h-5 w-5" />
-            </Button>
-          </TooltipHover>
+          <ButtonControlShowMap />
           {/* <TooltipHover
             content={"Temperature"}
             position="top"
@@ -123,8 +114,9 @@ export default async function Faculty () {
       <div className="w-full h-dvh">
         <CanvasScreen
           model={<FacultyAllBuilding isManage={false} />}
-          cameraPosition={[-5, 15, 25]}
-          dpr={[0.4, 0.75]}
+          cameraPosition={[-5, 25, 40]}
+          dpr={[0.6, 0.85]}
+          antialias={true}
           isUsePlane={false}
           controlSettings={{
             minPolarAngle: 0,

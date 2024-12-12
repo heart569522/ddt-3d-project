@@ -22,7 +22,6 @@ export default async function AddConditioner() {
 
   const airBrand = await getData("getAirBrand");
   const airType = await getData("getAirType");
-  const airSensor = await getData("getSensorAir/EN1240818");
 
   return (
     <>
@@ -31,7 +30,6 @@ export default async function AddConditioner() {
       <AirForm
         airTypes={airType}
         airBrands={airBrand}
-        sensorAir={airSensor}
         session={session as Session}
       />
     </>

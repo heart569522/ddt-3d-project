@@ -207,7 +207,7 @@ export default function EN113Building(props: Props) {
     );
     if (select === floorCode && !props.isManage) {
       return (
-        <Html distanceFactor={60}>
+        <Html distanceFactor={70}>
           <div className="pt-[10px] transform translate-x-[80%] bg-secondary text-left p-[10px_15px] rounded-md w-[320px] relative before:content-[''] before:absolute before:top-[25px] before:-left-10 before:h-[2px] before:w-[40px] before:bg-secondary">
             <div className="flex justify-between items-center">
               <label className="font-bold text-xl">
@@ -296,6 +296,7 @@ export default function EN113Building(props: Props) {
       ref={groupRef} 
       {...props} 
       dispose={null}
+      position={[0, 0.5, 0]}
     >
       <Select name="EN11302" enabled={hover === "EN11302" || select === "EN11302"} position={[-2.194, 6.7, -2.497]} rotation={[-Math.PI / 2, 0, 0]} scale={0.3}>
         {renderModalDetail("EN11302")}

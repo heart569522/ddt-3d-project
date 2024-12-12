@@ -5,7 +5,7 @@ import TooltipHover from "./tooltip-hover";
 import { Button } from "../shadcn-ui/button";
 import { Droplets, Thermometer, UndoDot } from "lucide-react";
 import { IconFaceMask } from "@tabler/icons-react";
-import { useContourMenuStore } from "@/stores/use-contour-menu-store";
+import { useContourMenuStore } from "@/stores/use-menu-store";
 import { cn } from "@/lib/utils";
 
 export default function ButtonControlContour() {

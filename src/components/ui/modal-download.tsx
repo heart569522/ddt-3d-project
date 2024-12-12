@@ -34,7 +34,7 @@ export default function ModalPDFDownload({ children, floorId }: Props) {
           </DialogDescription>
         </DialogHeader>
         <div className="space-y-2">
-          {docs &&
+          {docs ? (
             Object.entries(docs).map(([key, value]) => {
               if (
                 typeof value === "object" &&
@@ -47,7 +47,9 @@ export default function ModalPDFDownload({ children, floorId }: Props) {
                     className="flex justify-between items-center gap-2"
                     key={key}
                   >
-                    <span className="text-base font-semibold">{value.name}</span>
+                    <span className="text-base font-semibold">
+                      {value.name}
+                    </span>
                     <a
                       href={value.path}
                       target="_blank"
@@ -93,7 +95,10 @@ export default function ModalPDFDownload({ children, floorId }: Props) {
                 });
               }
               return null;
-            })}
+            })
+          ) : (
+            <p className="font-semibold text-sm text-center opacity-50">Document Not Avaliable</p>
+          )}
         </div>
       </DialogContent>
     </Dialog>

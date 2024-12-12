@@ -153,7 +153,7 @@ export default function EN104Building(props: Props) {
     );
     if (select === floorCode && !props.isManage) {
       return (
-        <Html distanceFactor={30}>
+        <Html distanceFactor={20}>
           <div className="pt-[10px] transform translate-x-[80%] bg-secondary text-left p-[10px_15px] rounded-md w-[320px] relative before:content-[''] before:absolute before:top-[25px] before:-left-10 before:h-[2px] before:w-[40px] before:bg-secondary">
             <div className="flex justify-between items-center">
               <label className="font-bold text-xl">

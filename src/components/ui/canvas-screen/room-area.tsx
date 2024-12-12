@@ -105,11 +105,10 @@ export default function RoomArea({ buildingId, floorId }: Props) {
   const handleClickManageAir = async (airNumber: number) => {
     const airList = await getData(`getAircon`);
 
+    const airId = `${selectRoom?.split("-")[0]?.toUpperCase()}A0${airNumber}`;
+
     const airData = airList.find(
-      (item: any) =>
-        (item.a_id = `${selectRoom
-          ?.split("-")[0]
-          ?.toUpperCase()}A0${airNumber}`)
+      (item: any) => item.a_id === airId
     );
 
     if (airData) {
@@ -152,7 +151,7 @@ export default function RoomArea({ buildingId, floorId }: Props) {
       {RoomComponent ? (
         <>
           <div className="absolute left-0 z-10 px-3 py-2 bg-background/50 rounded-sm m-1 font-semibold bg text-xl">
-            ห้อง {selectRoom?.slice(-3)}
+            ห้อง {selectRoom?.substring(6, 9)}
           </div>
           <Button
             size={"icon"}

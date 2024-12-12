@@ -298,10 +298,11 @@ export default function EN101Building(props: Props) {
       ref={groupRef} 
       {...props} 
       dispose={null}
+      position={[0, 0.5, 0]}
     >
       <mesh name="EN101RF" geometry={nodes.EN101RF.geometry} material={materials['Concrete, Cast-in-Place gray']} position={[0.367, 12.862, -0.694]} rotation={[-Math.PI / 2, 0, 0]} scale={0.3} />
       <Select name="EN10101" enabled={hover === "EN10101" || select === "EN10101"} position={[1.998, 0.407, -0.964]} rotation={[-Math.PI / 2, 0, 0]} scale={0.3}>
-      {renderModalDetail("EN10101")}
+        {renderModalDetail("EN10101")}
         <mesh name="พื้นห้อง" geometry={nodes.พื้นห้อง.geometry} material={materials.ปูนรอง} />
         <mesh name="พื้นห้อง_1" geometry={nodes.พื้นห้อง_1.geometry} material={materials.กระเบื้อง} />
         <mesh name="พื้นห้อง_2" geometry={nodes.พื้นห้อง_2.geometry} material={materials['Acoustic Ceiling Tile 24 x 24']} />
@@ -314,7 +315,7 @@ export default function EN101Building(props: Props) {
         <mesh name="พื้นห้อง_9" geometry={nodes.พื้นห้อง_9.geometry} material={materials['Concrete, Cast-in-Place gray.001']} />
       </Select>
       <Select name="EN10102" enabled={hover === "EN10102" || select === "EN10102"} position={[4.897, 3.807, 1.588]} rotation={[-Math.PI / 2, 0, 0]} scale={0.3}>
-      {renderModalDetail("EN10102")}
+        {renderModalDetail("EN10102")}
         <mesh name="พื้นทางเดิน" geometry={nodes.พื้นทางเดิน.geometry} material={materials['ปูนรอง.001']} />
         <mesh name="พื้นทางเดิน_1" geometry={nodes.พื้นทางเดิน_1.geometry} material={materials['ทราย.001']} />
         <mesh name="พื้นทางเดิน_2" geometry={nodes.พื้นทางเดิน_2.geometry} material={materials['Brick, Common.001']} />
@@ -339,7 +340,7 @@ export default function EN101Building(props: Props) {
         <mesh name="พื้นทางเดิน_21" geometry={nodes.พื้นทางเดิน_21.geometry} material={materials['Concrete, Normal Weight - 4 ksi.001']} />
       </Select>
       <Select name="EN10103" enabled={hover === "EN10103" || select === "EN10103"} position={[4.805, 7.153, 1.568]} rotation={[-Math.PI / 2, 0, 0]} scale={0.3}>
-      {renderModalDetail("EN10103")}
+        {renderModalDetail("EN10103")}
         <mesh name="พื้นห้อง001" geometry={nodes.พื้นห้อง001.geometry} material={materials['ปูนรอง.002']} />
         <mesh name="พื้นห้อง001_1" geometry={nodes.พื้นห้อง001_1.geometry} material={materials['กระเบื้อง.002']} />
         <mesh name="พื้นห้อง001_2" geometry={nodes.พื้นห้อง001_2.geometry} material={materials['Brick, Common.002']} />
@@ -364,7 +365,7 @@ export default function EN101Building(props: Props) {
         <mesh name="พื้นห้อง001_21" geometry={nodes.พื้นห้อง001_21.geometry} material={materials['Concrete, Normal Weight - 4 ksi.002']} />
       </Select>
       <Select name="EN10104" enabled={hover === "EN10104" || select === "EN10104"} position={[1.93, 10.481, 0.563]} rotation={[-Math.PI / 2, 0, 0]} scale={0.3}>
-      {renderModalDetail("EN10104")}
+        {renderModalDetail("EN10104")}
         <mesh name="พื้นห้อง002" geometry={nodes.พื้นห้อง002.geometry} material={materials['ปูนรอง.003']} />
         <mesh name="พื้นห้อง002_1" geometry={nodes.พื้นห้อง002_1.geometry} material={materials['กระเบื้อง.003']} />
         <mesh name="พื้นห้อง002_2" geometry={nodes.พื้นห้อง002_2.geometry} material={materials['Brick, Common.003']} />

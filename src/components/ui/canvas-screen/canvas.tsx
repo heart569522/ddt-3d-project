@@ -136,12 +136,12 @@ export default function CanvasScreen({
 
         <OrbitControls
           {...controlSettings}
-          onChange={(e) => {
-            const newPosition = e?.target?.object?.position?.clone();
-            if (newPosition) {
-              console.log("Camera position:", newPosition); // Log position for testing
-            }
-          }}
+          // onChange={(e) => {
+          //   const newPosition = e?.target?.object?.position?.clone();
+          //   if (newPosition) {
+          //     console.log("Camera position:", newPosition); // Log position for testing
+          //   }
+          // }}
           target={isRoomPage ? setDefaultPosition : 0}
         />
         <Environment preset="city" blur={1} />

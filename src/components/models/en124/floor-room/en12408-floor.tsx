@@ -16,7 +16,7 @@ import { ExternalLink } from 'lucide-react'
 import { Table, TableBody, TableCell, TableRow } from '@/components/shadcn-ui/table'
 import { Select } from '@react-three/postprocessing'
 import { formatDate, formatDatetoISOStringWithoutTime } from '@/lib/formats'
-import { useContourMenuStore } from '@/stores/use-contour-menu-store'
+import { useContourMenuStore } from '@/stores/use-menu-store'
 import { configs } from '@/lib/configs'
 import { usePathname } from 'next/navigation'
 
@@ -1006,8 +1006,18 @@ type Props = JSX.IntrinsicElements["group"] & {
 };
 
 export default function EN12408Floor(props: Props) {
-
-  const { isShowLamp, isShowAir, isManage, isFloorPage, isRoomPage, roomData, pathname, isFloorColorChange, activeAirId, activeLampId } = props;
+  const {
+    isShowLamp,
+    isShowAir,
+    isManage,
+    isFloorPage,
+    isRoomPage,
+    roomData,
+    pathname,
+    isFloorColorChange,
+    activeAirId,
+    activeLampId,
+  } = props;
 
   const groupRef = useRef<any>();
   const floorId = pathname;
@@ -1200,48 +1210,6 @@ export default function EN12408Floor(props: Props) {
     changeFloorColor();
   }, [isFloorColorChange]);
 
-  // useEffect(() => {
-  //   const activeAirLampColor = () => {
-  //     if (!groupRef.current || (!activeAirId && !activeLampId && !isManage)) return;
-  
-  //     groupRef.current.traverse((groupChild: any) => {
-  //       // ตรวจสอบว่าเป็น Group และมีชื่อที่ตรงกับ activeAirId หรือ activeLampId
-  //       if (
-  //         groupChild.isGroup && // ตรวจสอบว่าเป็น Group
-  //         (groupChild.name === activeAirId || groupChild.name === activeLampId) // ตรวจสอบชื่อ
-  //       ) {
-  //         console.log(`Matching Group found: ${groupChild.name}`);
-  
-  //         // Traverse ภายใน Group นี้เพื่อเปลี่ยนสีของ mesh
-  //         groupChild.traverse((meshChild: any) => {
-  //           if (meshChild.isMesh || meshChild.isInstancedMesh) {
-  //             if (meshChild.material) {
-  //               console.log(`Changing color for mesh: ${meshChild.name} in Group: ${groupChild.name}`);
-  
-  //               // Save original color if not saved yet
-  //               if (!meshChild.material.userData.originalColor) {
-  //                 meshChild.material.userData.originalColor = meshChild.material.color.getHex();
-  //               }
-  
-  //               // เปลี่ยนเป็นสีน้ำเงิน
-  //               if (Array.isArray(meshChild.material)) {
-  //                 meshChild.material.forEach((mat: any) => {
-  //                   mat.color.set(THREE.Color.NAMES.blue);
-  //                   mat.needsUpdate = true;
-  //                 });
-  //               } else {
-  //                 meshChild.material.color.set(THREE.Color.NAMES.blue);
-  //                 meshChild.material.needsUpdate = true;
-  //               }
-  //             }
-  //           }
-  //         });
-  //       }
-  //     });
-  //   };
-  
-  //   activeAirLampColor();
-  // }, [activeAirId, activeLampId]);
   const activeAirLampColor = () => {
     if (!groupRef.current || (!activeAirId && !activeLampId && !isManage)) return;
 
@@ -1257,7 +1225,7 @@ export default function EN12408Floor(props: Props) {
         groupChild.traverse((meshChild: any) => {
           if (meshChild.isMesh || meshChild.isInstancedMesh) {
             if (meshChild.material) {
-              console.log(`Changing color for mesh: ${meshChild.name} in Group: ${groupChild.name}`);
+              // console.log(`Changing color for mesh: ${meshChild.name} in Group: ${groupChild.name}`);
 
               // Save original color if not saved yet
               if (!meshChild.material.userData.originalColor) {
@@ -2189,25 +2157,25 @@ export default function EN12408Floor(props: Props) {
         <>
           <Select name="EN1240812-A01" enabled={hover === "EN1240812-A01" || select === "EN1240812-A01"} position={[-13.147, 3.651, -5.879]} rotation={[-Math.PI / 2, 0, 0]} scale={0.305}>
             {!isManage && isRoomPage && renderModalAirDetail("EN1240812-A01")}
-            <mesh name="PCY-SM42KAL-TH" geometry={nodes['PCY-SM42KAL-TH'].geometry} material={materials['Gypsum Wall Board']} />
-            <mesh name="PCY-SM42KAL-TH_1" geometry={nodes['PCY-SM42KAL-TH_1'].geometry} material={materials.Copper} />
-            <mesh name="PCY-SM42KAL-TH_2" geometry={nodes['PCY-SM42KAL-TH_2'].geometry} material={materials.Plastic} />
-            <mesh name="PCY-SM42KAL-TH_3" geometry={nodes['PCY-SM42KAL-TH_3'].geometry} material={materials['Wall Texture, Orange Peel']} />
-            <mesh name="PCY-SM42KAL-TH_4" geometry={nodes['PCY-SM42KAL-TH_4'].geometry} material={materials['Plastic, Formed']} />
+            <mesh name="PCY-SM42KAL-TH" geometry={nodes['PCY-SM42KAL-TH'].geometry} material={createAirMaterial("Gypsum Wall Board", "EN1240812", 1)} />
+            <mesh name="PCY-SM42KAL-TH_1" geometry={nodes['PCY-SM42KAL-TH_1'].geometry} material={createAirMaterial("Copper", "EN1240812", 1)} />
+            <mesh name="PCY-SM42KAL-TH_2" geometry={nodes['PCY-SM42KAL-TH_2'].geometry} material={createAirMaterial("Plastic", "EN1240812", 1)} />
+            <mesh name="PCY-SM42KAL-TH_3" geometry={nodes['PCY-SM42KAL-TH_3'].geometry} material={createAirMaterial("Wall Texture, Orange Peel", "EN1240812", 1)} />
+            <mesh name="PCY-SM42KAL-TH_4" geometry={nodes['PCY-SM42KAL-TH_4'].geometry} material={createAirMaterial("Plastic, Formed", "EN1240812", 1)} />
           </Select>
           <Select name="EN1240812-A02" enabled={hover === "EN1240812-A02" || select === "EN1240812-A02"} position={[-10.072, 3.651, -5.879]} rotation={[-Math.PI / 2, 0, 0]} scale={0.305}>
             {!isManage && isRoomPage && renderModalAirDetail("EN1240812-A02")}
-            <mesh name="PCY-SM42KAL-TH001" geometry={nodes['PCY-SM42KAL-TH001'].geometry} material={materials.Plastic} />
-            <mesh name="PCY-SM42KAL-TH001_1" geometry={nodes['PCY-SM42KAL-TH001_1'].geometry} material={materials.Copper} />
-            <mesh name="PCY-SM42KAL-TH001_2" geometry={nodes['PCY-SM42KAL-TH001_2'].geometry} material={materials['Wall Texture, Orange Peel']} />
-            <mesh name="PCY-SM42KAL-TH001_3" geometry={nodes['PCY-SM42KAL-TH001_3'].geometry} material={materials['Plastic, Formed']} />
+            <mesh name="PCY-SM42KAL-TH001" geometry={nodes['PCY-SM42KAL-TH001'].geometry} material={createAirMaterial("Plastic", "EN1240812", 2)} />
+            <mesh name="PCY-SM42KAL-TH001_1" geometry={nodes['PCY-SM42KAL-TH001_1'].geometry} material={createAirMaterial("Copper", "EN1240812", 2)} />
+            <mesh name="PCY-SM42KAL-TH001_2" geometry={nodes['PCY-SM42KAL-TH001_2'].geometry} material={createAirMaterial("Wall Texture, Orange Peel", "EN1240812", 2)} />
+            <mesh name="PCY-SM42KAL-TH001_3" geometry={nodes['PCY-SM42KAL-TH001_3'].geometry} material={createAirMaterial("Plastic, Formed", "EN1240812", 2)} />
           </Select>
           <Select name="EN1240812-A03" enabled={hover === "EN1240812-A03" || select === "EN1240812-A03"} position={[-5.162, 3.651, -5.878]} rotation={[-Math.PI / 2, 0, 0]} scale={0.305}>
             {!isManage && isRoomPage && renderModalAirDetail("EN1240812-A03")}
-            <mesh name="PCY-SM42KAL-TH002" geometry={nodes['PCY-SM42KAL-TH002'].geometry} material={materials.Plastic} />
-            <mesh name="PCY-SM42KAL-TH002_1" geometry={nodes['PCY-SM42KAL-TH002_1'].geometry} material={materials.Copper} />
-            <mesh name="PCY-SM42KAL-TH002_2" geometry={nodes['PCY-SM42KAL-TH002_2'].geometry} material={materials['Wall Texture, Orange Peel']} />
-            <mesh name="PCY-SM42KAL-TH002_3" geometry={nodes['PCY-SM42KAL-TH002_3'].geometry} material={materials['Plastic, Formed']} />
+            <mesh name="PCY-SM42KAL-TH002" geometry={nodes['PCY-SM42KAL-TH002'].geometry} material={createAirMaterial("Plastic", "EN1240812", 3)} />
+            <mesh name="PCY-SM42KAL-TH002_1" geometry={nodes['PCY-SM42KAL-TH002_1'].geometry} material={createAirMaterial("Copper", "EN1240812", 3)} />
+            <mesh name="PCY-SM42KAL-TH002_2" geometry={nodes['PCY-SM42KAL-TH002_2'].geometry} material={createAirMaterial("Wall Texture, Orange Peel", "EN1240812", 3)} />
+            <mesh name="PCY-SM42KAL-TH002_3" geometry={nodes['PCY-SM42KAL-TH002_3'].geometry} material={createAirMaterial("Plastic, Formed", "EN1240812", 3)} />
           </Select>
           <Select 
             name="EN1240818-A01"
@@ -2270,49 +2238,58 @@ export default function EN12408Floor(props: Props) {
       {isShowLamp && (
         <>
           <Select name="EN1240829-L01" enabled={hover === "EN1240829-L01" || select === "EN1240829-L01"} position={[-5.96, 3.89, 19.597]} rotation={[-Math.PI / 2, 0, 0]} scale={0.305}>
-            <mesh name="L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_3000K" geometry={nodes['L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_3000K'].geometry} material={materials['Glass.022']} />
-            <mesh name="L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_3000K_1" geometry={nodes['L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_3000K_1'].geometry} material={materials['Mirror anodized aluminium']} />
-            <mesh name="L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_3000K_2" geometry={nodes['L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_3000K_2'].geometry} material={materials['Die-formed cold roll steel']} />
+            {!isManage && isRoomPage && renderModalLampDetail("EN1240829-L01")}
+            <mesh name="L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_3000K" geometry={nodes['L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_3000K'].geometry} material={createLightMaterial('Glass.022', 'EN1240829', 1)} />
+            <mesh name="L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_3000K_1" geometry={nodes['L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_3000K_1'].geometry} material={createLightMaterial('Mirror anodized aluminium', 'EN1240829', 1)} />
+            <mesh name="L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_3000K_2" geometry={nodes['L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_3000K_2'].geometry} material={createLightMaterial('Die-formed cold roll steel', 'EN1240829', 1)} />
           </Select>
-          <Select name="EN1240829-L02" enabled={hover === "EN1240829-L01" || select === "EN1240829-L01"} position={[-3.96, 3.89, 19.597]} rotation={[-Math.PI / 2, 0, 0]} scale={0.305}>
-            <mesh name="L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300" geometry={nodes['L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300'].geometry} material={materials['Glass.022']} />
-            <mesh name="L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300_1" geometry={nodes['L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300_1'].geometry} material={materials['Mirror anodized aluminium']} />
-            <mesh name="L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300_2" geometry={nodes['L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300_2'].geometry} material={materials['Die-formed cold roll steel']} />
+          <Select name="EN1240829-L02" enabled={hover === "EN1240829-L02" || select === "EN1240829-L02"} position={[-3.96, 3.89, 19.597]} rotation={[-Math.PI / 2, 0, 0]} scale={0.305}>
+            {!isManage && isRoomPage && renderModalLampDetail("EN1240829-L02")}
+            <mesh name="L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300" geometry={nodes['L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300'].geometry} material={createLightMaterial('Glass.022', 'EN1240829', 2)} />
+            <mesh name="L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300_1" geometry={nodes['L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300_1'].geometry} material={createLightMaterial('Mirror anodized aluminium', 'EN1240829', 2)} />
+            <mesh name="L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300_2" geometry={nodes['L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300_2'].geometry} material={createLightMaterial('Die-formed cold roll steel', 'EN1240829', 2)} />
           </Select>
           <Select name="EN1240829-L03" enabled={hover === "EN1240829-L03" || select === "EN1240829-L03"} position={[-1.96, 3.89, 19.597]} rotation={[-Math.PI / 2, 0, 0]} scale={0.305}>
-            <mesh name="L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300001" geometry={nodes['L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300001'].geometry} material={materials['Glass.022']} />
-            <mesh name="L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300001_1" geometry={nodes['L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300001_1'].geometry} material={materials['Mirror anodized aluminium']} />
-            <mesh name="L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300001_2" geometry={nodes['L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300001_2'].geometry} material={materials['Die-formed cold roll steel']} />
+            {!isManage && isRoomPage && renderModalLampDetail("EN1240829-L03")}
+            <mesh name="L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300001" geometry={nodes['L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300001'].geometry} material={createLightMaterial('Glass.022', 'EN1240829', 3)} />
+            <mesh name="L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300001_1" geometry={nodes['L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300001_1'].geometry} material={createLightMaterial('Mirror anodized aluminium', 'EN1240829', 3)} />
+            <mesh name="L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300001_2" geometry={nodes['L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300001_2'].geometry} material={createLightMaterial('Die-formed cold roll steel', 'EN1240829', 3)} />
           </Select>
           <Select name="EN1240829-L04" enabled={hover === "EN1240829-L04" || select === "EN1240829-L04"} position={[-5.96, 3.89, 22.097]} rotation={[-Math.PI / 2, 0, 0]} scale={0.305}>
-            <mesh name="L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300002" geometry={nodes['L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300002'].geometry} material={materials['Glass.022']} />
-            <mesh name="L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300002_1" geometry={nodes['L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300002_1'].geometry} material={materials['Mirror anodized aluminium']} />
-            <mesh name="L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300002_2" geometry={nodes['L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300002_2'].geometry} material={materials['Die-formed cold roll steel']} />
+            {!isManage && isRoomPage && renderModalLampDetail("EN1240829-L04")}
+            <mesh name="L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300002" geometry={nodes['L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300002'].geometry} material={createLightMaterial('Glass.022', 'EN1240829', 4)} />
+            <mesh name="L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300002_1" geometry={nodes['L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300002_1'].geometry} material={createLightMaterial('Mirror anodized aluminium', 'EN1240829', 4)} />
+            <mesh name="L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300002_2" geometry={nodes['L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300002_2'].geometry} material={createLightMaterial('Die-formed cold roll steel', 'EN1240829', 4)} />
           </Select>
           <Select name="EN1240829-L05" enabled={hover === "EN1240829-L05" || select === "EN1240829-L05"} position={[-3.96, 3.89, 22.097]} rotation={[-Math.PI / 2, 0, 0]} scale={0.305}>
-            <mesh name="L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300003" geometry={nodes['L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300003'].geometry} material={materials['Glass.022']} />
-            <mesh name="L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300003_1" geometry={nodes['L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300003_1'].geometry} material={materials['Mirror anodized aluminium']} />
-            <mesh name="L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300003_2" geometry={nodes['L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300003_2'].geometry} material={materials['Die-formed cold roll steel']} />
+            {!isManage && isRoomPage && renderModalLampDetail("EN1240829-L05")}
+            <mesh name="L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300003" geometry={nodes['L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300003'].geometry} material={createLightMaterial('Glass.022', 'EN1240829', 5)} />
+            <mesh name="L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300003_1" geometry={nodes['L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300003_1'].geometry} material={createLightMaterial('Mirror anodized aluminium', 'EN1240829', 5)} />
+            <mesh name="L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300003_2" geometry={nodes['L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300003_2'].geometry} material={createLightMaterial('Die-formed cold roll steel', 'EN1240829', 5)} />
           </Select>
           <Select name="EN1240829-L06" enabled={hover === "EN1240829-L06" || select === "EN1240829-L06"} position={[-1.96, 3.89, 22.097]} rotation={[-Math.PI / 2, 0, 0]} scale={0.305}>
-            <mesh name="L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300004" geometry={nodes['L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300004'].geometry} material={materials['Glass.022']} />
-            <mesh name="L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300004_1" geometry={nodes['L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300004_1'].geometry} material={materials['Mirror anodized aluminium']} />
-            <mesh name="L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300004_2" geometry={nodes['L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300004_2'].geometry} material={materials['Die-formed cold roll steel']} />
+            {!isManage && isRoomPage && renderModalLampDetail("EN1240829-L06")}
+            <mesh name="L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300004" geometry={nodes['L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300004'].geometry} material={createLightMaterial('Glass.022', 'EN1240829', 6)} />
+            <mesh name="L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300004_1" geometry={nodes['L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300004_1'].geometry} material={createLightMaterial('Mirror anodized aluminium', 'EN1240829', 6)} />
+            <mesh name="L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300004_2" geometry={nodes['L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300004_2'].geometry} material={createLightMaterial('Die-formed cold roll steel', 'EN1240829', 6)} />
           </Select>
           <Select name="EN1240829-L07" enabled={hover === "EN1240829-L07" || select === "EN1240829-L07"} position={[-5.96, 3.89, 24.597]} rotation={[-Math.PI / 2, 0, 0]} scale={0.305}>
-            <mesh name="L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300005" geometry={nodes['L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300005'].geometry} material={materials['Glass.022']} />
-            <mesh name="L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300005_1" geometry={nodes['L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300005_1'].geometry} material={materials['Mirror anodized aluminium']} />
-            <mesh name="L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300005_2" geometry={nodes['L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300005_2'].geometry} material={materials['Die-formed cold roll steel']} />
+            {!isManage && isRoomPage && renderModalLampDetail("EN1240829-L07")}
+            <mesh name="L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300005" geometry={nodes['L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300005'].geometry} material={createLightMaterial('Glass.022', 'EN1240829', 7)} />
+            <mesh name="L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300005_1" geometry={nodes['L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300005_1'].geometry} material={createLightMaterial('Mirror anodized aluminium', 'EN1240829', 7)} />
+            <mesh name="L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300005_2" geometry={nodes['L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300005_2'].geometry} material={createLightMaterial('Die-formed cold roll steel', 'EN1240829', 7)} />
           </Select>
           <Select name="EN1240829-L08" enabled={hover === "EN1240829-L08" || select === "EN1240829-L08"} position={[-3.96, 3.89, 24.597]} rotation={[-Math.PI / 2, 0, 0]} scale={0.305}>
-            <mesh name="L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300006" geometry={nodes['L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300006'].geometry} material={materials['Glass.022']} />
-            <mesh name="L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300006_1" geometry={nodes['L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300006_1'].geometry} material={materials['Mirror anodized aluminium']} />
-            <mesh name="L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300006_2" geometry={nodes['L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300006_2'].geometry} material={materials['Die-formed cold roll steel']} />
+            {!isManage && isRoomPage && renderModalLampDetail("EN1240829-L08")}
+            <mesh name="L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300006" geometry={nodes['L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300006'].geometry} material={createLightMaterial('Glass.022', 'EN1240829', 8)} />
+            <mesh name="L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300006_1" geometry={nodes['L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300006_1'].geometry} material={createLightMaterial('Mirror anodized aluminium', 'EN1240829', 8)} />
+            <mesh name="L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300006_2" geometry={nodes['L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300006_2'].geometry} material={createLightMaterial('Die-formed cold roll steel', 'EN1240829', 8)} />
           </Select>
           <Select name="EN1240829-L09" enabled={hover === "EN1240829-L09" || select === "EN1240829-L09"} position={[-1.96, 3.89, 24.597]} rotation={[-Math.PI / 2, 0, 0]} scale={0.305}>
-            <mesh name="L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300007" geometry={nodes['L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300007'].geometry} material={materials['Glass.022']} />
-            <mesh name="L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300007_1" geometry={nodes['L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300007_1'].geometry} material={materials['Mirror anodized aluminium']} />
-            <mesh name="L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300007_2" geometry={nodes['L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300007_2'].geometry} material={materials['Die-formed cold roll steel']} />
+            {!isManage && isRoomPage && renderModalLampDetail("EN1240829-L09")}
+            <mesh name="L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300007" geometry={nodes['L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300007'].geometry} material={createLightMaterial('Glass.022', 'EN1240829', 9)} />
+            <mesh name="L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300007_1" geometry={nodes['L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300007_1'].geometry} material={createLightMaterial('Mirror anodized aluminium', 'EN1240829', 9)} />
+            <mesh name="L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300007_2" geometry={nodes['L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300007_2'].geometry} material={createLightMaterial('Die-formed cold roll steel', 'EN1240829', 9)} />
           </Select>
 
           <Select name="EN1240818-L01" enabled={hover === "EN1240818-L01" || select === "EN1240818-L01"} position={[-21.969, 3.89, 3.379]} rotation={[-Math.PI / 2, 0, 0]} scale={0.305}>
@@ -2371,221 +2348,264 @@ export default function EN12408Floor(props: Props) {
           </Select>
           
           <Select name="EN1240812-L01" enabled={hover === "EN1240812-L01" || select === "EN1240812-L01"} position={[-14.008, 3.89, -4.626]} rotation={[-Math.PI / 2, 0, 0]} scale={0.305}>
-            <mesh name="L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300017" geometry={nodes['L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300017'].geometry} material={materials['Glass.022']} />
-            <mesh name="L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300017_1" geometry={nodes['L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300017_1'].geometry} material={materials['Mirror anodized aluminium']} />
-            <mesh name="L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300017_2" geometry={nodes['L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300017_2'].geometry} material={materials['Die-formed cold roll steel']} />
+            {!isManage && isRoomPage && renderModalLampDetail("EN1240812-L01")}
+            <mesh name="L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300017" geometry={nodes['L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300017'].geometry} material={createLightMaterial('Glass.022', 'EN1240812', 1)} />
+            <mesh name="L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300017_1" geometry={nodes['L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300017_1'].geometry} material={createLightMaterial('Mirror anodized aluminium', 'EN1240812', 1)} />
+            <mesh name="L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300017_2" geometry={nodes['L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300017_2'].geometry} material={createLightMaterial('Die-formed cold roll steel', 'EN1240812', 1)} />
           </Select>
           <Select name="EN1240812-L02" enabled={hover === "EN1240812-L02" || select === "EN1240812-L02"} position={[-12.008, 3.89, -4.626]} rotation={[-Math.PI / 2, 0, 0]} scale={0.305}>
-            <mesh name="L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300018" geometry={nodes['L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300018'].geometry} material={materials['Glass.022']} />
-            <mesh name="L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300018_1" geometry={nodes['L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300018_1'].geometry} material={materials['Mirror anodized aluminium']} />
-            <mesh name="L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300018_2" geometry={nodes['L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300018_2'].geometry} material={materials['Die-formed cold roll steel']} />
+            {!isManage && isRoomPage && renderModalLampDetail("EN1240812-L02")}
+            <mesh name="L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300018" geometry={nodes['L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300018'].geometry} material={createLightMaterial('Glass.022', 'EN1240812', 2)} />
+            <mesh name="L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300018_1" geometry={nodes['L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300018_1'].geometry} material={createLightMaterial('Mirror anodized aluminium', 'EN1240812', 2)} />
+            <mesh name="L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300018_2" geometry={nodes['L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300018_2'].geometry} material={createLightMaterial('Die-formed cold roll steel', 'EN1240812', 2)} />
           </Select>
           <Select name="EN1240812-L03" enabled={hover === "EN1240812-L03" || select === "EN1240812-L03"} position={[-10.008, 3.89, -4.626]} rotation={[-Math.PI / 2, 0, 0]} scale={0.305}>
-            <mesh name="L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300019" geometry={nodes['L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300019'].geometry} material={materials['Glass.022']} />
-            <mesh name="L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300019_1" geometry={nodes['L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300019_1'].geometry} material={materials['Mirror anodized aluminium']} />
-            <mesh name="L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300019_2" geometry={nodes['L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300019_2'].geometry} material={materials['Die-formed cold roll steel']} />
+            {!isManage && isRoomPage && renderModalLampDetail("EN1240812-L03")}
+            <mesh name="L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300019" geometry={nodes['L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300019'].geometry} material={createLightMaterial('Glass.022', 'EN1240812', 3)} />
+            <mesh name="L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300019_1" geometry={nodes['L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300019_1'].geometry} material={createLightMaterial('Mirror anodized aluminium', 'EN1240812', 3)} />
+            <mesh name="L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300019_2" geometry={nodes['L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300019_2'].geometry} material={createLightMaterial('Die-formed cold roll steel', 'EN1240812', 3)} />
           </Select>
           <Select name="EN1240812-L06" enabled={hover === "EN1240812-L06" || select === "EN1240812-L06"} position={[-14.008, 3.89, -2.126]} rotation={[-Math.PI / 2, 0, 0]} scale={0.305}>
-            <mesh name="L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300020" geometry={nodes['L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300020'].geometry} material={materials['Glass.022']} />
-            <mesh name="L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300020_1" geometry={nodes['L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300020_1'].geometry} material={materials['Mirror anodized aluminium']} />
-            <mesh name="L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300020_2" geometry={nodes['L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300020_2'].geometry} material={materials['Die-formed cold roll steel']} />
+            {!isManage && isRoomPage && renderModalLampDetail("EN1240812-L06")}
+            <mesh name="L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300020" geometry={nodes['L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300020'].geometry} material={createLightMaterial('Glass.022', 'EN1240812', 6)} />
+            <mesh name="L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300020_1" geometry={nodes['L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300020_1'].geometry} material={createLightMaterial('Mirror anodized aluminium', 'EN1240812', 6)} />
+            <mesh name="L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300020_2" geometry={nodes['L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300020_2'].geometry} material={createLightMaterial('Die-formed cold roll steel', 'EN1240812', 6)} />
           </Select>
           <Select name="EN1240812-L07" enabled={hover === "EN1240812-L07" || select === "EN1240812-L07"} position={[-12.008, 3.89, -2.126]} rotation={[-Math.PI / 2, 0, 0]} scale={0.305}>
-            <mesh name="L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300021" geometry={nodes['L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300021'].geometry} material={materials['Glass.022']} />
-            <mesh name="L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300021_1" geometry={nodes['L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300021_1'].geometry} material={materials['Mirror anodized aluminium']} />
-            <mesh name="L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300021_2" geometry={nodes['L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300021_2'].geometry} material={materials['Die-formed cold roll steel']} />
+            {!isManage && isRoomPage && renderModalLampDetail("EN1240812-L07")}
+            <mesh name="L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300021" geometry={nodes['L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300021'].geometry} material={createLightMaterial('Glass.022', 'EN1240812', 7)} />
+            <mesh name="L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300021_1" geometry={nodes['L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300021_1'].geometry} material={createLightMaterial('Mirror anodized aluminium', 'EN1240812', 7)} />
+            <mesh name="L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300021_2" geometry={nodes['L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300021_2'].geometry} material={createLightMaterial('Die-formed cold roll steel', 'EN1240812', 7)} />
           </Select>
           <Select name="EN1240812-L08" enabled={hover === "EN1240812-L08" || select === "EN1240812-L08"} position={[-10.008, 3.89, -2.126]} rotation={[-Math.PI / 2, 0, 0]} scale={0.305}>
-            <mesh name="L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300022" geometry={nodes['L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300022'].geometry} material={materials['Glass.022']} />
-            <mesh name="L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300022_1" geometry={nodes['L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300022_1'].geometry} material={materials['Mirror anodized aluminium']} />
-            <mesh name="L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300022_2" geometry={nodes['L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300022_2'].geometry} material={materials['Die-formed cold roll steel']} />
+            {!isManage && isRoomPage && renderModalLampDetail("EN1240812-L08")}
+            <mesh name="L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300022" geometry={nodes['L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300022'].geometry} material={createLightMaterial('Glass.022', 'EN1240812', 8)} />
+            <mesh name="L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300022_1" geometry={nodes['L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300022_1'].geometry} material={createLightMaterial('Mirror anodized aluminium', 'EN1240812', 8)} />
+            <mesh name="L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300022_2" geometry={nodes['L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300022_2'].geometry} material={createLightMaterial('Die-formed cold roll steel', 'EN1240812', 8)} />
           </Select>
           <Select name="EN1240812-L11" enabled={hover === "EN1240812-L11" || select === "EN1240812-L11"} position={[-14.008, 3.89, 0.374]} rotation={[-Math.PI / 2, 0, 0]} scale={0.305}>
-            <mesh name="L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300023" geometry={nodes['L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300023'].geometry} material={materials['Glass.022']} />
-            <mesh name="L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300023_1" geometry={nodes['L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300023_1'].geometry} material={materials['Mirror anodized aluminium']} />
-            <mesh name="L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300023_2" geometry={nodes['L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300023_2'].geometry} material={materials['Die-formed cold roll steel']} />
+            {!isManage && isRoomPage && renderModalLampDetail("EN1240812-L11")}
+            <mesh name="L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300023" geometry={nodes['L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300023'].geometry} material={createLightMaterial('Glass.022', 'EN1240812', 11)} />
+            <mesh name="L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300023_1" geometry={nodes['L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300023_1'].geometry} material={createLightMaterial('Mirror anodized aluminium', 'EN1240812', 11)} />
+            <mesh name="L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300023_2" geometry={nodes['L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300023_2'].geometry} material={createLightMaterial('Die-formed cold roll steel', 'EN1240812', 11)} />
           </Select>
           <Select name="EN1240812-L12" enabled={hover === "EN1240812-L12" || select === "EN1240812-L12"} position={[-12.008, 3.89, 0.374]} rotation={[-Math.PI / 2, 0, 0]} scale={0.305}>
-            <mesh name="L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300024" geometry={nodes['L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300024'].geometry} material={materials['Glass.022']} />
-            <mesh name="L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300024_1" geometry={nodes['L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300024_1'].geometry} material={materials['Mirror anodized aluminium']} />
-            <mesh name="L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300024_2" geometry={nodes['L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300024_2'].geometry} material={materials['Die-formed cold roll steel']} />
+            {!isManage && isRoomPage && renderModalLampDetail("EN1240812-L12")}
+            <mesh name="L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300024" geometry={nodes['L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300024'].geometry} material={createLightMaterial('Glass.022', 'EN1240812', 12)} />
+            <mesh name="L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300024_1" geometry={nodes['L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300024_1'].geometry} material={createLightMaterial('Mirror anodized aluminium', 'EN1240812', 12)} />
+            <mesh name="L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300024_2" geometry={nodes['L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300024_2'].geometry} material={createLightMaterial('Die-formed cold roll steel', 'EN1240812', 12)} />
           </Select>
           <Select name="EN1240812-L13" enabled={hover === "EN1240812-L13" || select === "EN1240812-L13"} position={[-10.008, 3.89, 0.374]} rotation={[-Math.PI / 2, 0, 0]} scale={0.305}>
-            <mesh name="L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300025" geometry={nodes['L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300025'].geometry} material={materials['Glass.022']} />
-            <mesh name="L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300025_1" geometry={nodes['L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300025_1'].geometry} material={materials['Mirror anodized aluminium']} />
-            <mesh name="L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300025_2" geometry={nodes['L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300025_2'].geometry} material={materials['Die-formed cold roll steel']} />
+            {!isManage && isRoomPage && renderModalLampDetail("EN1240812-L13")}
+            <mesh name="L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300025" geometry={nodes['L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300025'].geometry} material={createLightMaterial('Glass.022', 'EN1240812', 13)} />
+            <mesh name="L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300025_1" geometry={nodes['L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300025_1'].geometry} material={createLightMaterial('Mirror anodized aluminium', 'EN1240812', 13)} />
+            <mesh name="L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300025_2" geometry={nodes['L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300025_2'].geometry} material={createLightMaterial('Die-formed cold roll steel', 'EN1240812', 13)} />
           </Select>
           <Select name="EN1240812-L04" enabled={hover === "EN1240812-L04" || select === "EN1240812-L04"} position={[-6.014, 3.89, -4.626]} rotation={[-Math.PI / 2, 0, 0]} scale={0.305}>
-            <mesh name="L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300026" geometry={nodes['L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300026'].geometry} material={materials['Glass.022']} />
-            <mesh name="L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300026_1" geometry={nodes['L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300026_1'].geometry} material={materials['Mirror anodized aluminium']} />
-            <mesh name="L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300026_2" geometry={nodes['L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300026_2'].geometry} material={materials['Die-formed cold roll steel']} />
+            {!isManage && isRoomPage && renderModalLampDetail("EN1240812-L04")}
+            <mesh name="L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300026" geometry={nodes['L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300026'].geometry} material={createLightMaterial('Glass.022', 'EN1240812', 4)} />
+            <mesh name="L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300026_1" geometry={nodes['L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300026_1'].geometry} material={createLightMaterial('Mirror anodized aluminium', 'EN1240812', 4)} />
+            <mesh name="L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300026_2" geometry={nodes['L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300026_2'].geometry} material={createLightMaterial('Die-formed cold roll steel', 'EN1240812', 4)} />
           </Select>
           <Select name="EN1240812-L05" enabled={hover === "EN1240812-L05" || select === "EN1240812-L05"} position={[-4.014, 3.89, -4.626]} rotation={[-Math.PI / 2, 0, 0]} scale={0.305}>
-            <mesh name="L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300027" geometry={nodes['L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300027'].geometry} material={materials['Glass.022']} />
-            <mesh name="L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300027_1" geometry={nodes['L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300027_1'].geometry} material={materials['Mirror anodized aluminium']} />
-            <mesh name="L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300027_2" geometry={nodes['L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300027_2'].geometry} material={materials['Die-formed cold roll steel']} />
+            {!isManage && isRoomPage && renderModalLampDetail("EN1240812-L05")}
+            <mesh name="L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300027" geometry={nodes['L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300027'].geometry} material={createLightMaterial('Glass.022', 'EN1240812', 5)} />
+            <mesh name="L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300027_1" geometry={nodes['L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300027_1'].geometry} material={createLightMaterial('Mirror anodized aluminium', 'EN1240812', 5)} />
+            <mesh name="L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300027_2" geometry={nodes['L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300027_2'].geometry} material={createLightMaterial('Die-formed cold roll steel', 'EN1240812', 5)} />
           </Select>
           <Select name="EN1240812-L09" enabled={hover === "EN1240812-L09" || select === "EN1240812-L09"} position={[-6.014, 3.89, -2.126]} rotation={[-Math.PI / 2, 0, 0]} scale={0.305}>
-            <mesh name="L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300028" geometry={nodes['L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300028'].geometry} material={materials['Glass.022']} />
-            <mesh name="L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300028_1" geometry={nodes['L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300028_1'].geometry} material={materials['Mirror anodized aluminium']} />
-            <mesh name="L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300028_2" geometry={nodes['L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300028_2'].geometry} material={materials['Die-formed cold roll steel']} />
+            {!isManage && isRoomPage && renderModalLampDetail("EN1240812-L09")}
+            <mesh name="L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300028" geometry={nodes['L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300028'].geometry} material={createLightMaterial('Glass.022', 'EN1240812', 9)} />
+            <mesh name="L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300028_1" geometry={nodes['L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300028_1'].geometry} material={createLightMaterial('Mirror anodized aluminium', 'EN1240812', 9)} />
+            <mesh name="L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300028_2" geometry={nodes['L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300028_2'].geometry} material={createLightMaterial('Die-formed cold roll steel', 'EN1240812', 9)} />
           </Select>
           <Select name="EN1240812-L10" enabled={hover === "EN1240812-L10" || select === "EN1240812-L10"} position={[-4.014, 3.89, -2.126]} rotation={[-Math.PI / 2, 0, 0]} scale={0.305}>
-            <mesh name="L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300029" geometry={nodes['L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300029'].geometry} material={materials['Glass.022']} />
-            <mesh name="L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300029_1" geometry={nodes['L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300029_1'].geometry} material={materials['Mirror anodized aluminium']} />
-            <mesh name="L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300029_2" geometry={nodes['L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300029_2'].geometry} material={materials['Die-formed cold roll steel']} />
+            {!isManage && isRoomPage && renderModalLampDetail("EN1240812-L10")}
+            <mesh name="L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300029" geometry={nodes['L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300029'].geometry} material={createLightMaterial('Glass.022', 'EN1240812', 10)} />
+            <mesh name="L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300029_1" geometry={nodes['L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300029_1'].geometry} material={createLightMaterial('Mirror anodized aluminium', 'EN1240812', 10)} />
+            <mesh name="L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300029_2" geometry={nodes['L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300029_2'].geometry} material={createLightMaterial('Die-formed cold roll steel', 'EN1240812', 10)} />
           </Select>
           <Select name="EN1240812-L14" enabled={hover === "EN1240812-L14" || select === "EN1240812-L14"} position={[-6.014, 3.89, 0.374]} rotation={[-Math.PI / 2, 0, 0]} scale={0.305}>
-            <mesh name="L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300030" geometry={nodes['L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300030'].geometry} material={materials['Glass.022']} />
-            <mesh name="L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300030_1" geometry={nodes['L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300030_1'].geometry} material={materials['Mirror anodized aluminium']} />
-            <mesh name="L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300030_2" geometry={nodes['L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300030_2'].geometry} material={materials['Die-formed cold roll steel']} />
+            {!isManage && isRoomPage && renderModalLampDetail("EN1240812-L14")}
+            <mesh name="L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300030" geometry={nodes['L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300030'].geometry} material={createLightMaterial('Glass.022', 'EN1240812', 14)} />
+            <mesh name="L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300030_1" geometry={nodes['L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300030_1'].geometry} material={createLightMaterial('Mirror anodized aluminium', 'EN1240812', 14)} />
+            <mesh name="L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300030_2" geometry={nodes['L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300030_2'].geometry} material={createLightMaterial('Die-formed cold roll steel', 'EN1240812', 14)} />
           </Select>
           <Select name="EN1240812-L15" enabled={hover === "EN1240812-L15" || select === "EN1240812-L15"} position={[-4.014, 3.89, 0.374]} rotation={[-Math.PI / 2, 0, 0]} scale={0.305}>
-            <mesh name="L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300031" geometry={nodes['L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300031'].geometry} material={materials['Glass.022']} />
-            <mesh name="L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300031_1" geometry={nodes['L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300031_1'].geometry} material={materials['Mirror anodized aluminium']} />
-            <mesh name="L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300031_2" geometry={nodes['L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300031_2'].geometry} material={materials['Die-formed cold roll steel']} />
+            {!isManage && isRoomPage && renderModalLampDetail("EN1240812-L15")}
+            <mesh name="L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300031" geometry={nodes['L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300031'].geometry} material={createLightMaterial('Glass.022', 'EN1240812', 15)} />
+            <mesh name="L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300031_1" geometry={nodes['L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300031_1'].geometry} material={createLightMaterial('Mirror anodized aluminium', 'EN1240812', 15)} />
+            <mesh name="L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300031_2" geometry={nodes['L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300031_2'].geometry} material={createLightMaterial('Die-formed cold roll steel', 'EN1240812', 15)} />
           </Select>
           
           <Select name="EN1240827-L01" enabled={hover === "EN1240827-L01" || select === "EN1240827-L01"} position={[14.362, 3.89, 15.848]} rotation={[-Math.PI / 2, 0, 0]} scale={0.305}>
-            <mesh name="L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300032" geometry={nodes['L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300032'].geometry} material={materials['Glass.022']} />
-            <mesh name="L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300032_1" geometry={nodes['L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300032_1'].geometry} material={materials['Mirror anodized aluminium']} />
-            <mesh name="L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300032_2" geometry={nodes['L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300032_2'].geometry} material={materials['Die-formed cold roll steel']} />
+            {!isManage && isRoomPage && renderModalLampDetail("EN1240827-L01")}
+            <mesh name="L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300032" geometry={nodes['L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300032'].geometry} material={createLightMaterial('Glass.022', 'EN1240827', 1)} />
+            <mesh name="L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300032_1" geometry={nodes['L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300032_1'].geometry} material={createLightMaterial('Mirror anodized aluminium', 'EN1240827', 1)} />
+            <mesh name="L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300032_2" geometry={nodes['L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300032_2'].geometry} material={createLightMaterial('Die-formed cold roll steel', 'EN1240827', 1)} />
           </Select>
           <Select name="EN1240826-L01" enabled={hover === "EN1240826-L01" || select === "EN1240826-L01"} position={[9.737, 3.89, 16.233]} rotation={[-Math.PI / 2, 0, 0]} scale={0.305}>
-            <mesh name="L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300033" geometry={nodes['L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300033'].geometry} material={materials['Glass.022']} />
-            <mesh name="L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300033_1" geometry={nodes['L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300033_1'].geometry} material={materials['Mirror anodized aluminium']} />
-            <mesh name="L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300033_2" geometry={nodes['L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300033_2'].geometry} material={materials['Die-formed cold roll steel']} />
+            {!isManage && isRoomPage && renderModalLampDetail("EN1240826-L01")}
+            <mesh name="L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300033" geometry={nodes['L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300033'].geometry} material={createLightMaterial('Glass.022', 'EN1240826', 1)} />
+            <mesh name="L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300033_1" geometry={nodes['L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300033_1'].geometry} material={createLightMaterial('Mirror anodized aluminium', 'EN1240826', 1)} />
+            <mesh name="L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300033_2" geometry={nodes['L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300033_2'].geometry} material={createLightMaterial('Die-formed cold roll steel', 'EN1240826', 1)} />
           </Select>
           <Select name="EN1240899-L20" enabled={hover === "EN1240899-L20" || select === "EN1240899-L20"} position={[-13.84, 3.89, 16.078]} rotation={[-Math.PI / 2, 0, 0]} scale={0.305}>
-            <mesh name="L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300034" geometry={nodes['L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300034'].geometry} material={materials['Glass.022']} />
-            <mesh name="L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300034_1" geometry={nodes['L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300034_1'].geometry} material={materials['Mirror anodized aluminium']} />
-            <mesh name="L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300034_2" geometry={nodes['L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300034_2'].geometry} material={materials['Die-formed cold roll steel']} />
+            {!isManage && isRoomPage && renderModalLampDetail("EN1240899-L20")}
+            <mesh name="L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300034" geometry={nodes['L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300034'].geometry} material={createLightMaterial('Glass.022', 'EN1240899', 20)} />
+            <mesh name="L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300034_1" geometry={nodes['L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300034_1'].geometry} material={createLightMaterial('Mirror anodized aluminium', 'EN1240899', 20)} />
+            <mesh name="L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300034_2" geometry={nodes['L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300034_2'].geometry} material={createLightMaterial('Die-formed cold roll steel', 'EN1240899', 20)} />
           </Select>
           <Select name="EN1240899-L21" enabled={hover === "EN1240899-L21" || select === "EN1240899-L21"} position={[-9.34, 3.89, 16.078]} rotation={[-Math.PI / 2, 0, 0]} scale={0.305}>
-            <mesh name="L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300035" geometry={nodes['L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300035'].geometry} material={materials['Glass.022']} />
-            <mesh name="L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300035_1" geometry={nodes['L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300035_1'].geometry} material={materials['Mirror anodized aluminium']} />
-            <mesh name="L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300035_2" geometry={nodes['L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300035_2'].geometry} material={materials['Die-formed cold roll steel']} />
+            {!isManage && isRoomPage && renderModalLampDetail("EN1240899-L21")}
+            <mesh name="L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300035" geometry={nodes['L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300035'].geometry} material={createLightMaterial('Glass.022', 'EN1240899', 21)} />
+            <mesh name="L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300035_1" geometry={nodes['L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300035_1'].geometry} material={createLightMaterial('Mirror anodized aluminium', 'EN1240899', 21)} />
+            <mesh name="L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300035_2" geometry={nodes['L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300035_2'].geometry} material={createLightMaterial('Die-formed cold roll steel', 'EN1240899', 21)} />
           </Select>
           <Select name="EN1240899-L22" enabled={hover === "EN1240899-L22" || select === "EN1240899-L22"} position={[-4.34, 3.89, 16.078]} rotation={[-Math.PI / 2, 0, 0]} scale={0.305}>
-            <mesh name="L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300036" geometry={nodes['L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300036'].geometry} material={materials['Glass.022']} />
-            <mesh name="L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300036_1" geometry={nodes['L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300036_1'].geometry} material={materials['Mirror anodized aluminium']} />
-            <mesh name="L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300036_2" geometry={nodes['L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300036_2'].geometry} material={materials['Die-formed cold roll steel']} />
+            {!isManage && isRoomPage && renderModalLampDetail("EN1240899-L22")}
+            <mesh name="L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300036" geometry={nodes['L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300036'].geometry} material={createLightMaterial('Glass.022', 'EN1240899', 22)} />
+            <mesh name="L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300036_1" geometry={nodes['L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300036_1'].geometry} material={createLightMaterial('Mirror anodized aluminium', 'EN1240899', 22)} />
+            <mesh name="L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300036_2" geometry={nodes['L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300036_2'].geometry} material={createLightMaterial('Die-formed cold roll steel', 'EN1240899', 22)} />
           </Select>
           <Select name="EN1240899-L23" enabled={hover === "EN1240899-L23" || select === "EN1240899-L23"} position={[2.16, 3.89, 16.078]} rotation={[-Math.PI / 2, 0, 0]} scale={0.305}>
-            <mesh name="L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300037" geometry={nodes['L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300037'].geometry} material={materials['Glass.022']} />
-            <mesh name="L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300037_1" geometry={nodes['L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300037_1'].geometry} material={materials['Mirror anodized aluminium']} />
-            <mesh name="L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300037_2" geometry={nodes['L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300037_2'].geometry} material={materials['Die-formed cold roll steel']} />
+            {!isManage && isRoomPage && renderModalLampDetail("EN1240899-L23")}
+            <mesh name="L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300037" geometry={nodes['L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300037'].geometry} material={createLightMaterial('Glass.022', 'EN1240899', 23)} />
+            <mesh name="L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300037_1" geometry={nodes['L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300037_1'].geometry} material={createLightMaterial('Mirror anodized aluminium', 'EN1240899', 23)} />
+            <mesh name="L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300037_2" geometry={nodes['L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300037_2'].geometry} material={createLightMaterial('Die-formed cold roll steel', 'EN1240899', 23)} />
           </Select>
           <Select name="EN1240899-L24" enabled={hover === "EN1240899-L24" || select === "EN1240899-L24"} position={[5.495, 3.89, 16.078]} rotation={[-Math.PI / 2, 0, 0]} scale={0.305}>
-            <mesh name="L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300038" geometry={nodes['L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300038'].geometry} material={materials['Glass.022']} />
-            <mesh name="L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300038_1" geometry={nodes['L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300038_1'].geometry} material={materials['Mirror anodized aluminium']} />
-            <mesh name="L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300038_2" geometry={nodes['L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300038_2'].geometry} material={materials['Die-formed cold roll steel']} />
+            {!isManage && isRoomPage && renderModalLampDetail("EN1240899-L24")}
+            <mesh name="L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300038" geometry={nodes['L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300038'].geometry} material={createLightMaterial('Glass.022', 'EN1240899', 24)} />
+            <mesh name="L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300038_1" geometry={nodes['L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300038_1'].geometry} material={createLightMaterial('Mirror anodized aluminium', 'EN1240899', 24)} />
+            <mesh name="L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300038_2" geometry={nodes['L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300038_2'].geometry} material={createLightMaterial('Die-formed cold roll steel', 'EN1240899', 24)} />
           </Select>
           <Select name="EN1240899-L18" enabled={hover === "EN1240899-L18" || select === "EN1240899-L18"} position={[-13.84, 3.89, 12.053]} rotation={[-Math.PI / 2, 0, 0]} scale={0.305}>
-            <mesh name="L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300039" geometry={nodes['L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300039'].geometry} material={materials['Glass.022']} />
-            <mesh name="L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300039_1" geometry={nodes['L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300039_1'].geometry} material={materials['Mirror anodized aluminium']} />
-            <mesh name="L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300039_2" geometry={nodes['L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300039_2'].geometry} material={materials['Die-formed cold roll steel']} />
+            {!isManage && isRoomPage && renderModalLampDetail("EN1240899-L18")}
+            <mesh name="L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300039" geometry={nodes['L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300039'].geometry} material={createLightMaterial('Glass.022', 'EN1240899', 18)} />
+            <mesh name="L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300039_1" geometry={nodes['L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300039_1'].geometry} material={createLightMaterial('Mirror anodized aluminium', 'EN1240899', 18)} />
+            <mesh name="L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300039_2" geometry={nodes['L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300039_2'].geometry} material={createLightMaterial('Die-formed cold roll steel', 'EN1240899', 18)} />
           </Select>
           <Select name="EN1240899-L16" enabled={hover === "EN1240899-L16" || select === "EN1240899-L16"} position={[-13.84, 3.89, 7.415]} rotation={[-Math.PI / 2, 0, 0]} scale={0.305}>
-            <mesh name="L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300040" geometry={nodes['L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300040'].geometry} material={materials['Glass.022']} />
-            <mesh name="L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300040_1" geometry={nodes['L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300040_1'].geometry} material={materials['Mirror anodized aluminium']} />
-            <mesh name="L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300040_2" geometry={nodes['L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300040_2'].geometry} material={materials['Die-formed cold roll steel']} />
+            {!isManage && isRoomPage && renderModalLampDetail("EN1240899-L16")}
+            <mesh name="L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300040" geometry={nodes['L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300040'].geometry} material={createLightMaterial('Glass.022', 'EN1240899', 16)} />
+            <mesh name="L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300040_1" geometry={nodes['L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300040_1'].geometry} material={createLightMaterial('Mirror anodized aluminium', 'EN1240899', 16)} />
+            <mesh name="L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300040_2" geometry={nodes['L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300040_2'].geometry} material={createLightMaterial('Die-formed cold roll steel', 'EN1240899', 16)} />
           </Select>
           <Select name="EN1240899-L11" enabled={hover === "EN1240899-L11" || select === "EN1240899-L11"} position={[-13.84, 3.89, 4.007]} rotation={[-Math.PI / 2, 0, 0]} scale={0.305}>
-            <mesh name="L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300041" geometry={nodes['L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300041'].geometry} material={materials['Glass.022']} />
-            <mesh name="L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300041_1" geometry={nodes['L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300041_1'].geometry} material={materials['Mirror anodized aluminium']} />
-            <mesh name="L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300041_2" geometry={nodes['L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300041_2'].geometry} material={materials['Die-formed cold roll steel']} />
+            {!isManage && isRoomPage && renderModalLampDetail("EN1240899-L11")}
+            <mesh name="L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300041" geometry={nodes['L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300041'].geometry} material={createLightMaterial('Glass.022', 'EN1240899', 11)} />
+            <mesh name="L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300041_1" geometry={nodes['L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300041_1'].geometry} material={createLightMaterial('Mirror anodized aluminium', 'EN1240899', 11)} />
+            <mesh name="L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300041_2" geometry={nodes['L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300041_2'].geometry} material={createLightMaterial('Die-formed cold roll steel', 'EN1240899', 11)} />
           </Select>
           <Select name="EN1240899-L12" enabled={hover === "EN1240899-L12" || select === "EN1240899-L12"} position={[-9.34, 3.89, 4.007]} rotation={[-Math.PI / 2, 0, 0]} scale={0.305}>
-            <mesh name="L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300042" geometry={nodes['L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300042'].geometry} material={materials['Glass.022']} />
-            <mesh name="L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300042_1" geometry={nodes['L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300042_1'].geometry} material={materials['Mirror anodized aluminium']} />
-            <mesh name="L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300042_2" geometry={nodes['L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300042_2'].geometry} material={materials['Die-formed cold roll steel']} />
+            {!isManage && isRoomPage && renderModalLampDetail("EN1240899-L12")}
+            <mesh name="L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300042" geometry={nodes['L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300042'].geometry} material={createLightMaterial('Glass.022', 'EN1240899', 12)} />
+            <mesh name="L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300042_1" geometry={nodes['L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300042_1'].geometry} material={createLightMaterial('Mirror anodized aluminium', 'EN1240899', 12)} />
+            <mesh name="L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300042_2" geometry={nodes['L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300042_2'].geometry} material={createLightMaterial('Die-formed cold roll steel', 'EN1240899', 12)} />
           </Select>
           <Select name="EN1240899-L13" enabled={hover === "EN1240899-L13" || select === "EN1240899-L13"} position={[-4.34, 3.89, 4.007]} rotation={[-Math.PI / 2, 0, 0]} scale={0.305}>
-            <mesh name="L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300043" geometry={nodes['L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300043'].geometry} material={materials['Glass.022']} />
-            <mesh name="L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300043_1" geometry={nodes['L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300043_1'].geometry} material={materials['Mirror anodized aluminium']} />
-            <mesh name="L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300043_2" geometry={nodes['L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300043_2'].geometry} material={materials['Die-formed cold roll steel']} />
+            {!isManage && isRoomPage && renderModalLampDetail("EN1240899-L13")}
+            <mesh name="L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300043" geometry={nodes['L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300043'].geometry} material={createLightMaterial('Glass.022', 'EN1240899', 13)} />
+            <mesh name="L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300043_1" geometry={nodes['L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300043_1'].geometry} material={createLightMaterial('Mirror anodized aluminium', 'EN1240899', 13)} />
+            <mesh name="L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300043_2" geometry={nodes['L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300043_2'].geometry} material={createLightMaterial('Die-formed cold roll steel', 'EN1240899', 13)} />
           </Select>
           <Select name="EN1240899-L14" enabled={hover === "EN1240899-L14" || select === "EN1240899-L14"} position={[2.16, 3.89, 4.007]} rotation={[-Math.PI / 2, 0, 0]} scale={0.305}>
-            <mesh name="L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300044" geometry={nodes['L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300044'].geometry} material={materials['Glass.022']} />
-            <mesh name="L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300044_1" geometry={nodes['L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300044_1'].geometry} material={materials['Mirror anodized aluminium']} />
-            <mesh name="L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300044_2" geometry={nodes['L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300044_2'].geometry} material={materials['Die-formed cold roll steel']} />
+           {!isManage && isRoomPage && renderModalLampDetail("EN1240899-L14")}
+            <mesh name="L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300044" geometry={nodes['L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300044'].geometry} material={createLightMaterial('Glass.022', 'EN1240899', 14)} />
+            <mesh name="L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300044_1" geometry={nodes['L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300044_1'].geometry} material={createLightMaterial('Mirror anodized aluminium', 'EN1240899', 14)} />
+            <mesh name="L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300044_2" geometry={nodes['L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300044_2'].geometry} material={createLightMaterial('Die-formed cold roll steel', 'EN1240899', 14)} />
           </Select>
           <Select name="EN1240899-L15" enabled={hover === "EN1240899-L15" || select === "EN1240899-L15"} position={[5.495, 3.89, 4.007]} rotation={[-Math.PI / 2, 0, 0]} scale={0.305}>
-            <mesh name="L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300045" geometry={nodes['L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300045'].geometry} material={materials['Glass.022']} />
-            <mesh name="L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300045_1" geometry={nodes['L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300045_1'].geometry} material={materials['Mirror anodized aluminium']} />
-            <mesh name="L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300045_2" geometry={nodes['L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300045_2'].geometry} material={materials['Die-formed cold roll steel']} />
+            {!isManage && isRoomPage && renderModalLampDetail("EN1240899-L15")}
+            <mesh name="L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300045" geometry={nodes['L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300045'].geometry} material={createLightMaterial('Glass.022', 'EN1240899', 15)} />
+            <mesh name="L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300045_1" geometry={nodes['L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300045_1'].geometry} material={createLightMaterial('Mirror anodized aluminium', 'EN1240899', 15)} />
+            <mesh name="L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300045_2" geometry={nodes['L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300045_2'].geometry} material={createLightMaterial('Die-formed cold roll steel', 'EN1240899', 15)} />
           </Select>
           <Select name="EN1240899-L17" enabled={hover === "EN1240899-L17" || select === "EN1240899-L17"} position={[5.495, 3.89, 7.007]} rotation={[-Math.PI / 2, 0, 0]} scale={0.305}>
-            <mesh name="L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300046" geometry={nodes['L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300046'].geometry} material={materials['Glass.022']} />
-            <mesh name="L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300046_1" geometry={nodes['L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300046_1'].geometry} material={materials['Mirror anodized aluminium']} />
-            <mesh name="L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300046_2" geometry={nodes['L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300046_2'].geometry} material={materials['Die-formed cold roll steel']} />
+            {!isManage && isRoomPage && renderModalLampDetail("EN1240899-L17")}
+            <mesh name="L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300046" geometry={nodes['L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300046'].geometry} material={createLightMaterial('Glass.022', 'EN1240899', 17)} />
+            <mesh name="L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300046_1" geometry={nodes['L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300046_1'].geometry} material={createLightMaterial('Mirror anodized aluminium', 'EN1240899', 17)} />
+            <mesh name="L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300046_2" geometry={nodes['L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300046_2'].geometry} material={createLightMaterial('Die-formed cold roll steel', 'EN1240899', 17)} />
           </Select>
           <Select name="EN1240899-L19" enabled={hover === "EN1240899-L19" || select === "EN1240899-L19"} position={[5.495, 3.89, 11.507]} rotation={[-Math.PI / 2, 0, 0]} scale={0.305}>
-            <mesh name="L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300047" geometry={nodes['L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300047'].geometry} material={materials['Glass.022']} />
-            <mesh name="L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300047_1" geometry={nodes['L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300047_1'].geometry} material={materials['Mirror anodized aluminium']} />
-            <mesh name="L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300047_2" geometry={nodes['L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300047_2'].geometry} material={materials['Die-formed cold roll steel']} />
+            {!isManage && isRoomPage && renderModalLampDetail("EN1240899-L19")}
+            <mesh name="L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300047" geometry={nodes['L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300047'].geometry} material={createLightMaterial('Glass.022', 'EN1240899', 19)} />
+            <mesh name="L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300047_1" geometry={nodes['L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300047_1'].geometry} material={createLightMaterial('Mirror anodized aluminium', 'EN1240899', 19)} />
+            <mesh name="L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300047_2" geometry={nodes['L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300047_2'].geometry} material={createLightMaterial('Die-formed cold roll steel', 'EN1240899', 19)} />
           </Select>
           <Select name="EN1240899-L10" enabled={hover === "EN1240899-L10" || select === "EN1240899-L10"} position={[2.16, 3.89, 0.607]} rotation={[-Math.PI / 2, 0, 0]} scale={0.305}>
-            <mesh name="L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300048" geometry={nodes['L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300048'].geometry} material={materials['Glass.022']} />
-            <mesh name="L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300048_1" geometry={nodes['L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300048_1'].geometry} material={materials['Mirror anodized aluminium']} />
-            <mesh name="L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300048_2" geometry={nodes['L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300048_2'].geometry} material={materials['Die-formed cold roll steel']} />
+            {!isManage && isRoomPage && renderModalLampDetail("EN1240899-L10")}
+            <mesh name="L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300048" geometry={nodes['L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300048'].geometry} material={createLightMaterial('Glass.022', 'EN1240899', 10)} />
+            <mesh name="L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300048_1" geometry={nodes['L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300048_1'].geometry} material={createLightMaterial('Mirror anodized aluminium', 'EN1240899', 10)} />
+            <mesh name="L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300048_2" geometry={nodes['L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300048_2'].geometry} material={createLightMaterial('Die-formed cold roll steel', 'EN1240899', 10)} />
           </Select>
           <Select name="EN1240899-L09" enabled={hover === "EN1240899-L09" || select === "EN1240899-L09"} position={[2.16, 3.89, -2.893]} rotation={[-Math.PI / 2, 0, 0]} scale={0.305}>
-            <mesh name="L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300049" geometry={nodes['L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300049'].geometry} material={materials['Glass.022']} />
-            <mesh name="L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300049_1" geometry={nodes['L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300049_1'].geometry} material={materials['Mirror anodized aluminium']} />
-            <mesh name="L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300049_2" geometry={nodes['L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300049_2'].geometry} material={materials['Die-formed cold roll steel']} />
+            {!isManage && isRoomPage && renderModalLampDetail("EN1240899-L09")}
+            <mesh name="L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300049" geometry={nodes['L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300049'].geometry} material={createLightMaterial('Glass.022', 'EN1240899', 9)} />
+            <mesh name="L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300049_1" geometry={nodes['L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300049_1'].geometry} material={createLightMaterial('Mirror anodized aluminium', 'EN1240899', 9)} />
+            <mesh name="L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300049_2" geometry={nodes['L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300049_2'].geometry} material={createLightMaterial('Die-formed cold roll steel', 'EN1240899', 9)} />
           </Select>
           <Select name="EN1240899-L05" enabled={hover === "EN1240899-L05" || select === "EN1240899-L05"} position={[2.16, 3.89, -7.893]} rotation={[-Math.PI / 2, 0, 0]} scale={0.305}>
-            <mesh name="L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300050" geometry={nodes['L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300050'].geometry} material={materials['Glass.022']} />
-            <mesh name="L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300050_1" geometry={nodes['L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300050_1'].geometry} material={materials['Mirror anodized aluminium']} />
-            <mesh name="L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300050_2" geometry={nodes['L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300050_2'].geometry} material={materials['Die-formed cold roll steel']} />
+            {!isManage && isRoomPage && renderModalLampDetail("EN1240899-L05")}
+            <mesh name="L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300050" geometry={nodes['L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300050'].geometry} material={createLightMaterial('Glass.022', 'EN1240899', 5)} />
+            <mesh name="L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300050_1" geometry={nodes['L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300050_1'].geometry} material={createLightMaterial('Mirror anodized aluminium', 'EN1240899', 5)} />
+            <mesh name="L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300050_2" geometry={nodes['L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300050_2'].geometry} material={createLightMaterial('Die-formed cold roll steel', 'EN1240899', 5)} />
           </Select>
           <Select name="EN1240899-L06" enabled={hover === "EN1240899-L06" || select === "EN1240899-L06"} position={[6.36, 3.89, -7.893]} rotation={[-Math.PI / 2, 0, 0]} scale={0.305}>
-            <mesh name="L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300051" geometry={nodes['L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300051'].geometry} material={materials['Glass.022']} />
-            <mesh name="L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300051_1" geometry={nodes['L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300051_1'].geometry} material={materials['Mirror anodized aluminium']} />
-            <mesh name="L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300051_2" geometry={nodes['L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300051_2'].geometry} material={materials['Die-formed cold roll steel']} />
+            {!isManage && isRoomPage && renderModalLampDetail("EN1240899-L06")}
+            <mesh name="L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300051" geometry={nodes['L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300051'].geometry} material={createLightMaterial('Glass.022', 'EN1240899', 6)} />
+            <mesh name="L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300051_1" geometry={nodes['L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300051_1'].geometry} material={createLightMaterial('Mirror anodized aluminium', 'EN1240899', 6)} />
+            <mesh name="L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300051_2" geometry={nodes['L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300051_2'].geometry} material={createLightMaterial('Die-formed cold roll steel', 'EN1240899', 6)} />
           </Select>
           <Select name="EN1240899-L07" enabled={hover === "EN1240899-L07" || select === "EN1240899-L07"} position={[10.36, 3.89, -7.893]} rotation={[-Math.PI / 2, 0, 0]} scale={0.305}>
-            <mesh name="L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300052" geometry={nodes['L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300052'].geometry} material={materials['Glass.022']} />
-            <mesh name="L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300052_1" geometry={nodes['L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300052_1'].geometry} material={materials['Mirror anodized aluminium']} />
-            <mesh name="L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300052_2" geometry={nodes['L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300052_2'].geometry} material={materials['Die-formed cold roll steel']} />
+            {!isManage && isRoomPage && renderModalLampDetail("EN1240899-L07")}
+            <mesh name="L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300052" geometry={nodes['L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300052'].geometry} material={createLightMaterial('Glass.022', 'EN1240899', 7)} />
+            <mesh name="L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300052_1" geometry={nodes['L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300052_1'].geometry} material={createLightMaterial('Mirror anodized aluminium', 'EN1240899', 7)} />
+            <mesh name="L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300052_2" geometry={nodes['L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300052_2'].geometry} material={createLightMaterial('Die-formed cold roll steel', 'EN1240899', 7)} />
           </Select>
           <Select name="EN1240899-L08" enabled={hover === "EN1240899-L08" || select === "EN1240899-L08"} position={[13.86, 3.89, -7.893]} rotation={[-Math.PI / 2, 0, 0]} scale={0.305}>
-            <mesh name="L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300053" geometry={nodes['L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300053'].geometry} material={materials['Glass.022']} />
-            <mesh name="L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300053_1" geometry={nodes['L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300053_1'].geometry} material={materials['Mirror anodized aluminium']} />
-            <mesh name="L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300053_2" geometry={nodes['L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300053_2'].geometry} material={materials['Die-formed cold roll steel']} />
+            {!isManage && isRoomPage && renderModalLampDetail("EN1240899-L08")}
+            <mesh name="L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300053" geometry={nodes['L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300053'].geometry} material={createLightMaterial('Glass.022', 'EN1240899', 8)} />
+            <mesh name="L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300053_1" geometry={nodes['L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300053_1'].geometry} material={createLightMaterial('Mirror anodized aluminium', 'EN1240899', 8)} />
+            <mesh name="L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300053_2" geometry={nodes['L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300053_2'].geometry} material={createLightMaterial('Die-formed cold roll steel', 'EN1240899', 8)} />
           </Select>
           
           <Select name="EN1240811-L01" enabled={hover === "EN1240811-L01" || select === "EN1240811-L01"} position={[17.86, 3.89, -7.893]} rotation={[-Math.PI / 2, 0, 0]} scale={0.305}>
-            <mesh name="L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300054" geometry={nodes['L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300054'].geometry} material={materials['Glass.022']} />
-            <mesh name="L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300054_1" geometry={nodes['L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300054_1'].geometry} material={materials['Mirror anodized aluminium']} />
-            <mesh name="L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300054_2" geometry={nodes['L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300054_2'].geometry} material={materials['Die-formed cold roll steel']} />
+            {!isManage && isRoomPage && renderModalLampDetail("EN1240811-L01")}
+            <mesh name="L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300054" geometry={nodes['L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300054'].geometry} material={createLightMaterial('Glass.022', 'EN1240811', 1)} />
+            <mesh name="L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300054_1" geometry={nodes['L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300054_1'].geometry} material={createLightMaterial('Mirror anodized aluminium', 'EN1240811', 1)} />
+            <mesh name="L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300054_2" geometry={nodes['L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300054_2'].geometry} material={createLightMaterial('Die-formed cold roll steel', 'EN1240811', 1)} />
           </Select>
           <Select name="EN1240811-L02" enabled={hover === "EN1240811-L02" || select === "EN1240811-L02"} position={[21.86, 3.89, -7.893]} rotation={[-Math.PI / 2, 0, 0]} scale={0.305}>
-            <mesh name="L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300055" geometry={nodes['L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300055'].geometry} material={materials['Glass.022']} />
-            <mesh name="L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300055_1" geometry={nodes['L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300055_1'].geometry} material={materials['Mirror anodized aluminium']} />
-            <mesh name="L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300055_2" geometry={nodes['L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300055_2'].geometry} material={materials['Die-formed cold roll steel']} />
+            {!isManage && isRoomPage && renderModalLampDetail("EN1240811-L02")}
+            <mesh name="L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300055" geometry={nodes['L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300055'].geometry} material={createLightMaterial('Glass.022', 'EN1240811', 2)} />
+            <mesh name="L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300055_1" geometry={nodes['L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300055_1'].geometry} material={createLightMaterial('Mirror anodized aluminium', 'EN1240811', 2)} />
+            <mesh name="L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300055_2" geometry={nodes['L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300055_2'].geometry} material={createLightMaterial('Die-formed cold roll steel', 'EN1240811', 2)} />
           </Select>
           <Select name="EN1240899-L01" enabled={hover === "EN1240899-L01" || select === "EN1240899-L01"} position={[-13.993, 3.89, -8.199]} rotation={[-Math.PI / 2, 0, 0]} scale={0.305}>
-            <mesh name="L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300056" geometry={nodes['L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300056'].geometry} material={materials['Glass.022']} />
-            <mesh name="L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300056_1" geometry={nodes['L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300056_1'].geometry} material={materials['Mirror anodized aluminium']} />
-            <mesh name="L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300056_2" geometry={nodes['L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300056_2'].geometry} material={materials['Die-formed cold roll steel']} />
+            {!isManage && isRoomPage && renderModalLampDetail("EN1240899-L01")}
+            <mesh name="L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300056" geometry={nodes['L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300056'].geometry} material={createLightMaterial('Glass.022', 'EN1240899', 1)} />
+            <mesh name="L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300056_1" geometry={nodes['L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300056_1'].geometry} material={createLightMaterial('Mirror anodized aluminium', 'EN1240899', 1)} />
+            <mesh name="L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300056_2" geometry={nodes['L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300056_2'].geometry} material={createLightMaterial('Die-formed cold roll steel', 'EN1240899', 1)} />
           </Select>
           <Select name="EN1240899-L02" enabled={hover === "EN1240899-L02" || select === "EN1240899-L02"} position={[-10.993, 3.89, -8.199]} rotation={[-Math.PI / 2, 0, 0]} scale={0.305}>
-            <mesh name="L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300057" geometry={nodes['L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300057'].geometry} material={materials['Glass.022']} />
-            <mesh name="L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300057_1" geometry={nodes['L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300057_1'].geometry} material={materials['Mirror anodized aluminium']} />
-            <mesh name="L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300057_2" geometry={nodes['L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300057_2'].geometry} material={materials['Die-formed cold roll steel']} />
+            {!isManage && isRoomPage && renderModalLampDetail("EN1240899-L02")}
+            <mesh name="L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300057" geometry={nodes['L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300057'].geometry} material={createLightMaterial('Glass.022', 'EN1240899', 2)} />
+            <mesh name="L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300057_1" geometry={nodes['L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300057_1'].geometry} material={createLightMaterial('Mirror anodized aluminium', 'EN1240899', 2)} />
+            <mesh name="L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300057_2" geometry={nodes['L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300057_2'].geometry} material={createLightMaterial('Die-formed cold roll steel', 'EN1240899', 2)} />
           </Select>
           <Select name="EN1240899-L03" enabled={hover === "EN1240899-L03" || select === "EN1240899-L03"} position={[-6.493, 3.89, -8.199]} rotation={[-Math.PI / 2, 0, 0]} scale={0.305}>
-            <mesh name="L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300058" geometry={nodes['L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300058'].geometry} material={materials['Glass.022']} />
-            <mesh name="L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300058_1" geometry={nodes['L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300058_1'].geometry} material={materials['Mirror anodized aluminium']} />
-            <mesh name="L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300058_2" geometry={nodes['L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300058_2'].geometry} material={materials['Die-formed cold roll steel']} />
+            {!isManage && isRoomPage && renderModalLampDetail("EN1240899-L03")}
+            <mesh name="L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300058" geometry={nodes['L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300058'].geometry} material={createLightMaterial('Glass.022', 'EN1240899', 3)} />
+            <mesh name="L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300058_1" geometry={nodes['L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300058_1'].geometry} material={createLightMaterial('Mirror anodized aluminium', 'EN1240899', 3)} />
+            <mesh name="L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300058_2" geometry={nodes['L&E_LED_RECESSED_FLUORESCENT_LRST6002L2L_2x18W_LED_T8_300058_2'].geometry} material={createLightMaterial('Die-formed cold roll steel', 'EN1240899', 3)} />
           </Select>
           <Select name="EN1240899-L04" enabled={hover === "EN1240899-L04" || select === "EN1240899-L04"} position={[-2.493, 3.89, -8.199]} rotation={[-Math.PI / 2, 0, 0]} scale={0.305}>
-            <mesh name="ระดับพื้นหลังคา001" geometry={nodes.ระดับพื้นหลังคา001.geometry} material={materials['Glass.022']} />
-            <mesh name="ระดับพื้นหลังคา001_1" geometry={nodes.ระดับพื้นหลังคา001_1.geometry} material={materials['Mirror anodized aluminium']} />
-            <mesh name="ระดับพื้นหลังคา001_2" geometry={nodes.ระดับพื้นหลังคา001_2.geometry} material={materials['Die-formed cold roll steel']} />
+            {!isManage && isRoomPage && renderModalLampDetail("EN1240899-L04")}
+            <mesh name="ระดับพื้นหลังคา001" geometry={nodes.ระดับพื้นหลังคา001.geometry} material={createLightMaterial('Glass.022', 'EN1240899', 4)} />
+            <mesh name="ระดับพื้นหลังคา001_1" geometry={nodes.ระดับพื้นหลังคา001_1.geometry} material={createLightMaterial('Mirror anodized aluminium', 'EN1240899', 4)} />
+            <mesh name="ระดับพื้นหลังคา001_2" geometry={nodes.ระดับพื้นหลังคา001_2.geometry} material={createLightMaterial('Die-formed cold roll steel', 'EN1240899', 4)} />
           </Select>
         </>
       )}

@@ -124,7 +124,7 @@ export default function EN110Building(props: Props) {
     );
     if (select === floorCode && !props.isManage) {
       return (
-        <Html distanceFactor={60}>
+        <Html distanceFactor={40}>
           <div className="pt-[10px] transform translate-x-[80%] bg-secondary text-left p-[10px_15px] rounded-md w-[320px] relative before:content-[''] before:absolute before:top-[25px] before:-left-10 before:h-[2px] before:w-[40px] before:bg-secondary">
             <div className="flex justify-between items-center">
               <label className="font-bold text-xl">
@@ -213,6 +213,7 @@ export default function EN110Building(props: Props) {
       ref={groupRef} 
       {...props} 
       dispose={null}
+      position={[0, 0.5, 0]}
     >
       <group name="EN110RF" position={[-0.203, 4.514, 3.545]} rotation={[-Math.PI / 2, 0, 0]} scale={0.3}>
         <mesh name="เก้าอี้_3" geometry={nodes.เก้าอี้_3.geometry} material={materials['concrete cream']} />

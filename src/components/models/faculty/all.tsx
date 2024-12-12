@@ -10,6 +10,7 @@ import { useGLTF } from "@react-three/drei";
 import { GLTF } from "three-stdlib";
 import useFacultyStore, { FacultyBuilding } from "@/stores/use-faculty-store";
 import { Select } from "@react-three/postprocessing";
+import { useMapMenuStore } from "@/stores/use-menu-store";
 
 type GLTFResult = GLTF & {
   nodes: {
@@ -3029,7 +3030,6 @@ type GLTFResult = GLTF & {
 
 type Props = JSX.IntrinsicElements["group"] & {
   isManage: boolean;
-  showMapOnly?: boolean;
 };
 
 export default function FacultyAllBuilding(props: Props) {
@@ -3038,6 +3038,7 @@ export default function FacultyAllBuilding(props: Props) {
   const { select: click, setSelect: setClick } = useFacultyStore(
     (state) => state
   );
+  const { menuState } = useMapMenuStore();
 
   const handleObjectHover = useCallback((object: FacultyBuilding | null) => {
     setHover(object);
@@ -3052,7 +3053,7 @@ export default function FacultyAllBuilding(props: Props) {
 
   return (
     <group {...props} dispose={null}>
-      {props.showMapOnly ? (
+      {menuState === "map" ? (
         <mesh
           name="Plane"
           geometry={nodes.Plane.geometry}

@@ -33,14 +33,13 @@ import { DateTimePicker } from "@/components/ui/datetime-picker";
 import { th } from "date-fns/locale";
 import { formatDatetoISOStringWithoutTime } from "@/lib/formats";
 import FormLabel from "../../form-label";
-import EN12408Floor from "@/components/models/en124/floor-room/en12408-floor";
 import CanvasScreen from "../../canvas-screen/canvas";
 import { configs } from "@/lib/configs";
 
 interface Props {
   airTypes: IAirTypes[];
   airBrands: IAirBrands;
-  sensorAir: ISensorAir;
+  sensorAir?: ISensorAir;
   session: Session;
   isFormEdit?: boolean;
   initData?: IAir;
@@ -54,6 +53,16 @@ export default function AirForm({
   isFormEdit = false,
   initData,
 }: Props) {
+  const searchParams = useSearchParams();
+  const pathname = usePathname();
+  const segments = pathname.split("/");
+  const roomId = isFormEdit
+    ? segments[segments.length - 2]
+    : searchParams.get("roomid")?.substring(0, 9);
+  const airId = isFormEdit
+    ? segments[segments.length - 1]
+    : searchParams.get("roomid");
+
   const {
     register,
     getValues,
@@ -65,8 +74,8 @@ export default function AirForm({
   } = useForm<IAirSchema>({
     resolver: zodResolver(airSchema),
     defaultValues: {
-      roomCode: isFormEdit ? initData?.rm_id : undefined,
-      airId: isFormEdit ? initData?.a_id : undefined,
+      roomCode: isFormEdit ? initData?.rm_id : roomId,
+      airId: isFormEdit ? initData?.a_id : airId?.replace("-", ""),
       sensorId: isFormEdit ? initData?.u_srID : undefined,
       air: isFormEdit ? initData?.a_code : undefined,
       airBrand: isFormEdit ? initData?.brand_code : undefined,
@@ -93,14 +102,9 @@ export default function AirForm({
     },
   });
 
-  const searchParams = useSearchParams();
-  const pathname = usePathname();
-  const segments = pathname.split("/");
-  const roomId = isFormEdit
-    ? segments[segments.length - 2]
-    : searchParams.get("roomid");
-  const airId = isFormEdit && segments[segments.length - 1];
-
+  const [sensorAirList, setSensorAirList] = useState<ISensorAir | undefined>(
+    sensorAir
+  );
   const [RoomComponent, setRoomComponent] = useState<ComponentType<{
     isManage: boolean;
     isShowLamp: boolean;
@@ -139,6 +143,21 @@ export default function AirForm({
 
     loadRoomComponent();
   }, [roomId]);
+
+  useEffect(() => {
+    if (!isFormEdit) {
+      const loadAirSensor = async () => {
+        try {
+          const data = await getData(`getSensorAir/${roomId}`);
+          setSensorAirList(data);
+        } catch (error) {
+          console.error("Failed to load sensor air data:", error);
+        }
+      };
+
+      loadAirSensor();
+    }
+  }, [roomId, isFormEdit]);
 
   const [showAlert, setShowAlert] = useState<AlertProps | null>(null);
   const router = useRouter();
@@ -325,7 +344,7 @@ export default function AirForm({
     }));
 
     const formData = await setFormData(data);
-    console.log("🚀 ~ onSubmit ~ formData:", formData);
+    // console.log("🚀 ~ onSubmit ~ formData:", formData);
 
     try {
       let response;
@@ -344,7 +363,7 @@ export default function AirForm({
           session.user.accessToken,
           formData
         );
-        console.log("🚀 ~ onSubmit ~ response:", response);
+        // console.log("🚀 ~ onSubmit ~ response:", response);
       }
       if (response && response.status === 200) {
         setShowAlert({
@@ -352,8 +371,8 @@ export default function AirForm({
           loading: false,
           type: "success",
           detail: isFormEdit
-            ? `Update air: ${initData?.a_id} success`
-            : "Create new air success",
+            ? `แก้ไขข้อมูลเครื่องปรับอากาศ: ${initData?.a_id} สำเร็จ`
+            : "เพิ่มเครื่องปรับอากาศสำเร็จ",
           onClose: clearAlert,
         });
         resetForm();
@@ -363,8 +382,8 @@ export default function AirForm({
           loading: false,
           type: "warning",
           detail: isFormEdit
-            ? `Update faild, please try again.`
-            : "Create new air faild, please try again.",
+            ? `ผิดพลาด, โปรดลองอีกครั้ง.`
+            : "ผิดพลาด, โปรดลองอีกครั้ง.",
           onClose: clearAlert,
         });
       }
@@ -404,9 +423,9 @@ export default function AirForm({
                       isShowAir={true}
                       isFloorColorChange={true}
                       activeAirId={
-                        airId
-                          ? airId.slice(0, -3) + "-" + airId.slice(-3)
-                          : null
+                        isFormEdit
+                          ? airId?.slice(0, -3) + "-" + airId?.slice(-3)
+                          : airId
                       }
                     />
                   ) : null
@@ -481,7 +500,7 @@ export default function AirForm({
                     </FormLabel>
                     <Combobox
                       title="Sensor ID"
-                      listData={sensorAir}
+                      listData={sensorAirList}
                       defaultValue={getValues("sensorId")}
                       valueKey="u_srID"
                       nameKey="u_srID"

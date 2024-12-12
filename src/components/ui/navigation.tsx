@@ -22,7 +22,7 @@ import { IBuilding, IElectricTodayUsage } from "@/types/model";
 import useFacultyStore from "@/stores/use-faculty-store";
 import CardSelectFloor from "./dashboard/card-select-floor";
 import CardSelectRoom from "./dashboard/card-select-room";
-import { useContourMenuStore } from "@/stores/use-contour-menu-store";
+import { useContourMenuStore } from "@/stores/use-menu-store";
 import ContourLegend from "./contour-legend";
 import CardSelectInRoom from "./dashboard/card-select-in-room";
 

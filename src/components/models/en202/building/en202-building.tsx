@@ -125,6 +125,7 @@ export default function EN202Building(props: Props) {
       select?.substring(0, 5),
       select as string
     );
+    console.log("🚀 ~ renderModalDetail ~ isFloorActive:", isFloorActive)
     if (select === floorCode && !props.isManage) {
       return (
         <Html distanceFactor={60}>

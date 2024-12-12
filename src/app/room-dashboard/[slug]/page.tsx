@@ -89,7 +89,7 @@ export default async function RoomDashboard({
     `SensorUseHour/${roomId}`
   );
 
-  const formatAirStatus = airStatus.map((status) => {
+  const formatAirStatus = airStatus?.map((status) => {
     const matchingUseHour = airUseHour.find(
       (hour) => hour.sensor === status.Sensor
     );
@@ -240,7 +240,7 @@ export default async function RoomDashboard({
                     </TableRow>
                   </TableHeader>
                   <TableBody>
-                    {lightSwitch.map((item, i) => (
+                    {lightSwitch?.map((item, i) => (
                       <TableRow key={i}>
                         <TableCell className="py-2">{item.Sensor}</TableCell>
                         <TableCell className="py-2">
@@ -257,13 +257,13 @@ export default async function RoomDashboard({
                         </TableCell>
                       </TableRow>
                     ))}
-                    {lightSwitch.length === 0 && (
+                    {lightSwitch?.length === 0 || !lightSwitch && (
                       <TableRow>
                         <TableCell
                           className="py-2 text-center opacity-50"
                           colSpan={2}
                         >
-                          No Data
+                          Data Not Available
                         </TableCell>
                       </TableRow>
                     )}
@@ -289,7 +289,7 @@ export default async function RoomDashboard({
                     </TableRow>
                   </TableHeader>
                   <TableBody>
-                    {formatAirStatus.map((item, i) => (
+                    {formatAirStatus?.map((item, i) => (
                       <TableRow key={i}>
                         <TableCell className="py-2">{item.Sensor}</TableCell>
                         <TableCell className="py-2">
@@ -309,13 +309,13 @@ export default async function RoomDashboard({
                         </TableCell>
                       </TableRow>
                     ))}
-                    {formatAirStatus.length === 0 && (
+                    {formatAirStatus?.length === 0 || !formatAirStatus && (
                       <TableRow>
                         <TableCell
                           className="py-2 text-center opacity-50"
                           colSpan={3}
                         >
-                          No Data
+                          Data Not Available
                         </TableCell>
                       </TableRow>
                     )}

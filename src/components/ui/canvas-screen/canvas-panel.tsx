@@ -16,7 +16,6 @@ import { configs } from "@/lib/configs";
 export default function CanvasPanel() {
   const { select: selectBuilding, setSelect: setSelectBuilding } =
     useFacultyStore((state) => state);
-  console.log("🚀 ~ CanvasPanel ~ selectBuilding:", selectBuilding);
 
   const [BuildingComponent, setBuildingComponent] = useState<ComponentType<{
     isManage: boolean;
@@ -27,7 +26,6 @@ export default function CanvasPanel() {
 
   const isBuidingActive =
     configs.building[selectBuilding?.toLowerCase() as string]?.active;
-  console.log("🚀 ~ CanvasPanel ~ isBuidingActive:", isBuidingActive);
 
   useEffect(() => {
     if (isBuidingActive) {
@@ -62,7 +60,7 @@ export default function CanvasPanel() {
         </div>
         <CanvasScreen
           model={<FacultyAllBuilding isManage={true} />}
-          cameraPosition={[7, 13, 27]}
+          cameraPosition={[7, 20, 40]}
           dpr={[0.4, 0.75]}
           isUsePlane={false}
           controlSettings={{

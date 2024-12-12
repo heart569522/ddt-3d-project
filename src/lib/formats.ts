@@ -13,7 +13,7 @@ export function formatFacultyElectricTodayUsage(data: IElectricTodayUsage[]) {
   data?.forEach((item: IElectricTodayUsage) => {
     // if (item.UseRateToday > abnormalThreshold) return;
 
-    const buildingNumber = item.fl_id.substring(2, 5);
+    const buildingNumber = item.fl_id.substring(0, 5);
 
     if (buildingUsageMap[buildingNumber]) {
       buildingUsageMap[buildingNumber].useToday += item.UseRateToday;
@@ -180,9 +180,12 @@ export function formatRoomElectricTodayUsage(data: IFloorRoomUseHour[]) {
 
 export function formatFacultyElectric24Usage(data: IElectric24Usage[]) {
   const buildingUsageMap: { [key: string]: any } = {};
+  // const abnormalThreshold = 100000;
 
   data?.forEach((item: IElectric24Usage) => {
-    const buildingNumber = item.fl_id.substring(2, 5);
+    // if (item.UseRateYesterday > abnormalThreshold) return;
+
+    const buildingNumber = item.fl_id.substring(0, 5);
 
     if (buildingUsageMap[buildingNumber]) {
       buildingUsageMap[buildingNumber].UseRateYesterday +=

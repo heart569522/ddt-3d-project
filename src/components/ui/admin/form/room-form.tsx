@@ -27,7 +27,7 @@ import { configs } from "@/lib/configs";
 
 interface Props {
   roomTypes: IRoomTypes[];
-  building: IBuilding;
+  building: IBuilding[];
   session: Session;
   isFormEdit?: boolean;
   initData?: IRoom;
@@ -40,6 +40,17 @@ export default function RoomForm({
   isFormEdit = false,
   initData,
 }: Props) {
+  const searchParams = useSearchParams();
+  const pathname = usePathname();
+  const segments = pathname.split("/");
+  const roomId = isFormEdit
+    ? segments[segments.length - 1]
+    : searchParams.get("roomid");
+
+  const initSelectBuilding = building.find(
+    (b) => b.bu_id === roomId?.substring(0, 5)
+  );
+
   const {
     register,
     getValues,
@@ -51,24 +62,21 @@ export default function RoomForm({
   } = useForm<IRoomSchema>({
     resolver: zodResolver(roomSchema),
     defaultValues: {
-      roomCode: isFormEdit ? initData?.rm_id : undefined,
-      building: isFormEdit ? initData?.bu_id : undefined,
-      building_abbr: isFormEdit ? initData?.bu_abbr : undefined,
+      roomCode: isFormEdit ? initData?.rm_id : (roomId as string),
+      building: isFormEdit ? initData?.bu_id : roomId?.substring(0, 5),
+      building_abbr: isFormEdit
+        ? initData?.bu_abbr
+        : (initSelectBuilding?.bu_abbr as string),
       roomType: isFormEdit ? initData?.type : undefined,
-      roomName: isFormEdit ? (initData?.rm_name as string) : undefined,
+      roomName: isFormEdit
+        ? (initData?.rm_name as string)
+        : roomId?.substring(6, 9),
       airAmount: isFormEdit ? initData?.air_amount : 0,
       lampAmount: isFormEdit ? initData?.lamp_amount : 0,
       switchAmount: isFormEdit ? initData?.sensor_switch : 0,
       receptacleAmount: isFormEdit ? initData?.sensor_receptacle : 0,
     },
   });
-
-  const searchParams = useSearchParams();
-  const pathname = usePathname();
-  const segments = pathname.split("/");
-  const roomId = isFormEdit
-    ? segments[segments.length - 1]
-    : searchParams.get("roomid");
 
   const [showAlert, setShowAlert] = useState<AlertProps | null>(null);
   const [triggerResetCombobox, setTriggerResetCombobox] =
@@ -210,8 +218,8 @@ export default function RoomForm({
           loading: false,
           type: "success",
           detail: isFormEdit
-            ? `Update room: ${initData?.rm_id} success`
-            : "Create new room success",
+            ? `แก้ไขห้อง: ${initData?.rm_id} สำเร็จ`
+            : "สร้างห้องใหม่สำเร็จ",
           onClose: clearAlert,
         });
         setTriggerResetCombobox(true);
@@ -222,8 +230,8 @@ export default function RoomForm({
           loading: false,
           type: "warning",
           detail: isFormEdit
-            ? `Update faild, please try again.`
-            : "Create new room faild, please try again.",
+            ? `ผิดพลาด, โปรดลองอีกครั้ง.`
+            : "ผิดพลาด, โปรดลองอีกครั้ง.",
           onClose: clearAlert,
         });
       }
@@ -318,6 +326,15 @@ export default function RoomForm({
                       triggerReset={triggerResetCombobox}
                       onValueChange={(selectedValue) => {
                         setValue("building", selectedValue);
+                        const selectedBuilding = building.find(
+                          (b) => b.bu_id === selectedValue
+                        );
+                        if (selectedBuilding) {
+                          setValue(
+                            "building_abbr",
+                            selectedBuilding.bu_abbr || ""
+                          );
+                        }
                       }}
                       disabled={isFormEdit}
                     />
@@ -336,7 +353,6 @@ export default function RoomForm({
                       type="text"
                       id="building_abbr"
                       placeholder="ชื่อย่ออาคาร"
-                      // disabled
                     />
                     {errors.building_abbr && (
                       <p className="text-sm text-red-500">

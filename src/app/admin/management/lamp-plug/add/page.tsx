@@ -23,7 +23,6 @@ export default async function AddLamp() {
   const bulbBrand = await getData("getBulbBrand");
   const lampType = await getData("getLampType");
   const bulbType = await getData("getBulbType");
-  const switchSensor = await getData("getSensorSwitch/EN1240818");
 
   return (
     <>
@@ -38,7 +37,6 @@ export default async function AddLamp() {
         bulbTypes={bulbType}
         bulbBrands={bulbBrand}
         lampBrands={lampBrand}
-        sensorSwitch={switchSensor}
         session={session as Session}
       />
     </>

@@ -95,24 +95,32 @@ export function EnvironmentInfoRoomChart({
     data?.forEach((item: IPmTempHmd) => {
       switch (timeRange) {
         case "6month":
-          PMData.push({
-            title: item.Month,
-            min: parseFloat(item.PM25Min.toFixed(configs.numberOfDecimal)),
-            max: parseFloat(item.PM25Max.toFixed(configs.numberOfDecimal)),
-            mean: item.PM25Month,
-          });
-          TempData.push({
-            title: item.Month,
-            min: parseFloat(item.TempMin.toFixed(configs.numberOfDecimal)),
-            max: parseFloat(item.TempMax.toFixed(configs.numberOfDecimal)),
-            mean: item.TempMonth,
-          });
-          HumidityData.push({
-            title: item.Month,
-            min: parseFloat(item.HumidMin.toFixed(configs.numberOfDecimal)),
-            max: parseFloat(item.HumidMax.toFixed(configs.numberOfDecimal)),
-            mean: item.HumidMonth,
-          });
+          if (item.PM25Min || item.PM25Max || item.PM25Month) {
+            PMData.push({
+              title: item.Month,
+              min: parseFloat(item.PM25Min.toFixed(configs.numberOfDecimal)),
+              max: parseFloat(item.PM25Max.toFixed(configs.numberOfDecimal)),
+              mean: item.PM25Month,
+            });
+          }
+
+          if (item.TempMin || item.TempMax || item.TempMonth) {
+            TempData.push({
+              title: item.Month,
+              min: parseFloat(item.TempMin.toFixed(configs.numberOfDecimal)),
+              max: parseFloat(item.TempMax.toFixed(configs.numberOfDecimal)),
+              mean: item.TempMonth,
+            });
+          }
+
+          if (item.HumidMin || item.HumidMax || item.HumidMonth) {
+            HumidityData.push({
+              title: item.Month,
+              min: parseFloat(item.HumidMin.toFixed(configs.numberOfDecimal)),
+              max: parseFloat(item.HumidMax.toFixed(configs.numberOfDecimal)),
+              mean: item.HumidMonth,
+            });
+          }
           break;
         case "1month":
           PMData.push({
@@ -135,24 +143,32 @@ export function EnvironmentInfoRoomChart({
           });
           break;
         default:
-          PMData.push({
-            title: item.Day,
-            min: parseFloat(item.PM25Min.toFixed(configs.numberOfDecimal)),
-            max: parseFloat(item.PM25Max.toFixed(configs.numberOfDecimal)),
-            mean: item.PM25Day,
-          });
-          TempData.push({
-            title: item.Day,
-            min: parseFloat(item.TempMin.toFixed(configs.numberOfDecimal)),
-            max: parseFloat(item.TempMax.toFixed(configs.numberOfDecimal)),
-            mean: item.TempDay,
-          });
-          HumidityData.push({
-            title: item.Day,
-            min: parseFloat(item.HumidMin.toFixed(configs.numberOfDecimal)),
-            max: parseFloat(item.HumidMax.toFixed(configs.numberOfDecimal)),
-            mean: item.HumidDay,
-          });
+          if (item.PM25Min || item.PM25Max || item.PM25Day) {
+            PMData.push({
+              title: item.Day,
+              min: parseFloat(item.PM25Min.toFixed(configs.numberOfDecimal)),
+              max: parseFloat(item.PM25Max.toFixed(configs.numberOfDecimal)),
+              mean: item.PM25Day,
+            });
+          }
+
+          if (item.TempMin || item.TempMax || item.TempDay) {
+            TempData.push({
+              title: item.Day,
+              min: parseFloat(item.TempMin.toFixed(configs.numberOfDecimal)),
+              max: parseFloat(item.TempMax.toFixed(configs.numberOfDecimal)),
+              mean: item.TempDay,
+            });
+          }
+
+          if (item.HumidMin || item.HumidMax || item.HumidDay) {
+            HumidityData.push({
+              title: item.Day,
+              min: parseFloat(item.HumidMin.toFixed(configs.numberOfDecimal)),
+              max: parseFloat(item.HumidMax.toFixed(configs.numberOfDecimal)),
+              mean: item.HumidDay,
+            });
+          }
           break;
       }
     });

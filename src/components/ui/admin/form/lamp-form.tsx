@@ -40,7 +40,7 @@ interface Props {
   bulbTypes: IBulbTypes[];
   lampBrands: ILampBrands;
   bulbBrands: IBulbBrands;
-  sensorSwitch: ISensorSwitch;
+  sensorSwitch?: ISensorSwitch;
   session: Session;
   isFormEdit?: boolean;
   initData?: ILamp;
@@ -59,6 +59,16 @@ export default function LampForm({
   // console.log("🚀 ~ lampTypes:", lampTypes)
   // console.log("🚀 ~ sensorSwitch:", sensorSwitch)
   // console.log("🚀 ~ initData:", initData)
+  const searchParams = useSearchParams();
+  const pathname = usePathname();
+  const segments = pathname.split("/");
+  const roomId = isFormEdit
+    ? segments[segments.length - 2]
+    : searchParams.get("roomid")?.substring(0, 9);
+  const lampId = isFormEdit
+    ? segments[segments.length - 1]
+    : searchParams.get("roomid");
+
   const {
     register,
     getValues,
@@ -70,8 +80,8 @@ export default function LampForm({
   } = useForm<ILampSchema>({
     resolver: zodResolver(lampSchema),
     defaultValues: {
-      roomCode: isFormEdit ? initData?.rm_id : undefined,
-      lampId: isFormEdit ? initData?.l_id : undefined,
+      roomCode: isFormEdit ? initData?.rm_id : roomId,
+      lampId: isFormEdit ? initData?.l_id : lampId?.replace("-", ""),
       sensorId: isFormEdit ? initData?.u_srID : undefined,
       lamp: isFormEdit ? initData?.l_code : undefined,
       lampBrand: isFormEdit ? initData?.brand_code : undefined,
@@ -85,14 +95,8 @@ export default function LampForm({
     },
   });
 
-  const searchParams = useSearchParams();
-  const pathname = usePathname();
-  const segments = pathname.split("/");
-  const roomId = isFormEdit
-    ? segments[segments.length - 2]
-    : searchParams.get("roomid");
-  const lampId = isFormEdit && segments[segments.length - 1];
-
+  const [sensorSwitchList, setSensorSwitchList] =
+    useState<ISensorSwitch | undefined>(sensorSwitch);
   const [RoomComponent, setRoomComponent] = useState<ComponentType<{
     isManage: boolean;
     isShowLamp: boolean;
@@ -124,13 +128,28 @@ export default function LampForm({
         setRoomComponent(() => component);
       } catch (error) {
         console.error("Failed to load room component:", error);
-        setModelErrorMessage(`Model not avaliable.`);
+        setModelErrorMessage(`Model not available.`);
         setRoomComponent(null);
       }
     };
 
     loadRoomComponent();
   }, [roomId]);
+
+  useEffect(() => {
+    if (!isFormEdit) {
+      const loadSwitchSensor = async () => {
+        try {
+          const data = await getData(`getSensorSwitch/${roomId}`);
+          setSensorSwitchList(data);
+        } catch (error) {
+          console.error("Failed to load sensor switch data:", error);
+        }
+      };
+
+      loadSwitchSensor();
+    }
+  }, [roomId, isFormEdit]);
 
   const [showAlert, setShowAlert] = useState<AlertProps | null>(null);
   const router = useRouter();
@@ -300,8 +319,8 @@ export default function LampForm({
           loading: false,
           type: "success",
           detail: isFormEdit
-            ? `Update lamp: ${initData?.l_id} success`
-            : "Create new lamp success",
+            ? `แก้ไขข้อมูลโคม: ${initData?.l_id} สำเร็จ`
+            : "เพิ่มโคมไฟสำเร็จ",
           onClose: clearAlert,
         });
         resetForm();
@@ -311,8 +330,8 @@ export default function LampForm({
           loading: false,
           type: "warning",
           detail: isFormEdit
-            ? `Update faild, please try again.`
-            : "Create new lamp faild, please try again.",
+            ? `ผิดพลาด, โปรดลองอีกครั้ง.`
+            : "ผิดพลาด, โปรดลองอีกครั้ง.",
           onClose: clearAlert,
         });
       }
@@ -349,9 +368,9 @@ export default function LampForm({
                       isShowAir={true}
                       isFloorColorChange={true}
                       activeLampId={
-                        lampId
-                          ? lampId.slice(0, -3) + "-" + lampId.slice(-3)
-                          : null
+                        isFormEdit
+                          ? lampId?.slice(0, -3) + "-" + lampId?.slice(-3)
+                          : lampId
                       }
                     />
                   ) : null
@@ -425,7 +444,7 @@ export default function LampForm({
                     </FormLabel>
                     <Combobox
                       title="Sensor ID"
-                      listData={sensorSwitch}
+                      listData={sensorSwitchList}
                       defaultValue={getValues("sensorId")}
                       valueKey="u_srID"
                       nameKey="u_srID"
