@@ -60,7 +60,7 @@ export default function FloorArea({ buildingId, onSelectFloor }: Props) {
           <Button
             size={"icon"}
             onClick={() => {
-              setFloorComponent(null), setSelectFloor(null);
+              setFloorComponent(null), setSelectFloor?.(null);
             }}
             className="size-7 absolute right-0 z-10 bg-destructive/50 hover:bg-destructive/80 m-1"
           >

@@ -39,7 +39,7 @@ export default function CardSelectRoom({ room }: Props) {
         );
       } catch (error) {
         console.error("Error loading floors:", error);
-        notFound();
+        // notFound();
       }
     };
 
@@ -82,7 +82,7 @@ export default function CardSelectRoom({ room }: Props) {
       </CardHeader>
       <CardContent className="max-h-48 overflow-y-scroll custom-scrollbar">
         <div className="grid grid-cols-3 items-center gap-1">
-          {rooms.map((room) => (
+          {rooms?.map((room) => (
             <Button
               key={room}
               variant={select === room ? "default" : "outline"}

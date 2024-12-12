@@ -3,19 +3,21 @@ import React, { ComponentType, useEffect, useState } from "react";
 import CanvasScreen from "./canvas";
 
 import FacultyAllBuilding from "@/components/models/faculty/all";
-import EN12408Floor from "@/components/models/en124/floor-room/en12408-floor";
-import EN124Building from "@/components/models/en124/building/en124-building";
 import useFacultyStore from "@/stores/use-faculty-store";
 import { Button } from "@/components/shadcn-ui/button";
 import { X } from "lucide-react";
-import { getBuildingStore } from "@/stores/get-building-store";
 import FloorArea from "./floor-area";
 import RoomArea from "./room-area";
 import { configs } from "@/lib/configs";
 
 export default function CanvasPanel() {
   const { select: selectBuilding, setSelect: setSelectBuilding } =
-    useFacultyStore((state) => state);
+  useFacultyStore((state) => state);
+
+  const isBuidingActive =
+    configs.building[selectBuilding?.toLowerCase() as string]?.active;
+  const useBGMap =
+    configs.building[selectBuilding?.toLowerCase() as string]?.bgMap;
 
   const [BuildingComponent, setBuildingComponent] = useState<ComponentType<{
     isManage: boolean;
@@ -23,9 +25,6 @@ export default function CanvasPanel() {
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
   const [selectedFloor, setSelectedFloor] = useState<string | null>(null);
-
-  const isBuidingActive =
-    configs.building[selectBuilding?.toLowerCase() as string]?.active;
 
   useEffect(() => {
     if (isBuidingActive) {
@@ -39,7 +38,7 @@ export default function CanvasPanel() {
             ).default;
             setBuildingComponent(() => component);
           } catch (error) {
-            console.error("Failed to load building component:", error);
+            // console.error("Failed to load building component:", error);
             setErrorMessage(`Model ${selectBuilding} not avaliable.`);
             setBuildingComponent(null);
           }
@@ -49,6 +48,8 @@ export default function CanvasPanel() {
       };
 
       loadBuildingComponent();
+    } else {
+      setErrorMessage(`Model ${selectBuilding} not avaliable.`);
     }
   }, [selectBuilding, isBuidingActive]);
 
@@ -61,7 +62,8 @@ export default function CanvasPanel() {
         <CanvasScreen
           model={<FacultyAllBuilding isManage={true} />}
           cameraPosition={[7, 20, 40]}
-          dpr={[0.4, 0.75]}
+          dpr={[0.5, 0.9]}
+          antialias={true}
           isUsePlane={false}
           controlSettings={{
             minPolarAngle: 0,
@@ -91,7 +93,7 @@ export default function CanvasPanel() {
                 BuildingComponent ? <BuildingComponent isManage={true} /> : null
               }
               cameraPosition={[0, 30, 45]}
-              isUsePlane={false}
+              isUsePlane={!useBGMap}
               controlSettings={{
                 minPolarAngle: 0,
                 maxPolarAngle: Math.PI / 2.25,
@@ -110,7 +112,7 @@ export default function CanvasPanel() {
         )}
       </div>
       <div className="h-full relative bg-background/50">
-        {selectBuilding && (
+        {isBuidingActive && selectBuilding && (
           <FloorArea
             buildingId={selectBuilding}
             onSelectFloor={setSelectedFloor}
@@ -118,7 +120,7 @@ export default function CanvasPanel() {
         )}
       </div>
       <div className="h-full relative bg-background/50">
-        {selectBuilding && selectedFloor && (
+        {isBuidingActive && selectBuilding && selectedFloor && (
           <RoomArea
             buildingId={selectBuilding}
             floorId={selectedFloor}

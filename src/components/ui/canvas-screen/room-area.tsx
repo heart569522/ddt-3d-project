@@ -105,11 +105,12 @@ export default function RoomArea({ buildingId, floorId }: Props) {
   const handleClickManageAir = async (airNumber: number) => {
     const airList = await getData(`getAircon`);
 
-    const airId = `${selectRoom?.split("-")[0]?.toUpperCase()}A0${airNumber}`;
+    const airId =
+      airNumber < 10
+        ? `${selectRoom?.split("-")[0]?.toUpperCase()}-A0${airNumber}`
+        : `${selectRoom?.split("-")[0]?.toUpperCase()}-A${airNumber}`;
 
-    const airData = airList.find(
-      (item: any) => item.a_id === airId
-    );
+    const airData = airList.find((item: any) => item.a_id === airId);
 
     if (airData) {
       window.open(
@@ -127,10 +128,12 @@ export default function RoomArea({ buildingId, floorId }: Props) {
   };
 
   const handleClickManageLamp = async (lampNumber: number) => {
-    const lampData = await getData(
-      `getLampById/${selectRoom?.split("-")[0]?.toUpperCase()}L0${lampNumber}`
-    );
+    const lampId =
+      lampNumber < 10
+        ? `${selectRoom?.split("-")[0]?.toUpperCase()}-L0${lampNumber}`
+        : `${selectRoom?.split("-")[0]?.toUpperCase()}-L${lampNumber}`;
 
+    const lampData = await getData(`getLampById/${lampId}`);
     if (lampData) {
       window.open(
         `/admin/management/lamp-plug/edit/${selectRoom
@@ -217,8 +220,8 @@ export default function RoomArea({ buildingId, floorId }: Props) {
                         onClick={() => handleClickManageAir(index + 1)}
                         onMouseOver={() =>
                           setSelectRoom(
-                            `${selectRoom?.split("-")[0]?.toUpperCase()}-A0${
-                              index + 1
+                            `${selectRoom?.split("-")[0]?.toUpperCase()}-A${
+                              index + 1 < 10 ? `0${index + 1}` : index + 1
                             }`
                           )
                         }
@@ -262,8 +265,8 @@ export default function RoomArea({ buildingId, floorId }: Props) {
                         onClick={() => handleClickManageLamp(index + 1)}
                         onMouseOver={() =>
                           setSelectRoom(
-                            `${selectRoom?.split("-")[0]?.toUpperCase()}-L0${
-                              index + 1
+                            `${selectRoom?.split("-")[0]?.toUpperCase()}-L${
+                              index + 1 < 10 ? `0${index + 1}` : index + 1
                             }`
                           )
                         }

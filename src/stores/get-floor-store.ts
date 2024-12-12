@@ -17,8 +17,8 @@ const storeMap = {
 
 export const getFloorStore = (floor: string) => {
   const store = storeMap[floor as keyof typeof storeMap];
-  if (!store) {
-    throw new Error(`Store for floor ${floor} not found`);
-  }
-  return store();
+  // if (!store) {
+  //   throw new Error(`Store for floor ${floor} not found`);
+  // }
+  return store && store();
 };

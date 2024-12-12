@@ -80,11 +80,11 @@ type GLTFResult = GLTF & {
   }
 }
 
-export const en202FloorsB1 = [
+export const en202Floorsb1 = [
   "EN202B101", "EN202B102", "EN202B103", "EN202B199"
 ] as const;
 
-export type EN202FloorB1 = typeof en202FloorsB1[number];
+export type EN202FloorB1 = typeof en202Floorsb1[number];
 
 type Props = JSX.IntrinsicElements["group"] & {
   isShowLamp?: boolean;

@@ -21,6 +21,7 @@ import {
 const storeMap = {
   EN001: useEN001Store,
   EN101: useEN101Store,
+  EN103: null,
   EN104: useEN104Store,
   EN105: useEN105Store,
   EN106: useEN106Store,
@@ -31,11 +32,16 @@ const storeMap = {
   EN115: useEN115Store,
   EN116: useEN116Store,
   EN117: useEN117Store,
+  EN118: null,
+  EN119: null,
   EN120: useEN120Store,
+  EN122: null,
   EN124: useEN124Store,
+  EN125: null,
   EN126: useEN126Store,
   EN161: useEN161Store,
   EN202: useEN202Store,
+  EN509: null
 };
 
 export const getBuildingStore = (building: string) => {
@@ -43,5 +49,5 @@ export const getBuildingStore = (building: string) => {
   // if (!store) {
   //   throw new Error(`Store for building ${building} not found`);
   // }
-  return store();
+  return store && store();
 };
