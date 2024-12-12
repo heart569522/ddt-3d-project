@@ -110,7 +110,7 @@ export default function EN105Building(props: Props) {
   const [hover, setHover] = useState<EN105Floor | null>(null);
   const { select, setSelect } = useEN105Store((state) => state);
   const [floorDetail, setFloorDetail] = useState<IFloorDetails | null>(null);
-  console.log("🚀 ~ EN105Building ~ floorDetail:", floorDetail)
+  // console.log("🚀 ~ EN105Building ~ floorDetail:", floorDetail)
 
   const handleObjectHover = useCallback((object: EN105Floor | null) => {
     setHover(object);

@@ -245,7 +245,7 @@ export default function EN20201Floor(props: Props) {
                           meshChild.material.needsUpdate = true;
                         }
   
-                        console.log(`Changed color for ${meshChild.name} in ${groupName}`);
+                        // console.log(`Changed color for ${meshChild.name} in ${groupName}`);
                       }
                     }
                   });

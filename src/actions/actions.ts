@@ -13,7 +13,7 @@ export async function getAverageEnvironment() {
 
     return res.data;
   } catch (error) {
-    console.log("🚀 ~ getAverageEnvironment ~ error:", error);
+    // console.log("🚀 ~ getAverageEnvironment ~ error:", error);
   }
 }
 
@@ -27,7 +27,7 @@ export async function getAverageElectricityUsage() {
 
     return res.data;
   } catch (error) {
-    console.log("🚀 ~ getAverageElectricityUsage ~ error:", error);
+    // console.log("🚀 ~ getAverageElectricityUsage ~ error:", error);
   }
 }
 
@@ -40,7 +40,7 @@ export async function getPmTempHmdData() {
     }
     return res.data;
   } catch (error) {
-    console.log("🚀 ~ getPmTempHmdData ~ error:", error);
+    // console.log("🚀 ~ getPmTempHmdData ~ error:", error);
   }
 }
 
@@ -53,7 +53,7 @@ export async function getDashboardData(apiPath: string) {
     }
     return res.data;
   } catch (error) {
-    console.log("🚀 ~ getDashboardData ~ error:", error);
+    // console.log("🚀 ~ getDashboardData ~ error:", error);
   }
 }
 
@@ -70,7 +70,7 @@ export async function getData(apiPath: string, key?: string) {
 
     return res.data;
   } catch (error) {
-    console.log("🚀 ~ getData ~ error:", error);
+    // console.log("🚀 ~ getData ~ error:", error);
   }
 }
 
@@ -91,7 +91,7 @@ export async function getDataById(
 
     return res.data;
   } catch (error) {
-    console.log("🚀 ~ getData ~ error:", error);
+    // console.log("🚀 ~ getData ~ error:", error);
   }
 }
 
@@ -104,7 +104,7 @@ export async function createData(apiPath: string, key?: string, data?: any) {
 
     return res;
   } catch (error) {
-    console.log("🚀 ~ getData ~ error:", error);
+    // console.log("🚀 ~ getData ~ error:", error);
     return null;
   }
 }
@@ -127,7 +127,7 @@ export async function updateData(
 
     return res;
   } catch (error) {
-    console.log("🚀 ~ getData ~ error:", error);
+    // console.log("🚀 ~ getData ~ error:", error);
     return null;
   }
 }
@@ -148,7 +148,7 @@ export async function deleteData(
 
     return res;
   } catch (error) {
-    console.log("🚀 ~ getData ~ error:", error);
+    // console.log("🚀 ~ getData ~ error:", error);
     return null;
   }
 }

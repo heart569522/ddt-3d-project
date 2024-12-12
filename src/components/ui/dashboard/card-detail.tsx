@@ -68,7 +68,7 @@ export default function CardDetail({ buildingData, electricUsageData }: Props) {
   }, [select]);
 
   const handleCheckActiveBuilding = () => {
-    console.log(select);
+    // console.log(select);
 
     const isBuidingActive =
       configs.building[select?.toLowerCase() as string]?.active;

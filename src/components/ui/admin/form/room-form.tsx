@@ -211,7 +211,7 @@ export default function RoomForm({
           lamp_amount: lampAmount,
         });
       }
-      console.log("🚀 ~ onSubmit ~ response:", response);
+      // console.log("🚀 ~ onSubmit ~ response:", response);
       if (response && response.status === 200) {
         setShowAlert({
           openModal: true,

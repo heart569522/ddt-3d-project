@@ -1148,7 +1148,7 @@ export default function EN12408Floor(props: Props) {
                           meshChild.material.needsUpdate = true;
                         }
   
-                        console.log(`Changed color for ${meshChild.name} in ${groupName}`);
+                        // console.log(`Changed color for ${meshChild.name} in ${groupName}`);
                       }
                     }
                   });
@@ -1219,7 +1219,7 @@ export default function EN12408Floor(props: Props) {
         groupChild.isGroup && // ตรวจสอบว่าเป็น Group
         (groupChild.name === activeAirId || groupChild.name === activeLampId) // ตรวจสอบชื่อ
       ) {
-        console.log(`Matching Group found: ${groupChild.name}`);
+        // console.log(`Matching Group found: ${groupChild.name}`);
 
         // Traverse ภายใน Group นี้เพื่อเปลี่ยนสีของ mesh
         groupChild.traverse((meshChild: any) => {
