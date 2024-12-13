@@ -83,7 +83,7 @@ export function formatFloorElectricTodayUsage(
   data: IFloorRoomUseHour[],
   floorId: string
 ) {
-  const floorData = data.filter((item) => item.room.startsWith(floorId));
+  const floorData = data?.filter((item) => item.room.startsWith(floorId));
 
   let totalUseRateRoom = 0;
 
@@ -106,7 +106,7 @@ export function formatFloorElectricTodayUsage(
 
       return useRateRoom ? data : null;
     })
-    .filter((item): item is NonNullable<typeof item> => item !== null);
+    ?.filter((item): item is NonNullable<typeof item> => item !== null);
 
   // Update each entry's total field with the accumulated total
   const totalAsString = totalUseRateRoom.toFixed(configs.numberOfDecimal);
@@ -218,7 +218,7 @@ export function formatBuildingElectric24Usage(
 ) {
   const floorUsageMap: { [key: string]: any } = {};
 
-  const filteredData = data.filter((item) =>
+  const filteredData = data?.filter((item) =>
     item.fl_id.toUpperCase().startsWith(buildingId)
   );
 
@@ -253,7 +253,7 @@ export function formatFloorElectric24Usage(
   data: IRoomUse24[],
   floorId: string
 ) {
-  const floorData = data.filter((item) => item.room.startsWith(floorId));
+  const floorData = data?.filter((item) => item.room.startsWith(floorId));
   let totalUseRateRoom = 0;
 
   const formattedData = floorData
@@ -275,7 +275,7 @@ export function formatFloorElectric24Usage(
 
       return useRateRoom ? data : null;
     })
-    .filter((item): item is NonNullable<typeof item> => item !== null);
+    ?.filter((item): item is NonNullable<typeof item> => item !== null);
 
   // Update each entry's total field with the accumulated total
   const totalAsString = totalUseRateRoom.toFixed(configs.numberOfDecimal);

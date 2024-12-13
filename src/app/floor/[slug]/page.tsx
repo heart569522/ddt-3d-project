@@ -82,6 +82,7 @@ export default async function Floor({ params }: { params: { slug: string } }) {
         />
       );
     } catch (error) {
+      console.error("🚀 ~ renderCanvas ~ error:", error)
       // notFound();
     }
   };
