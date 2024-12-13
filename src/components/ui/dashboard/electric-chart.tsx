@@ -489,7 +489,7 @@ export function AverageElectricUsage({ data, isFloorRoom = false }: Props) {
       ? item.Month.replace(/^\d+-/, "")
       : item.Month;
 
-    const [, month] = monthString.split("-").map(Number);
+    const [, month] = monthString.split("-")?.map(Number);
 
     return {
       Month: isFloorRoom ? monthString : `${monthNames[month - 1]}`, // Format the month
@@ -499,7 +499,7 @@ export function AverageElectricUsage({ data, isFloorRoom = false }: Props) {
 
   if (isFloorRoom) {
     // Sort only if not isFloorRoom
-    chartData.sort((a, b) => {
+    chartData?.sort((a, b) => {
       // Sort by the month order
       return monthOrder.indexOf(a.Month) - monthOrder.indexOf(b.Month);
     });

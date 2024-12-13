@@ -19,6 +19,7 @@ import { formatDate, formatDatetoISOStringWithoutTime } from '@/lib/formats'
 import { useContourMenuStore } from '@/stores/use-menu-store'
 import { configs } from '@/lib/configs'
 import { usePathname } from 'next/navigation'
+import { getColorFromScale } from '@/lib/utils'
 
 type GLTFResult = GLTF & {
   nodes: {
@@ -1247,37 +1248,6 @@ export default function EN12408Floor(props: Props) {
         });
       }
     });
-  };
-
-  const getColorFromScale = (value: number, scale: Array<[number, string]>) => {
-    for (let i = 0; i < scale.length - 1; i++) {
-      const [start, startColor] = scale[i];
-      const [end, endColor] = scale[i + 1];
-  
-      if (value >= start && value <= end) {
-        const ratio = (value - start) / (end - start);
-        return interpolateColor(startColor, endColor, ratio);
-      }
-    }
-    return scale[scale.length - 1][1];
-  };
-
-  const interpolateColor = (color1: string, color2: string, ratio: number) => {
-    const hexToRgb = (hex: string) =>
-      hex
-        .replace(/^#/, "")
-        .match(/.{2}/g)
-        ?.map((x) => parseInt(x, 16)) || [0, 0, 0];
-  
-    const rgbToHex = (rgb: number[]) =>
-      `#${rgb.map((x) => x.toString(16).padStart(2, "0")).join("")}`;
-  
-    const rgb1 = hexToRgb(color1);
-    const rgb2 = hexToRgb(color2);
-  
-    const interpolatedRgb = rgb1.map((c, i) => Math.round(c + (rgb2[i] - c) * ratio));
-  
-    return rgbToHex(interpolatedRgb);
   };
 
   useEffect(() => {

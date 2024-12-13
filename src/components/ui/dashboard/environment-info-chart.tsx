@@ -31,7 +31,7 @@ export default function EnvironmentInfoChart({
   let HumidityData: IEnvironmentLineChart[] = [];
 
   data?.forEach((item: IPmTempHmd) => {
-    const [, month] = item.Month.split("-").map(Number);
+    const [, month] = item.Month.split("-")?.map(Number);
     const monthName = monthNames[month - 1];
 
     if (item.PM25Min || item.PM25Max || item.PM25Month) {

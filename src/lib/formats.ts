@@ -29,12 +29,12 @@ export function formatFacultyElectricTodayUsage(data: IElectricTodayUsage[]) {
   });
 
   const formatData = Object.values(buildingUsageMap)
-    .map((item) => ({
+    ?.map((item) => ({
       ...item,
       value: parseFloat(item.useToday.toFixed(configs.numberOfDecimal)),
       total: parseFloat(item.useTotal.toFixed(configs.numberOfDecimal)),
     }))
-    .sort((a, b) => b.value - a.value);
+    ?.sort((a, b) => b.value - a.value);
 
   return formatData;
 }
@@ -69,12 +69,12 @@ export function formatBuildingElectricTodayUsage(
   });
 
   const formatData = Object.values(floorUsageMap)
-    .map((item) => ({
+    ?.map((item) => ({
       ...item,
       value: parseFloat(item.useToday.toFixed(configs.numberOfDecimal)),
       total: parseFloat(item.useTotal.toFixed(configs.numberOfDecimal)),
     }))
-    .sort((a, b) => b.value - a.value);
+    ?.sort((a, b) => b.value - a.value);
 
   return formatData;
 }
@@ -88,7 +88,7 @@ export function formatFloorElectricTodayUsage(
   let totalUseRateRoom = 0;
 
   const formattedData = floorData
-    .map((item) => {
+    ?.map((item) => {
       const useRateRoom = Math.abs(item.UseRateRoom);
       const roomName = useRateRoom ? item.room.substring(6, 9) : "";
 
@@ -202,12 +202,12 @@ export function formatFacultyElectric24Usage(data: IElectric24Usage[]) {
   });
 
   const formatData = Object.values(buildingUsageMap)
-    .map((item) => ({
+    ?.map((item) => ({
       ...item,
       value: parseFloat(item.useYesterday.toFixed(configs.numberOfDecimal)),
       total: parseFloat(item.useTotal.toFixed(configs.numberOfDecimal)),
     }))
-    .sort((a, b) => b.value - a.value);
+    ?.sort((a, b) => b.value - a.value);
 
   return formatData;
 }
@@ -239,12 +239,12 @@ export function formatBuildingElectric24Usage(
   });
 
   const formatData = Object.values(floorUsageMap)
-    .map((item) => ({
+    ?.map((item) => ({
       ...item,
       value: parseFloat(item.useYesterday.toFixed(configs.numberOfDecimal)),
       total: parseFloat(item.useTotal.toFixed(configs.numberOfDecimal)),
     }))
-    .sort((a, b) => b.value - a.value);
+    ?.sort((a, b) => b.value - a.value);
 
   return formatData;
 }
@@ -257,7 +257,7 @@ export function formatFloorElectric24Usage(
   let totalUseRateRoom = 0;
 
   const formattedData = floorData
-    .map((item) => {
+    ?.map((item) => {
       const useRateRoom = Math.abs(item.UseRateRoom);
       const roomName = useRateRoom ? item.room.substring(6, 9) : "";
 

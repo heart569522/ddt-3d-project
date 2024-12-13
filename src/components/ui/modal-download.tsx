@@ -35,7 +35,7 @@ export default function ModalPDFDownload({ children, floorId }: Props) {
         </DialogHeader>
         <div className="space-y-2">
           {docs ? (
-            Object.entries(docs).map(([key, value]) => {
+            Object.entries(docs)?.map(([key, value]) => {
               if (
                 typeof value === "object" &&
                 value !== null &&
@@ -64,7 +64,7 @@ export default function ModalPDFDownload({ children, floorId }: Props) {
                 );
               } else if (typeof value === "object" && value !== null) {
                 // Nested documents (e.g., sanitary_system)
-                return Object.entries(value).map(([subKey, subValue]) => {
+                return Object.entries(value)?.map(([subKey, subValue]) => {
                   if (
                     typeof subValue === "object" &&
                     subValue !== null &&
