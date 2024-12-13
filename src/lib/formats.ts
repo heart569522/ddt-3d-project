@@ -110,7 +110,7 @@ export function formatFloorElectricTodayUsage(
 
   // Update each entry's total field with the accumulated total
   const totalAsString = totalUseRateRoom.toFixed(configs.numberOfDecimal);
-  formattedData.forEach((entry) => {
+  formattedData?.forEach((entry) => {
     entry.total = totalUseRateRoom ? totalAsString : "";
   });
 
@@ -164,7 +164,7 @@ export function formatRoomElectricTodayUsage(data: IFloorRoomUseHour[]) {
       .toFixed(configs.numberOfDecimal);
 
     // Set the total field for all entries
-    formattedData.forEach((entry) => {
+    formattedData?.forEach((entry) => {
       entry.total = total;
     });
 
@@ -222,7 +222,7 @@ export function formatBuildingElectric24Usage(
     item.fl_id.toUpperCase().startsWith(buildingId)
   );
 
-  filteredData.forEach((item: IElectric24Usage) => {
+  filteredData?.forEach((item: IElectric24Usage) => {
     const floorNumber = `${parseInt(item.fl_id.slice(-2), 10)}-FL`;
 
     if (floorUsageMap[floorNumber]) {
@@ -279,7 +279,7 @@ export function formatFloorElectric24Usage(
 
   // Update each entry's total field with the accumulated total
   const totalAsString = totalUseRateRoom.toFixed(configs.numberOfDecimal);
-  formattedData.forEach((entry) => {
+  formattedData?.forEach((entry) => {
     entry.total = totalUseRateRoom ? totalAsString : "";
   });
 
@@ -326,7 +326,7 @@ export function formatRoomElectric24Usage(data: IRoomUse24[], roomId: string) {
       .toFixed(configs.numberOfDecimal);
 
     // Set the total field for each entry
-    formattedData.forEach((entry) => {
+    formattedData?.forEach((entry) => {
       entry.total = total;
     });
 
