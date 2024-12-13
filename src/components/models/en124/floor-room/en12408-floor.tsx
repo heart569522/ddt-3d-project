@@ -1601,7 +1601,7 @@ export default function EN12408Floor(props: Props) {
       if (!isManage) {
       const material = materials[materialName].clone();
 
-      const airStatus = roomData?.[room.toUpperCase() as any]?.Airconditioner[`AIR0${airNumber.toString()}`]?.Status
+      const airStatus = roomData?.[room.toUpperCase() as any]?.Airconditioner?.[`AIR0${airNumber.toString()}`]?.Status
 
       if (airStatus == "On") {
         material.color.set(THREE.Color.NAMES.blue);
