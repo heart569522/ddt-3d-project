@@ -1,5 +1,4 @@
 "use client";
-import { getPmTempHmdData } from "@/actions/actions";
 import {
   Card,
   CardContent,

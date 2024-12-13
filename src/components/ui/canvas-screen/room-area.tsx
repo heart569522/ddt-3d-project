@@ -90,7 +90,7 @@ export default function RoomArea({ buildingId, floorId }: Props) {
   }, [selectRoom]);
 
   const handleClickManageRoom = async () => {
-    const roomlist = await getData(`getRoomById/${selectRoom}`);
+    const roomlist = await getData(`getRoomById/${selectRoom}`, true);
 
     if (roomlist[0].rm_id === null) {
       window.open(`/admin/management/rooms/add?roomid=${selectRoom}`, "_blank");
@@ -103,7 +103,7 @@ export default function RoomArea({ buildingId, floorId }: Props) {
   };
 
   const handleClickManageAir = async (airNumber: number) => {
-    const airList = await getData(`getAircon`);
+    const airList = await getData(`getAircon`, true);
 
     const airId =
       airNumber < 10
@@ -133,7 +133,7 @@ export default function RoomArea({ buildingId, floorId }: Props) {
         ? `${selectRoom?.split("-")[0]?.toUpperCase()}-L0${lampNumber}`
         : `${selectRoom?.split("-")[0]?.toUpperCase()}-L${lampNumber}`;
 
-    const lampData = await getData(`getLampById/${lampId}`);
+    const lampData = await getData(`getLampById/${lampId}`, true);
     if (lampData) {
       window.open(
         `/admin/management/lamp-plug/edit/${selectRoom

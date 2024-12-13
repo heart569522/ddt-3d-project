@@ -1,6 +1,4 @@
 import {
-  getAverageElectricityUsage,
-  getAverageEnvironment,
   getDashboardData,
   getData,
 } from "@/actions/actions";

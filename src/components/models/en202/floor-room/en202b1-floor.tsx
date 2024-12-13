@@ -304,18 +304,18 @@ export default function EN202B1Floor(props: Props) {
       if (isRoomPage) {
         if (select?.includes("L")) {
           const formattedSelect = select.replace("-", "");
-          const lampData = await getData(`getLampById/${formattedSelect.toUpperCase()}`);
+          const lampData = await getData(`getLampById/${formattedSelect.toUpperCase()}`, true);
           setModalLampDetail(lampData);
         } else if (select?.includes("A")) {
           const formattedSelect = select.replace("-", "");
-          const airData = await getData(`getAirById/${formattedSelect.toUpperCase()}`);
+          const airData = await getData(`getAirById/${formattedSelect.toUpperCase()}`, true);
           setModalAirDetail(airData[0]);
         } else {
-          const roomData = await getData(`roomDetail/${select?.toUpperCase()}`);
+          const roomData = await getData(`roomDetail/${select?.toUpperCase()}`, true);
           setModalRoomDetail(roomData);
         }
       } else {
-        const floorRoomData = await getData(`floorRoomDetail/${select?.toUpperCase()}`);
+        const floorRoomData = await getData(`floorRoomDetail/${select?.toUpperCase()}`, true);
         setModalFloorRoomDetail(floorRoomData);
       }
     }

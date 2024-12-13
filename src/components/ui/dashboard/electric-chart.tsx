@@ -75,10 +75,10 @@ export function ElectricChart({ data, buildingId }: ElectricProps) {
       switch (selectedTimeRange) {
         case "24hr":
           if (buildingId) {
-            const response = await getData("UseRate24");
+            const response = await getData("UseRate24", true);
             newData = formatBuildingElectric24Usage(response, buildingId);
           } else {
-            const response = await getData("UseRate24");
+            const response = await getData("UseRate24", true);
             newData = formatFacultyElectric24Usage(response);
           }
           break;
@@ -87,10 +87,10 @@ export function ElectricChart({ data, buildingId }: ElectricProps) {
         default:
           if (data.length === 0) {
             if (buildingId) {
-              const response = await getData("UseRateToday");
+              const response = await getData("UseRateToday", true);
               newData = formatBuildingElectricTodayUsage(response, buildingId);
             } else {
-              const response = await getData("UseRateToday");
+              const response = await getData("UseRateToday", true);
               newData = formatFacultyElectricTodayUsage(response);
             }
           } else {
@@ -277,12 +277,12 @@ export function ElectricFloorRoomChart({
       switch (selectedTimeRange) {
         case "24hr":
           if (roomId) {
-            const response = await getData(`RoomUseHourYesterday`);
+            const response = await getData(`RoomUseHourYesterday`, true);
             newData = formatRoomElectric24Usage(response, roomId as string);
           }
 
           if (floorId) {
-            const response = await getData(`RoomUseHourYesterday`);
+            const response = await getData(`RoomUseHourYesterday`, true);
             newData = formatFloorElectric24Usage(response, floorId as string);
           }
 
@@ -292,12 +292,12 @@ export function ElectricFloorRoomChart({
         default:
           if (data?.length === 0) {
             if (roomId) {
-              const response = await getData(`RoomUseHour/${roomId}`);
+              const response = await getData(`RoomUseHour/${roomId}`, true);
               newData = formatRoomElectricTodayUsage(response);
             }
 
             if (floorId) {
-              const response = await getData(`RoomUseHour`);
+              const response = await getData(`RoomUseHour`, true);
               newData = formatFloorElectricTodayUsage(response, floorId);
             }
           } else {

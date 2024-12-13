@@ -140,7 +140,7 @@ export default function LampForm({
     if (!isFormEdit) {
       const loadSwitchSensor = async () => {
         try {
-          const data = await getData(`getSensorSwitch/${roomId}`);
+          const data = await getData(`getSensorSwitch/${roomId}`, true);
           setSensorSwitchList(data);
         } catch (error) {
           console.error("Failed to load sensor switch data:", error);
@@ -178,7 +178,7 @@ export default function LampForm({
 
   const findSensorLampTypes = async (apiPath: string) => {
     try {
-      const response = await getData(apiPath);
+      const response = await getData(apiPath, true);
       if (!response) {
         setShowAlert({
           type: "warning",
@@ -203,7 +203,7 @@ export default function LampForm({
 
   const findBulbTypes = async (apiPath: string) => {
     try {
-      const response = await getData(apiPath);
+      const response = await getData(apiPath, true);
       if (!response) {
         setShowAlert({
           type: "warning",
@@ -303,13 +303,15 @@ export default function LampForm({
           "updateLamp",
           session.user.accessToken,
           formData,
-          data.lampId
+          data.lampId,
+          true
         );
       } else {
         response = await createData(
           "addLamp",
           session.user.accessToken,
-          formData
+          formData,
+          true
         );
         // console.log("🚀 ~ onSubmit ~ response:", response);
       }

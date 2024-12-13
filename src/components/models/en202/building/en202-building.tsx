@@ -112,7 +112,7 @@ export default function EN202Building(props: Props) {
   useEffect(() => {
     const fetchFloorDetail = async () => {
       const data = await getData(
-        `buildingFloorDetail/${select?.toUpperCase()}`
+        `buildingFloorDetail/${select?.toUpperCase()}`, true
       );
       setFloorDetail(data);
     };

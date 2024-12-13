@@ -39,10 +39,11 @@ export default function CardEnvironmentElectric({ roomId }: Props) {
             : selectedTimeRange === "1month"
             ? "Week"
             : "Day"
-        }/${roomId}`
+        }/${roomId}`, 
+        true
       );
 
-      const formattedData = data.map((item) => {
+      const formattedData = data?.map((item) => {
         const formattedDay = item.Day
           ? `${item.Day.substring(7, 10)}-${item.Day.substring(3, 6)}`
           : "";
@@ -100,7 +101,8 @@ export default function CardEnvironmentElectric({ roomId }: Props) {
             : selectedTimeRange === "1month"
             ? "Week"
             : "Day"
-        }/${roomId}`
+        }/${roomId}`,
+        true
       );
 
       const monthOrder = [
@@ -119,7 +121,7 @@ export default function CardEnvironmentElectric({ roomId }: Props) {
       ];
 
       const formattedData = data
-        ?.map((item: any) => {
+        .map((item: any) => {
           return {
             Date:
               selectedTimeRange === "6month"
@@ -135,7 +137,7 @@ export default function CardEnvironmentElectric({ roomId }: Props) {
                 : item.TotalUseRateDay.toFixed(0),
           };
         })
-        .sort((a: any, b: any) => {
+        ?.sort((a: any, b: any) => {
           if (selectedTimeRange === "6month") {
             return monthOrder.indexOf(a.Date) - monthOrder.indexOf(b.Date);
           }

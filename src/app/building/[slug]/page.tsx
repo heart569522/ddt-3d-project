@@ -1,11 +1,7 @@
 import {
-  getAverageElectricityUsage,
-  getAverageEnvironment,
   getDashboardData,
   getData,
-  getPmTempHmdData,
 } from "@/actions/actions";
-import { Button } from "@/components/shadcn-ui/button";
 import CardInfo from "@/components/ui/dashboard/card-info";
 import {
   AverageElectricUsage,
@@ -15,12 +11,7 @@ import { EnvironmentAverage } from "@/components/ui/dashboard/environment-chart"
 import Navigation from "@/components/ui/navigation";
 import {
   formatBuildingElectricTodayUsage,
-  formatFacultyElectricTodayUsage,
 } from "@/lib/formats";
-import { Droplets, MapPin, Thermometer } from "lucide-react";
-import { IconFaceMask } from "@tabler/icons-react";
-import TooltipHover from "@/components/ui/tooltip-hover";
-import Link from "next/link";
 import EnvironmentInfoChart from "@/components/ui/dashboard/environment-info-chart";
 import CanvasScreen from "@/components/ui/canvas-screen/canvas";
 import { Metadata } from "next/types";
@@ -28,7 +19,6 @@ import { notFound } from "next/navigation";
 import React from "react";
 import CardSelectFloor from "@/components/ui/dashboard/card-select-floor";
 import { configs } from "@/lib/configs";
-import { Color } from "three";
 
 export async function generateMetadata({
   params,

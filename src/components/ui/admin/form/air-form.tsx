@@ -148,7 +148,7 @@ export default function AirForm({
     if (!isFormEdit) {
       const loadAirSensor = async () => {
         try {
-          const data = await getData(`getSensorAir/${roomId}`);
+          const data = await getData(`getSensorAir/${roomId}`, true);
           setSensorAirList(data);
         } catch (error) {
           console.error("Failed to load sensor air data:", error);
@@ -204,7 +204,7 @@ export default function AirForm({
 
   const findSensorAirTypes = async (apiPath: string) => {
     try {
-      const response = await getData(apiPath);
+      const response = await getData(apiPath, true);
       if (!response) {
         setShowAlert({
           type: "warning",
@@ -355,13 +355,15 @@ export default function AirForm({
           "updateAir",
           session.user.accessToken,
           formData,
-          data.airId
+          data.airId,
+          true
         );
       } else {
         response = await createData(
           "addAir",
           session.user.accessToken,
-          formData
+          formData,
+          true
         );
         // console.log("🚀 ~ onSubmit ~ response:", response);
       }

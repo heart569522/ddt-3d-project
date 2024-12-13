@@ -50,7 +50,8 @@ export default function ActionColumn({
       const response = await deleteData(
         apiDeletePath,
         session?.user.accessToken,
-        dataId
+        dataId,
+        true
       );
 
       if (response?.status === 200) {

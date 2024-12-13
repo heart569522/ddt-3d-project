@@ -198,18 +198,24 @@ export default function RoomForm({
             air_amount: airAmount,
             lamp_amount: lampAmount,
           },
-          roomCode
+          roomCode,
+          true
         );
       } else {
-        response = await createData("addRoom", session.user.accessToken, {
-          rm_id: roomCode,
-          bu_id: building,
-          bu_abbr: building_abbr,
-          rm_name: roomName,
-          rm_type: roomType,
-          air_amount: airAmount,
-          lamp_amount: lampAmount,
-        });
+        response = await createData(
+          "addRoom",
+          session.user.accessToken,
+          {
+            rm_id: roomCode,
+            bu_id: building,
+            bu_abbr: building_abbr,
+            rm_name: roomName,
+            rm_type: roomType,
+            air_amount: airAmount,
+            lamp_amount: lampAmount,
+          },
+          true
+        );
       }
       // console.log("🚀 ~ onSubmit ~ response:", response);
       if (response && response.status === 200) {

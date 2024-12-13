@@ -1,5 +1,4 @@
 import {
-  getAverageElectricityUsage,
   getData,
 } from "@/actions/actions";
 import { Button } from "@/components/shadcn-ui/button";
@@ -24,7 +23,7 @@ import ButtonControlShowMap from "@/components/ui/button-control-showmap";
 
 export default async function Faculty () {
   const avgEnvironment = await getData("gaugeOutdoorDustboy");
-  const avgElectricUsage = await getAverageElectricityUsage();
+  const avgElectricUsage = await getData("UseRatePerMonth");
   const electricUsage = await getData("UseRateToday");
   const electricUsageData = formatFacultyElectricTodayUsage(electricUsage);
   const pmTempHmdData = await getData("HTPMPerMonth");

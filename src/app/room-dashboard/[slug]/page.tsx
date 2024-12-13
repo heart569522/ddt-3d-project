@@ -23,13 +23,9 @@ import { cn } from "@/lib/utils";
 import { IFloorRoomUseHour } from "@/types/model";
 import { IconFaceMask } from "@tabler/icons-react";
 import {
-  Cctv,
   Droplets,
-  Thermometer,
   ThermometerSun,
-  UserRound,
   Users,
-  Zap,
 } from "lucide-react";
 import { Metadata } from "next";
 import React from "react";
@@ -88,9 +84,11 @@ export default async function RoomDashboard({
   const sensorUseHour: ISensorUseHour[] = await getData(
     `SensorUseHour/${roomId}`
   );
+  console.log("🚀 ~ roomUseHour:", roomUseHour)
+  console.log("🚀 ~ sensorUseHour:", sensorUseHour)
 
   const formatAirStatus = airStatus?.map((status) => {
-    const matchingUseHour = airUseHour.find(
+    const matchingUseHour = airUseHour?.find(
       (hour) => hour.sensor === status.Sensor
     );
     return {
