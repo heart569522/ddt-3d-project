@@ -13,7 +13,7 @@ export async function getDashboardData(apiPath: string, isClient?: boolean) {
     }
     return res.data;
   } catch (error) {
-    console.log("🚀 ~ getDashboardData ~ error:", error);
+    console.error("🚀 ~ getDashboardData ~ error:", error);
   }
 }
 
@@ -31,7 +31,7 @@ export async function getData(apiPath: string, isClient?: boolean) {
 
     return res.data;
   } catch (error) {
-    console.log("🚀 ~ getData ~ error:", error);
+    console.error("🚀 ~ getData ~ error:", error);
   }
 }
 

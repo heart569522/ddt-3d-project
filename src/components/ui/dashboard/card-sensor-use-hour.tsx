@@ -28,7 +28,7 @@ export default function CardSensorUseHour({
   totalUseHour,
   sensorUseHour,
 }: Props) {
-  const chartConfig = sensorUseHour?.reduce((config, item, index) => {
+  const chartConfig = sensorUseHour.reduce((config, item, index) => {
     config[item.sensor] = {
       label: item.sensor,
       color: `hsl(var(--chart-${index + 1}))`,
@@ -36,20 +36,21 @@ export default function CardSensorUseHour({
     return config;
   }, {} as ChartConfig);
   
-  const totalEnergy = sensorUseHour?.reduce(
+  const totalEnergy = sensorUseHour.reduce(
     (sum, item) => sum + parseFloat(item.energy.toString()),
     0
   );
-  const pieChartData = sensorUseHour?.map((item) => {
+
+  const pieChartData = sensorUseHour.map((item) => {
     const value = Math.abs(parseFloat(item.energy.toString()));
-
+    
     const percent =
-      totalEnergy !== 0 && !isNaN(totalEnergy)
-        ? parseFloat(
-            ((value / totalEnergy) * 100).toFixed(configs.numberOfDecimal)
-          )
-        : 0;
-
+    totalEnergy !== 0 && !isNaN(totalEnergy)
+    ? parseFloat(
+      ((value / totalEnergy) * 100).toFixed(configs.numberOfDecimal)
+    )
+    : 0;
+    
     return {
       ...item,
       fill: `var(--color-${item.sensor})`,
