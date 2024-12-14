@@ -84,8 +84,6 @@ export default async function RoomDashboard({
   const sensorUseHour: ISensorUseHour[] = await getData(
     `SensorUseHour/${roomId}`
   );
-  // console.log("🚀 ~ roomUseHour:", roomUseHour)
-  // console.log("🚀 ~ sensorUseHour:", sensorUseHour)
 
   const formatAirStatus = airStatus?.map((status) => {
     const matchingUseHour = airUseHour?.find(
