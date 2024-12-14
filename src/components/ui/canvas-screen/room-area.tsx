@@ -104,13 +104,16 @@ export default function RoomArea({ buildingId, floorId }: Props) {
 
   const handleClickManageAir = async (airNumber: number) => {
     const airList = await getData(`getAircon`, true);
+    console.log("🚀 ~ handleClickManageAir ~ airList:", airList);
 
     const airId =
       airNumber < 10
-        ? `${selectRoom?.split("-")[0]?.toUpperCase()}-A0${airNumber}`
-        : `${selectRoom?.split("-")[0]?.toUpperCase()}-A${airNumber}`;
+        ? `${selectRoom?.split("-")[0]?.toUpperCase()}A0${airNumber}`
+        : `${selectRoom?.split("-")[0]?.toUpperCase()}A${airNumber}`;
+    console.log("🚀 ~ handleClickManageAir ~ airId:", airId);
 
     const airData = airList.find((item: any) => item.a_id === airId);
+    console.log("🚀 ~ handleClickManageAir ~ airData:", airData);
 
     if (airData) {
       window.open(
@@ -130,8 +133,8 @@ export default function RoomArea({ buildingId, floorId }: Props) {
   const handleClickManageLamp = async (lampNumber: number) => {
     const lampId =
       lampNumber < 10
-        ? `${selectRoom?.split("-")[0]?.toUpperCase()}-L0${lampNumber}`
-        : `${selectRoom?.split("-")[0]?.toUpperCase()}-L${lampNumber}`;
+        ? `${selectRoom?.split("-")[0]?.toUpperCase()}L0${lampNumber}`
+        : `${selectRoom?.split("-")[0]?.toUpperCase()}L${lampNumber}`;
 
     const lampData = await getData(`getLampById/${lampId}`, true);
     if (lampData) {
