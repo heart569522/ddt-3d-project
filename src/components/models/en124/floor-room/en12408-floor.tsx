@@ -19,7 +19,7 @@ import { formatDate, formatDatetoISOStringWithoutTime } from '@/lib/formats'
 import { useContourMenuStore } from '@/stores/use-menu-store'
 import { configs } from '@/lib/configs'
 import { usePathname } from 'next/navigation'
-import { getColorFromScale } from '@/lib/utils'
+import { getColorFromScale, getRoomActiveStatus } from '@/lib/utils'
 
 type GLTFResult = GLTF & {
   nodes: {
@@ -1022,13 +1022,11 @@ export default function EN12408Floor(props: Props) {
 
   const groupRef = useRef<any>();
   const floorId = pathname;
-
   const path = usePathname();
   const roomId = path.split('/room/')[1];
   // console.log("isRoomPage : ", isRoomPage);
   // console.log("roomData : ", props.roomData);
   // console.log("🚀 ~ EN12408Floor ~ group:", group)
-  
   const { nodes, materials } = useGLTF('/models/building/en124/floor_8/floor-room.glb') as GLTFResult
 
   const [hover, setHover] = useState<EN12408Air | EN12408Light | EN124Floor8 | null>(null);
@@ -1053,163 +1051,203 @@ export default function EN12408Floor(props: Props) {
   );
 
   useEffect(() => {
-    const floorContourColor = () => {
-      if (!groupRef.current) return;
-  
-      groupRef.current.traverse((groupChild: any) => {
-        if ((groupChild.isGroup || groupChild.type === 'Select') && !groupChild.name.includes('-')) {
-          const roomData = props.roomData?.[groupChild.name];
-  
-          if (roomData && roomData.Humi_Temp_PM25) {
-            // Calculate averages
-            const sensors = Object.values(roomData.Humi_Temp_PM25) as Array<{
-              Temp?: number;
-              Humidity?: number;
-              PM25?: number;
-            }>;
-  
-            let averages: any = null;
-            if (sensors.length > 1) {
-              const total = sensors.reduce(
-                (acc: { Temp: number; Humidity: number; PM25: number; count: number }, sensor) => {
-                  acc.Temp += sensor.Temp || 0;
-                  acc.Humidity += sensor.Humidity || 0;
-                  acc.PM25 += sensor.PM25 || 0;
-                  acc.count += 1;
-                  return acc;
-                },
-                { Temp: 0, Humidity: 0, PM25: 0, count: 0 }
-              );
-  
-              averages = {
-                Temp: total.Temp / total.count,
-                Humidity: total.Humidity / total.count,
-                PM25: total.PM25 / total.count,
-              };
-            } else if (sensors.length === 1) {
-              const sensor = sensors[0];
-              averages = {
-                Temp: sensor.Temp || 0,
-                Humidity: sensor.Humidity || 0,
-                PM25: sensor.PM25 || 0,
-              };
-            }
-  
-            if (averages) {
-              // console.log(`Averages for ${groupChild.name}:`, averages);
-  
-              // Handle menuState
-              if (menuState === null) {
-                // Reset to original color
-                groupChild.traverse((meshChild: any) => {
-                  if (meshChild.isMesh || meshChild.isInstancedMesh) {
-                    if (meshChild.material) {
-                      if (Array.isArray(meshChild.material)) {
-                        meshChild.material.forEach((mat: any) => {
-                          if (mat.userData.originalColor) {
-                            mat.color.set(mat.userData.originalColor);
-                            mat.needsUpdate = true;
-                          }
-                        });
-                      } else {
-                        if (meshChild.material.userData.originalColor) {
-                          meshChild.material.color.set(meshChild.material.userData.originalColor);
-                          meshChild.material.needsUpdate = true;
-                        }
-                      }
-                    }
-                  }
-                });
-              } else {
-                // Process PM2.5, Humidity, or Temperature
-                const processState = (value: number, scale: any, groupName: string) => {
-                  const normalizedValue = Math.max(0, Math.min(value, 1));
-                  const color = getColorFromScale(normalizedValue, scale);
-  
+    if (!isRoomPage && isFloorPage) {
+      const floorContourColor = () => {
+        if (!groupRef.current) return;
+    
+        groupRef.current.traverse((groupChild: any) => {
+          if ((groupChild.isGroup || groupChild.type === 'Select') && !groupChild.name.includes('-')) {
+            const roomData = props.roomData?.[groupChild.name];
+    
+            if (roomData && roomData.Humi_Temp_PM25) {
+              // Calculate averages
+              const sensors = Object.values(roomData.Humi_Temp_PM25) as Array<{
+                Temp?: number;
+                Humidity?: number;
+                PM25?: number;
+              }>;
+    
+              let averages: any = null;
+              if (sensors.length > 1) {
+                const total = sensors.reduce(
+                  (acc: { Temp: number; Humidity: number; PM25: number; count: number }, sensor) => {
+                    acc.Temp += sensor.Temp || 0;
+                    acc.Humidity += sensor.Humidity || 0;
+                    acc.PM25 += sensor.PM25 || 0;
+                    acc.count += 1;
+                    return acc;
+                  },
+                  { Temp: 0, Humidity: 0, PM25: 0, count: 0 }
+                );
+    
+                averages = {
+                  Temp: total.Temp / total.count,
+                  Humidity: total.Humidity / total.count,
+                  PM25: total.PM25 / total.count,
+                };
+              } else if (sensors.length === 1) {
+                const sensor = sensors[0];
+                averages = {
+                  Temp: sensor.Temp || 0,
+                  Humidity: sensor.Humidity || 0,
+                  PM25: sensor.PM25 || 0,
+                };
+              }
+    
+              if (averages) {
+                // console.log(`Averages for ${groupChild.name}:`, averages);
+    
+                // Handle menuState
+                if (menuState === null) {
+                  // Reset to original color
                   groupChild.traverse((meshChild: any) => {
                     if (meshChild.isMesh || meshChild.isInstancedMesh) {
-                      if (
-                        meshChild.material &&
-                        (meshChild.material.name?.includes('ผิวคอนกรีต ขัดมัน') ||
-                          meshChild.material.name?.includes('กระเบื้องห้องน้ำ'))
-                      ) {
-                        // Save original color if not saved yet
-                        if (!meshChild.material.userData.originalColor) {
-                          meshChild.material.userData.originalColor = meshChild.material.color.getHex();
-                        }
-  
-                        // Set new color
+                      if (meshChild.material) {
                         if (Array.isArray(meshChild.material)) {
                           meshChild.material.forEach((mat: any) => {
-                            mat.color.set(color);
-                            mat.needsUpdate = true;
+                            if (mat.userData.originalColor) {
+                              mat.color.set(mat.userData.originalColor);
+                              mat.needsUpdate = true;
+                            }
                           });
                         } else {
-                          meshChild.material.color.set(color);
-                          meshChild.material.needsUpdate = true;
+                          if (meshChild.material.userData.originalColor) {
+                            meshChild.material.color.set(meshChild.material.userData.originalColor);
+                            meshChild.material.needsUpdate = true;
+                          }
                         }
-  
-                        // console.log(`Changed color for ${meshChild.name} in ${groupName}`);
                       }
                     }
                   });
-                };
-  
-                if (menuState === 'pm25') {
-                  const pm25Value = averages.PM25 || 0;
-                  processState(pm25Value / 600, configs.colorScale.pm25, groupChild.name);
-                } else if (menuState === 'humidity') {
-                  const humidityValue = averages.Humidity || 0;
-                  processState(humidityValue / 100, configs.colorScale.humidity, groupChild.name);
-                } else if (menuState === 'temperature') {
-                  const tempValue = averages.Temp || 0;
-                  processState(tempValue / 50, configs.colorScale.temperature, groupChild.name);
+                } else {
+                  // Process PM2.5, Humidity, or Temperature
+                  const processState = (value: number, scale: any, groupName: string) => {
+                    const normalizedValue = Math.max(0, Math.min(value, 1));
+                    const color = getColorFromScale(normalizedValue, scale);
+    
+                    groupChild.traverse((meshChild: any) => {
+                      if (meshChild.isMesh || meshChild.isInstancedMesh) {
+                        if (
+                          meshChild.material &&
+                          (meshChild.material.name?.includes('ผิวคอนกรีต ขัดมัน') ||
+                            meshChild.material.name?.includes('กระเบื้องห้องน้ำ'))
+                        ) {
+                          // Save original color if not saved yet
+                          if (!meshChild.material.userData.originalColor) {
+                            meshChild.material.userData.originalColor = meshChild.material.color.getHex();
+                          }
+    
+                          // Set new color
+                          if (Array.isArray(meshChild.material)) {
+                            meshChild.material.forEach((mat: any) => {
+                              mat.color.set(color);
+                              mat.needsUpdate = true;
+                            });
+                          } else {
+                            meshChild.material.color.set(color);
+                            meshChild.material.needsUpdate = true;
+                          }
+    
+                          // console.log(`Changed color for ${meshChild.name} in ${groupName}`);
+                        }
+                      }
+                    });
+                  };
+    
+                  if (menuState === 'pm25') {
+                    const pm25Value = averages.PM25 || 0;
+                    processState(pm25Value / 600, configs.colorScale.pm25, groupChild.name);
+                  } else if (menuState === 'humidity') {
+                    const humidityValue = averages.Humidity || 0;
+                    processState(humidityValue / 100, configs.colorScale.humidity, groupChild.name);
+                  } else if (menuState === 'temperature') {
+                    const tempValue = averages.Temp || 0;
+                    processState(tempValue / 50, configs.colorScale.temperature, groupChild.name);
+                  }
                 }
               }
             }
           }
-        }
-      });
-    };
-  
-    floorContourColor();
-  }, [roomData, menuState]);
+        });
+      };
+    
+      floorContourColor();
+    }
+  }, [roomData, menuState, isRoomPage]);
 
   useEffect(() => {
-    const changeFloorColor = () => {
-      if (!groupRef.current || !isFloorColorChange) return;
-  
-      groupRef.current.traverse((groupChild: any) => {
-        groupChild.traverse((meshChild: any) => {
-          if (meshChild.isMesh || meshChild.isInstancedMesh) {
-            if (
-              meshChild.material &&
-              (meshChild.material.name?.includes('ผิวคอนกรีต ขัดมัน') ||
-                meshChild.material.name?.includes('กระเบื้องห้องน้ำ'))
-            ) {
-              // Save original color if not saved yet
-              if (!meshChild.material.userData.originalColor) {
-                meshChild.material.userData.originalColor = meshChild.material.color.getHex();
-              }
-  
-              // Change to gray color
-              const grayColor = 0x959595; // Hex for gray
-              if (Array.isArray(meshChild.material)) {
-                meshChild.material.forEach((mat: any) => {
-                  mat.color.set(grayColor);
-                  mat.needsUpdate = true;
-                });
-              } else {
-                meshChild.material.color.set(grayColor);
-                meshChild.material.needsUpdate = true;
+    if (!isRoomPage && isFloorPage) {
+      const changeFloorColor = () => {
+        if (!groupRef.current || !isFloorColorChange) return;
+    
+        groupRef.current.traverse((groupChild: any) => {
+          groupChild.traverse((meshChild: any) => {
+            if (meshChild.isMesh || meshChild.isInstancedMesh) {
+              if (
+                meshChild.material &&
+                (meshChild.material.name?.includes('ผิวคอนกรีต ขัดมัน') ||
+                  meshChild.material.name?.includes('กระเบื้องห้องน้ำ'))
+              ) {
+                // Save original color if not saved yet
+                if (!meshChild.material.userData.originalColor) {
+                  meshChild.material.userData.originalColor = meshChild.material.color.getHex();
+                }
+    
+                // Change to gray color
+                const grayColor = 0x959595; // Hex for gray
+                if (Array.isArray(meshChild.material)) {
+                  meshChild.material.forEach((mat: any) => {
+                    mat.color.set(grayColor);
+                    mat.needsUpdate = true;
+                  });
+                } else {
+                  meshChild.material.color.set(grayColor);
+                  meshChild.material.needsUpdate = true;
+                }
               }
             }
-          }
+          });
         });
-      });
-    };
-    changeFloorColor();
-  }, [isFloorColorChange]);
+      };
+      changeFloorColor();
+    }
+  }, [isFloorColorChange, isRoomPage]);
+
+  // useEffect(() => {
+  //   if (isRoomPage) {
+  //     const focusRoom = () => {
+  //       if (!groupRef.current || !roomId) return;
+  //       groupRef.current.traverse((child: any) => {
+  //         if (child.isMesh && child.parent?.name) {
+  //           if (child.parent.name.startsWith(roomId)) {
+  //             // Mesh ที่เป็นห้องที่ตรงกับ roomId -> opacity = 1
+  //             if (Array.isArray(child.material)) {
+  //               child.material.forEach((m: { transparent: boolean; opacity: number }) => {
+  //                 m.transparent = true;
+  //                 m.opacity = 1;
+  //               });
+  //             } else {
+  //               child.material.transparent = true;
+  //               child.material.opacity = 1;
+  //             }
+  //           } else {
+  //             // Mesh ที่ไม่ตรงกับ roomId -> opacity = 0.3 (ถ้าต้องการจางลง)
+  //             if (Array.isArray(child.material)) {
+  //               child.material.forEach((m: { transparent: boolean; opacity: number }) => {
+  //                 m.transparent = true;
+  //                 m.opacity = 0.3;
+  //               });
+  //             } else {
+  //               child.material.transparent = true;
+  //               child.material.opacity = 0.3;
+  //             }
+  //           }
+  //         }
+  //       });
+  //     };
+  //     focusRoom();
+  //   }
+  // }, [isRoomPage, roomId]);
 
   const activeAirLampColor = () => {
     if (!groupRef.current || (!activeAirId && !activeLampId && !isManage)) return;
@@ -1250,6 +1288,63 @@ export default function EN12408Floor(props: Props) {
     });
   };
 
+  const createAirMaterial =  (materialName: keyof typeof materials, room: string, airNumber: number) => {
+    if (!activeAirId && !activeLampId) {
+      if (!isManage) {
+      const material = materials[materialName].clone();
+
+      const airStatus = roomData?.[room.toUpperCase() as any]?.Airconditioner?.[`AIR0${airNumber.toString()}`]?.Status
+
+      if (airStatus == "On") {
+        material.color.set(THREE.Color.NAMES.blue);
+      } else if (airStatus == "Off") {
+        material.color.set(THREE.Color.NAMES.gray);
+      }
+      
+      return material;
+      } else {
+        const material = materials[materialName].clone();
+        return material
+      }
+    } else {
+      activeAirLampColor();
+    }
+  };
+
+  const createLightMaterial =  (materialName: keyof typeof materials, room: string, lightNumber: number) => {
+    if (!activeAirId && !activeLampId) {
+      if (!isManage) {
+        const material = materials[materialName].clone();
+
+        if (room.toUpperCase() == "EN1240818") {
+          const switchStatus1 = roomData?.[room.toUpperCase() as any]?.Lighting_Switch.LSW01.Status
+          const switchStatus2 = roomData?.[room.toUpperCase() as any]?.Lighting_Switch.LSW02.Status
+      
+          if (lightNumber <= 3) {
+            if (switchStatus1 == "Open") {
+              material.color.set(THREE.Color.NAMES.yellow);
+            } else if (switchStatus1 == "Close") {
+              material.color.set(THREE.Color.NAMES.gray);
+            }
+          } else {
+            if (switchStatus2 == "Open") {
+              material.color.set(THREE.Color.NAMES.yellow);
+            } else if (switchStatus2 == "Close") {
+              material.color.set(THREE.Color.NAMES.gray);
+            }
+          }
+        }
+        
+        return material;
+      } else {
+        const material = materials[materialName].clone();
+        return material
+      }
+    } else {
+      activeAirLampColor();
+    }
+  };
+
   useEffect(() => {
     const fetchFloorRoomDetail = async () => {
       if (isRoomPage) {
@@ -1275,6 +1370,11 @@ export default function EN12408Floor(props: Props) {
   }, [select]);
 
   const renderModalDetail = (roomCode: string) => {
+    const isRoomActive = getRoomActiveStatus(
+      select?.substring(0, 5),
+      select?.substring(0, 7),
+      select?.substring(0, 9),
+    )
     if (select === roomCode && !isManage) {
       return (
         <Html distanceFactor={50}>
@@ -1283,11 +1383,13 @@ export default function EN12408Floor(props: Props) {
               <label className="font-bold text-xl">
                 {`ห้อง ${roomCode.substring(6, 9)} - ${roomCode}`}
               </label>
-              <Link href={`/room/${roomCode.toUpperCase()}`} target="_blank">
-                <Button variant={"ghost"} size={"icon"}>
-                  <ExternalLink className="size-5" />
-                </Button>
-              </Link>
+              {isRoomActive && (
+                <Link href={`/room/${roomCode.toUpperCase()}`} target="_blank">
+                  <Button variant={"ghost"} size={"icon"}>
+                    <ExternalLink className="size-5" />
+                  </Button>
+                </Link>
+              )}
             </div>
             <Table className="border rounded-md">
               <TableBody>
@@ -1330,13 +1432,13 @@ export default function EN12408Floor(props: Props) {
                 <TableRow>
                   <TableCell className="p-2">Average Temperature</TableCell>
                   <TableCell className="p-2">
-                    {`${modalFloorRoomDetail?.averageTemp} °C` || "-"}
+                    {modalFloorRoomDetail?.averageTemp ? `${modalFloorRoomDetail?.averageTemp} °C` : "-"}
                   </TableCell>
                 </TableRow>
                 <TableRow>
                   <TableCell className="p-2">Average Humidity</TableCell>
                   <TableCell className="p-2">
-                    {`${modalFloorRoomDetail?.averageHumidity} %` || "-"}
+                    {modalFloorRoomDetail?.averageHumidity ? `${modalFloorRoomDetail?.averageHumidity} %` : "-"}
                   </TableCell>
                 </TableRow>
               </TableBody>
@@ -1565,63 +1667,6 @@ export default function EN12408Floor(props: Props) {
       )
     }
   }
-
-  const createAirMaterial =  (materialName: keyof typeof materials, room: string, airNumber: number) => {
-    if (!activeAirId && !activeLampId) {
-      if (!isManage) {
-      const material = materials[materialName].clone();
-
-      const airStatus = roomData?.[room.toUpperCase() as any]?.Airconditioner?.[`AIR0${airNumber.toString()}`]?.Status
-
-      if (airStatus == "On") {
-        material.color.set(THREE.Color.NAMES.blue);
-      } else if (airStatus == "Off") {
-        material.color.set(THREE.Color.NAMES.gray);
-      }
-      
-      return material;
-      } else {
-        const material = materials[materialName].clone();
-        return material
-      }
-    } else {
-      activeAirLampColor();
-    }
-  };
-
-  const createLightMaterial =  (materialName: keyof typeof materials, room: string, lightNumber: number) => {
-    if (!activeAirId && !activeLampId) {
-      if (!isManage) {
-        const material = materials[materialName].clone();
-
-        if (room.toUpperCase() == "EN1240818") {
-          const switchStatus1 = roomData?.[room.toUpperCase() as any]?.Lighting_Switch.LSW01.Status
-          const switchStatus2 = roomData?.[room.toUpperCase() as any]?.Lighting_Switch.LSW02.Status
-      
-          if (lightNumber <= 3) {
-            if (switchStatus1 == "Open") {
-              material.color.set(THREE.Color.NAMES.yellow);
-            } else if (switchStatus1 == "Close") {
-              material.color.set(THREE.Color.NAMES.gray);
-            }
-          } else {
-            if (switchStatus2 == "Open") {
-              material.color.set(THREE.Color.NAMES.yellow);
-            } else if (switchStatus2 == "Close") {
-              material.color.set(THREE.Color.NAMES.gray);
-            }
-          }
-        }
-        
-        return material;
-      } else {
-        const material = materials[materialName].clone();
-        return material
-      }
-    } else {
-      activeAirLampColor();
-    }
-  };
 
   return (
     <group 

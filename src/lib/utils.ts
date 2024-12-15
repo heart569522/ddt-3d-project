@@ -48,7 +48,33 @@ export const getFloorActiveStatus = (
   return floor?.active ?? false; // Return floor active status or false
 };
 
-export const getColorFromScale = (value: number, scale: Array<[number, string]>) => {
+export const getRoomActiveStatus = (
+  buildingKey?: string,
+  floorKey?: string,
+  roomKey?: string
+): boolean => {
+  if (!buildingKey || !floorKey || !roomKey) {
+    return false; // Return false if keys are missing
+  }
+
+  const building = configs.building[buildingKey.toLowerCase()]; // Get the building
+  if (!building?.floor) {
+    return false; // Building or floors don't exist
+  }
+
+  const floor = building.floor[floorKey.toLowerCase()]; // Get the floor
+  if (!floor?.room) {
+    return false; // Floor or rooms don't exist
+  }
+
+  const room = floor.room[roomKey.toLowerCase()]; // Get the room
+  return room?.active ?? false; // Return room active status or false
+};
+
+export const getColorFromScale = (
+  value: number,
+  scale: Array<[number, string]>
+) => {
   for (let i = 0; i < scale.length - 1; i++) {
     const [start, startColor] = scale[i];
     const [end, endColor] = scale[i + 1];
@@ -61,7 +87,11 @@ export const getColorFromScale = (value: number, scale: Array<[number, string]>)
   return scale[scale.length - 1][1];
 };
 
-export const interpolateColor = (color1: string, color2: string, ratio: number) => {
+export const interpolateColor = (
+  color1: string,
+  color2: string,
+  ratio: number
+) => {
   const hexToRgb = (hex: string) =>
     hex
       .replace(/^#/, "")

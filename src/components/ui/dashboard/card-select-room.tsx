@@ -8,7 +8,7 @@ import {
   CardTitle,
 } from "@/components/shadcn-ui/card";
 import { configs } from "@/lib/configs";
-import { cn } from "@/lib/utils";
+import { cn, getRoomActiveStatus } from "@/lib/utils";
 import { getFloorStore } from "@/stores/get-floor-store";
 import { notFound } from "next/navigation";
 import React, { useEffect, useState } from "react";
@@ -49,11 +49,11 @@ export default function CardSelectRoom({ room }: Props) {
   useEffect(() => {
     const handleCheckActiveRoom = () => {
       if (select) {
-        const isRoomActive =
-          configs.building?.[select?.substring(0, 5).toLowerCase() as string]
-            ?.floor?.[select?.substring(0, 7).toLowerCase() as string]?.room?.[
-            select?.toLowerCase() as string
-          ]?.active ?? false;
+        const isRoomActive = getRoomActiveStatus(
+          select?.substring(0, 5),
+          select?.substring(0, 7),
+          select?.substring(0, 9)
+        );
         if (isRoomActive) {
           setDisableButton(false);
         } else {

@@ -224,6 +224,105 @@ export const configs: Configs = {
             },
           },
           room: {
+            en1240801: {
+              active: true,
+              cameraPosition: [-11, 0, -21],
+              minDistance: 9,
+              maxDistance: 12,
+              modalDistance: 15,
+              airCount: 0,
+              lampCount: 0
+            },
+            en1240802: {
+              active: true,
+              cameraPosition: [-7, 0, -21],
+              minDistance: 9,
+              maxDistance: 12,
+              modalDistance: 15,
+              airCount: 0,
+              lampCount: 0
+            },
+            en1240803: {
+              active: true,
+              cameraPosition: [-3, 0, -20],
+              minDistance: 9,
+              maxDistance: 12,
+              modalDistance: 15,
+              airCount: 0,
+              lampCount: 0
+            },
+            en1240804: {
+              active: true,
+              cameraPosition: [3, 3, -18.5],
+              minDistance: 9,
+              maxDistance: 12,
+              modalDistance: 18,
+              airCount: 0,
+              lampCount: 0
+            },
+            en1240805: {
+              active: true,
+              cameraPosition: [12.5, 0, -17.5],
+              minDistance: 15,
+              maxDistance: 18,
+              modalDistance: 18,
+              airCount: 0,
+              lampCount: 0
+            },
+            en1240806: {
+              active: true,
+              cameraPosition: [20, 0, -17.5],
+              minDistance: 15,
+              maxDistance: 18,
+              modalDistance: 18,
+              airCount: 0,
+              lampCount: 0
+            },
+            en1240807: {
+              active: true,
+              cameraPosition: [-11, 0, -18],
+              minDistance: 7,
+              maxDistance: 10,
+              modalDistance: 15,
+              airCount: 0,
+              lampCount: 0
+            },
+            en1240808: {
+              active: true,
+              cameraPosition: [-3, 0, -17.2],
+              minDistance: 9,
+              maxDistance: 12,
+              modalDistance: 15,
+              airCount: 0,
+              lampCount: 0
+            },
+            en1240809: {
+              active: true,
+              cameraPosition: [-3, 0, -15],
+              minDistance: 9,
+              maxDistance: 12,
+              modalDistance: 15,
+              airCount: 0,
+              lampCount: 0
+            },
+            en1240810: {
+              active: true,
+              cameraPosition: [3, 3, -11],
+              minDistance: 9,
+              maxDistance: 12,
+              modalDistance: 15,
+              airCount: 0,
+              lampCount: 0
+            },
+            en1240811: {
+              active: true,
+              cameraPosition: [20, 7, -7.5],
+              minDistance: 5,
+              maxDistance: 8,
+              modalDistance: 15,
+              airCount: 0,
+              lampCount: 2
+            },
             en1240812: {
               active: true,
               cameraPosition: [-9, 6, -3],
@@ -232,6 +331,51 @@ export const configs: Configs = {
               modalDistance: 20,
               airCount: 3,
               lampCount: 15
+            },
+            en1240813: {
+              active: true,
+              cameraPosition: [10, 5, 0],
+              minDistance: 10,
+              maxDistance: 15,
+              modalDistance: 20,
+              airCount: 0,
+              lampCount: 0
+            },
+            en1240814: {
+              active: true,
+              cameraPosition: [21, 5.5, -3.2],
+              minDistance: 5,
+              maxDistance: 8,
+              modalDistance: 11,
+              airCount: 0,
+              lampCount: 0
+            },
+            en1240815: {
+              active: true,
+              cameraPosition: [15, 1, 0],
+              minDistance: 9,
+              maxDistance: 12,
+              modalDistance: 15,
+              airCount: 0,
+              lampCount: 0
+            },
+            en1240816: {
+              active: true,
+              cameraPosition: [20, 1, 0],
+              minDistance: 9,
+              maxDistance: 12,
+              modalDistance: 15,
+              airCount: 0,
+              lampCount: 0
+            },
+            en1240817: {
+              active: true,
+              cameraPosition: [15, 1, 4],
+              minDistance: 9,
+              maxDistance: 12,
+              modalDistance: 15,
+              airCount: 0,
+              lampCount: 0
             },
             en1240818: {
               active: true,
@@ -248,6 +392,33 @@ export const configs: Configs = {
               minDistance: 4.5,
               maxDistance: 6,
               modalDistance: 13,
+              airCount: 0,
+              lampCount: 0
+            },
+            en1240820: {
+              active: true,
+              cameraPosition: [9, 0, 8.5],
+              minDistance: 7,
+              maxDistance: 10,
+              modalDistance: 15,
+              airCount: 0,
+              lampCount: 0
+            },
+            en1240821: {
+              active: true,
+              cameraPosition: [13, 2, 8],
+              minDistance: 9,
+              maxDistance: 12,
+              modalDistance: 15,
+              airCount: 0,
+              lampCount: 0
+            },
+            en1240822: {
+              active: true,
+              cameraPosition: [13, 2, 8],
+              minDistance: 9,
+              maxDistance: 12,
+              modalDistance: 15,
               airCount: 0,
               lampCount: 0
             },
@@ -269,6 +440,24 @@ export const configs: Configs = {
               airCount: 0,
               lampCount: 0
             },
+            en1240825: {
+              active: true,
+              cameraPosition: [12, 2, 11.2],
+              minDistance: 9,
+              maxDistance: 12,
+              modalDistance: 15,
+              airCount: 0,
+              lampCount: 0
+            },
+            en1240826: {
+              active: true,
+              cameraPosition: [9.9, 2, 16.5],
+              minDistance: 8,
+              maxDistance: 11,
+              modalDistance: 13,
+              airCount: 1,
+              lampCount: 1
+            },
             en1240827: {
               active: true,
               cameraPosition: [15, 2, 15],
@@ -287,7 +476,60 @@ export const configs: Configs = {
               airCount: 0,
               lampCount: 0
             },
-            
+            en1240829: {
+              active: true,
+              cameraPosition: [-4, 3, 21],
+              minDistance: 9,
+              maxDistance: 12,
+              modalDistance: 20,
+              airCount: 2,
+              lampCount: 9
+            },
+            en1240830: {
+              active: true,
+              cameraPosition: [2, 0, 20],
+              minDistance: 9,
+              maxDistance: 12,
+              modalDistance: 15,
+              airCount: 0,
+              lampCount: 0
+            },
+            en1240831: {
+              active: true,
+              cameraPosition: [6, 0, 19.5],
+              minDistance: 9,
+              maxDistance: 12,
+              modalDistance: 15,
+              airCount: 0,
+              lampCount: 0
+            },
+            en1240832: {
+              active: true,
+              cameraPosition: [2, 0, 24],
+              minDistance: 9,
+              maxDistance: 12,
+              modalDistance: 15,
+              airCount: 0,
+              lampCount: 0
+            },
+            en1240833: {
+              active: true,
+              cameraPosition: [6, 0, 23],
+              minDistance: 9,
+              maxDistance: 12,
+              modalDistance: 15,
+              airCount: 0,
+              lampCount: 0
+            },
+            en1240899: {
+              active: true,
+              cameraPosition: [0, 0, 0],
+              minDistance: 25,
+              maxDistance: 40,
+              modalDistance: 30,
+              airCount: 0,
+              lampCount: 0
+            },
           },
         },
       },

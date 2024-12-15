@@ -340,6 +340,23 @@ export default function EN10401Floor(props: Props) {
     changeFloorColor();
   }, [isFloorColorChange]);
 
+  // useEffect(() => {
+  //   const focusRoom = () => {
+  //     if (!groupRef.current || !roomId) return;
+  //     groupRef.current.traverse((child: any) => {
+  //       if (child.isMesh) {
+  //         if (child.parent.name !== roomId) {
+  //           child.material.transparent = true;
+  //           child.material.opacity = 0.3;
+  //         } else {
+  //           child.material.opacity = 1;
+  //         }
+  //       }
+  //     });
+  //   };
+  //   focusRoom();
+  // }, [isRoomPage, roomId]);
+
   const getColorFromScale = (value: number, scale: Array<[number, string]>) => {
     for (let i = 0; i < scale.length - 1; i++) {
       const [start, startColor] = scale[i];

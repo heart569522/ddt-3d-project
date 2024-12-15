@@ -19,6 +19,7 @@ import { Button } from '@/components/shadcn-ui/button'
 import { ExternalLink } from 'lucide-react'
 import { Table, TableBody, TableCell, TableRow } from '@/components/shadcn-ui/table'
 import { Select } from '@react-three/postprocessing'
+import { getColorFromScale, getRoomActiveStatus } from '@/lib/utils'
 
 type GLTFResult = GLTF & {
   nodes: {
@@ -306,36 +307,22 @@ export default function EN20201Floor(props: Props) {
     changeFloorColor();
   }, [isFloorColorChange]);
 
-  const getColorFromScale = (value: number, scale: Array<[number, string]>) => {
-    for (let i = 0; i < scale.length - 1; i++) {
-      const [start, startColor] = scale[i];
-      const [end, endColor] = scale[i + 1];
-  
-      if (value >= start && value <= end) {
-        const ratio = (value - start) / (end - start);
-        return interpolateColor(startColor, endColor, ratio);
-      }
-    }
-    return scale[scale.length - 1][1];
-  };
-
-  const interpolateColor = (color1: string, color2: string, ratio: number) => {
-    const hexToRgb = (hex: string) =>
-      hex
-        .replace(/^#/, "")
-        .match(/.{2}/g)
-        ?.map((x) => parseInt(x, 16)) || [0, 0, 0];
-  
-    const rgbToHex = (rgb: number[]) =>
-      `#${rgb.map((x) => x.toString(16).padStart(2, "0")).join("")}`;
-  
-    const rgb1 = hexToRgb(color1);
-    const rgb2 = hexToRgb(color2);
-  
-    const interpolatedRgb = rgb1.map((c, i) => Math.round(c + (rgb2[i] - c) * ratio));
-  
-    return rgbToHex(interpolatedRgb);
-  };
+  // useEffect(() => {
+  //   const focusRoom = () => {
+  //     if (!groupRef.current || !roomId) return;
+  //     groupRef.current.traverse((child: any) => {
+  //       if (child.isMesh) {
+  //         if (child.parent.name !== roomId) {
+  //           child.material.transparent = true;
+  //           child.material.opacity = 0.3;
+  //         } else {
+  //           child.material.opacity = 1;
+  //         }
+  //       }
+  //     });
+  //   };
+  //   focusRoom();
+  // }, [isRoomPage, roomId]);
 
   useEffect(() => {
     const fetchFloorRoomDetail = async () => {
@@ -362,6 +349,11 @@ export default function EN20201Floor(props: Props) {
   }, [select]);
 
   const renderModalDetail = (roomCode: string) => {
+    const isRoomActive = getRoomActiveStatus(
+      select?.substring(0, 5),
+      select?.substring(0, 7),
+      select?.substring(0, 9),
+    )
     if (select === roomCode && !isManage) {
       return (
         <Html distanceFactor={50}>
@@ -370,11 +362,13 @@ export default function EN20201Floor(props: Props) {
               <label className="font-bold text-xl">
                 {`ห้อง ${roomCode.substring(6, 9)} - ${roomCode}`}
               </label>
-              <Link href={`/room/${roomCode.toUpperCase()}`} target="_blank">
-                <Button variant={"ghost"} size={"icon"}>
-                  <ExternalLink className="size-5" />
-                </Button>
-              </Link>
+              {isRoomActive && (
+                <Link href={`/room/${roomCode.toUpperCase()}`} target="_blank">
+                  <Button variant={"ghost"} size={"icon"}>
+                    <ExternalLink className="size-5" />
+                  </Button>
+                </Link>
+              )}
             </div>
             <Table className="border rounded-md">
               <TableBody>

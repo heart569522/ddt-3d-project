@@ -19,7 +19,7 @@ import { Button } from '@/components/shadcn-ui/button'
 import { ExternalLink } from 'lucide-react'
 import { Table, TableBody, TableCell, TableRow } from '@/components/shadcn-ui/table'
 import { Select } from '@react-three/postprocessing'
-import { getColorFromScale } from '@/lib/utils'
+import { getColorFromScale, getRoomActiveStatus } from '@/lib/utils'
 
 type GLTFResult = GLTF & {
   nodes: {
@@ -299,6 +299,23 @@ export default function EN202B1Floor(props: Props) {
     changeFloorColor();
   }, [isFloorColorChange]);
 
+  // useEffect(() => {
+  //     const focusRoom = () => {
+  //       if (!groupRef.current || !roomId) return;
+  //       groupRef.current.traverse((child: any) => {
+  //         if (child.isMesh) {
+  //           if (child.parent.name !== roomId) {
+  //             child.material.transparent = true;
+  //             child.material.opacity = 0.3;
+  //           } else {
+  //             child.material.opacity = 1;
+  //           }
+  //         }
+  //       });
+  //     };
+  //     focusRoom();
+  //   }, [isRoomPage, roomId]);
+
   useEffect(() => {
     const fetchFloorRoomDetail = async () => {
       if (isRoomPage) {
@@ -324,6 +341,11 @@ export default function EN202B1Floor(props: Props) {
   }, [select]);
 
   const renderModalDetail = (roomCode: string) => {
+    const isRoomActive = getRoomActiveStatus(
+      select?.substring(0, 5),
+      select?.substring(0, 7),
+      select?.substring(0, 9),
+    )
     if (select === roomCode && !isManage) {
       return (
         <Html distanceFactor={50}>
@@ -332,11 +354,13 @@ export default function EN202B1Floor(props: Props) {
               <label className="font-bold text-xl">
                 {`ห้อง ${roomCode.substring(6, 9)} - ${roomCode}`}
               </label>
-              <Link href={`/room/${roomCode.toUpperCase()}`} target="_blank">
-                <Button variant={"ghost"} size={"icon"}>
-                  <ExternalLink className="size-5" />
-                </Button>
-              </Link>
+              {isRoomActive && (
+                <Link href={`/room/${roomCode.toUpperCase()}`} target="_blank">
+                  <Button variant={"ghost"} size={"icon"}>
+                    <ExternalLink className="size-5" />
+                  </Button>
+                </Link>
+              )}
             </div>
             <Table className="border rounded-md">
               <TableBody>
