@@ -36,18 +36,18 @@ export default function EnvironmentInfoChart({
     if (item.PM25Min || item.PM25Max || item.PM25Month) {
       PMData.push({
         title: monthName.slice(0, 3),
-        min: parseFloat(item.PM25Min.toFixed(configs.numberOfDecimal)),
-        max: parseFloat(item.PM25Max.toFixed(configs.numberOfDecimal)),
-        mean: parseFloat(item.PM25Month.toFixed(configs.numberOfDecimal)),
+        min: parseFloat(item.PM25Min?.toFixed(configs.numberOfDecimal)),
+        max: parseFloat(item.PM25Max?.toFixed(configs.numberOfDecimal)),
+        mean: parseFloat(item.PM25Month?.toFixed(configs.numberOfDecimal)),
       });
     }
 
     if (item.TempMin || item.TempMax || item.TempMonth) {
       TempData.push({
         title: monthName.slice(0, 3),
-        min: parseFloat(item.TempMin.toFixed(configs.numberOfDecimal)),
-        max: parseFloat(item.TempMax.toFixed(configs.numberOfDecimal)),
-        mean: parseFloat(item.TempMonth.toFixed(configs.numberOfDecimal)),
+        min: parseFloat(item.TempMin?.toFixed(configs.numberOfDecimal)),
+        max: parseFloat(item.TempMax?.toFixed(configs.numberOfDecimal)),
+        mean: parseFloat(item.TempMonth?.toFixed(configs.numberOfDecimal)),
       });
     }
 
@@ -97,8 +97,8 @@ export function EnvironmentInfoRoomChart({
           if (item.PM25Min || item.PM25Max || item.PM25Month) {
             PMData.push({
               title: item.Month,
-              min: parseFloat(item.PM25Min.toFixed(configs.numberOfDecimal)),
-              max: parseFloat(item.PM25Max.toFixed(configs.numberOfDecimal)),
+              min: parseFloat(item.PM25Min?.toFixed(configs.numberOfDecimal)),
+              max: parseFloat(item.PM25Max?.toFixed(configs.numberOfDecimal)),
               mean: item.PM25Month,
             });
           }
@@ -106,8 +106,8 @@ export function EnvironmentInfoRoomChart({
           if (item.TempMin || item.TempMax || item.TempMonth) {
             TempData.push({
               title: item.Month,
-              min: parseFloat(item.TempMin.toFixed(configs.numberOfDecimal)),
-              max: parseFloat(item.TempMax.toFixed(configs.numberOfDecimal)),
+              min: parseFloat(item.TempMin?.toFixed(configs.numberOfDecimal)),
+              max: parseFloat(item.TempMax?.toFixed(configs.numberOfDecimal)),
               mean: item.TempMonth,
             });
           }
@@ -115,8 +115,8 @@ export function EnvironmentInfoRoomChart({
           if (item.HumidMin || item.HumidMax || item.HumidMonth) {
             HumidityData.push({
               title: item.Month,
-              min: parseFloat(item.HumidMin.toFixed(configs.numberOfDecimal)),
-              max: parseFloat(item.HumidMax.toFixed(configs.numberOfDecimal)),
+              min: parseFloat(item.HumidMin?.toFixed(configs.numberOfDecimal)),
+              max: parseFloat(item.HumidMax?.toFixed(configs.numberOfDecimal)),
               mean: item.HumidMonth,
             });
           }
@@ -124,20 +124,20 @@ export function EnvironmentInfoRoomChart({
         case "1month":
           PMData.push({
             title: item.Week,
-            min: parseFloat(item.PM25Min.toFixed(configs.numberOfDecimal)),
-            max: parseFloat(item.PM25Max.toFixed(configs.numberOfDecimal)),
+            min: parseFloat(item.PM25Min?.toFixed(configs.numberOfDecimal)),
+            max: parseFloat(item.PM25Max?.toFixed(configs.numberOfDecimal)),
             mean: item.PM25Week,
           });
           TempData.push({
             title: item.Week,
-            min: parseFloat(item.TempMin.toFixed(configs.numberOfDecimal)),
-            max: parseFloat(item.TempMax.toFixed(configs.numberOfDecimal)),
+            min: parseFloat(item.TempMin?.toFixed(configs.numberOfDecimal)),
+            max: parseFloat(item.TempMax?.toFixed(configs.numberOfDecimal)),
             mean: item.TempWeek,
           });
           HumidityData.push({
             title: item.Week,
-            min: parseFloat(item.HumidMin.toFixed(configs.numberOfDecimal)),
-            max: parseFloat(item.HumidMax.toFixed(configs.numberOfDecimal)),
+            min: parseFloat(item.HumidMin?.toFixed(configs.numberOfDecimal)),
+            max: parseFloat(item.HumidMax?.toFixed(configs.numberOfDecimal)),
             mean: item.HumidWeek,
           });
           break;
@@ -145,8 +145,8 @@ export function EnvironmentInfoRoomChart({
           if (item.PM25Min || item.PM25Max || item.PM25Day) {
             PMData.push({
               title: item.Day,
-              min: parseFloat(item.PM25Min.toFixed(configs.numberOfDecimal)),
-              max: parseFloat(item.PM25Max.toFixed(configs.numberOfDecimal)),
+              min: parseFloat(item.PM25Min?.toFixed(configs.numberOfDecimal)),
+              max: parseFloat(item.PM25Max?.toFixed(configs.numberOfDecimal)),
               mean: item.PM25Day,
             });
           }
@@ -154,8 +154,8 @@ export function EnvironmentInfoRoomChart({
           if (item.TempMin || item.TempMax || item.TempDay) {
             TempData.push({
               title: item.Day,
-              min: parseFloat(item.TempMin.toFixed(configs.numberOfDecimal)),
-              max: parseFloat(item.TempMax.toFixed(configs.numberOfDecimal)),
+              min: parseFloat(item.TempMin?.toFixed(configs.numberOfDecimal)),
+              max: parseFloat(item.TempMax?.toFixed(configs.numberOfDecimal)),
               mean: item.TempDay,
             });
           }
@@ -163,8 +163,8 @@ export function EnvironmentInfoRoomChart({
           if (item.HumidMin || item.HumidMax || item.HumidDay) {
             HumidityData.push({
               title: item.Day,
-              min: parseFloat(item.HumidMin.toFixed(configs.numberOfDecimal)),
-              max: parseFloat(item.HumidMax.toFixed(configs.numberOfDecimal)),
+              min: parseFloat(item.HumidMin?.toFixed(configs.numberOfDecimal)),
+              max: parseFloat(item.HumidMax?.toFixed(configs.numberOfDecimal)),
               mean: item.HumidDay,
             });
           }

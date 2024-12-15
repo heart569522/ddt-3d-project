@@ -115,7 +115,7 @@ export function ElectricChart({ data, buildingId }: ElectricProps) {
   const pieChartData = chartData?.map((item) => ({
     ...item,
     percent: parseFloat(
-      ((item.value / item.total) * 100).toFixed(configs.numberOfDecimal)
+      ((item.value / item.total) * 100)?.toFixed(configs.numberOfDecimal)
     ),
   }));
 
@@ -326,7 +326,7 @@ export function ElectricFloorRoomChart({
 
     const percent =
       total !== 0 && !isNaN(total)
-        ? parseFloat(((value / total) * 100).toFixed(configs.numberOfDecimal))
+        ? parseFloat(((value / total) * 100)?.toFixed(configs.numberOfDecimal))
         : 0;
 
     return {
@@ -493,7 +493,7 @@ export function AverageElectricUsage({ data, isFloorRoom = false }: Props) {
 
     return {
       Month: isFloorRoom ? monthString : `${monthNames[month - 1]}`, // Format the month
-      Usage: item.TotalUseRateMonth.toFixed(0), // Format usage value
+      Usage: item.TotalUseRateMonth?.toFixed(0), // Format usage value
     };
   });
 

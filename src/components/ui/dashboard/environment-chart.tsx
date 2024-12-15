@@ -132,7 +132,7 @@ export function EnvironmentAverage({ data, isFaculty = false }: AverageProps) {
                   <p className="text-xl sm:text-2xl font-semibold">
                     {averageTemp && (
                       <>
-                        {averageTemp.toFixed(configs.numberOfDecimal)}&nbsp;
+                        {averageTemp?.toFixed(configs.numberOfDecimal)}&nbsp;
                         <span className="text-base sm:text-lg align-super">
                           °C
                         </span>
