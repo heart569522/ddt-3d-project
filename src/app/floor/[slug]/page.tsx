@@ -61,6 +61,8 @@ export default async function Floor({ params }: { params: { slug: string } }) {
               isShowLamp={true}
               isShowAir={true}
               isManage={false}
+              isFloorPage={true}
+              isRoomPage={false}
               roomData={floorDetail}
               pathname={floorId}
             />

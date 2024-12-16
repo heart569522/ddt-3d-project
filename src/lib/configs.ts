@@ -528,7 +528,7 @@ export const configs: Configs = {
               maxDistance: 40,
               modalDistance: 30,
               airCount: 0,
-              lampCount: 0
+              lampCount: 24
             },
           },
         },

@@ -1024,6 +1024,7 @@ export default function EN12408Floor(props: Props) {
   const floorId = pathname;
   const path = usePathname();
   const roomId = path.split('/room/')[1];
+  // console.log("🚀 ~ EN12408Floor ~ roomId:", roomId)
   // console.log("isRoomPage : ", isRoomPage);
   // console.log("roomData : ", props.roomData);
   // console.log("🚀 ~ EN12408Floor ~ group:", group)
@@ -1051,7 +1052,7 @@ export default function EN12408Floor(props: Props) {
   );
 
   useEffect(() => {
-    if (!isRoomPage && isFloorPage) {
+    if (isFloorPage) {
       const floorContourColor = () => {
         if (!groupRef.current) return;
     
@@ -1176,7 +1177,7 @@ export default function EN12408Floor(props: Props) {
   }, [roomData, menuState, isRoomPage]);
 
   useEffect(() => {
-    if (!isRoomPage && isFloorPage) {
+    if (isManage) {
       const changeFloorColor = () => {
         if (!groupRef.current || !isFloorColorChange) return;
     
@@ -1211,43 +1212,28 @@ export default function EN12408Floor(props: Props) {
       };
       changeFloorColor();
     }
-  }, [isFloorColorChange, isRoomPage]);
+  }, [isFloorColorChange, isManage]);
 
-  // useEffect(() => {
-  //   if (isRoomPage) {
-  //     const focusRoom = () => {
-  //       if (!groupRef.current || !roomId) return;
-  //       groupRef.current.traverse((child: any) => {
-  //         if (child.isMesh && child.parent?.name) {
-  //           if (child.parent.name.startsWith(roomId)) {
-  //             // Mesh ที่เป็นห้องที่ตรงกับ roomId -> opacity = 1
-  //             if (Array.isArray(child.material)) {
-  //               child.material.forEach((m: { transparent: boolean; opacity: number }) => {
-  //                 m.transparent = true;
-  //                 m.opacity = 1;
-  //               });
-  //             } else {
-  //               child.material.transparent = true;
-  //               child.material.opacity = 1;
-  //             }
-  //           } else {
-  //             // Mesh ที่ไม่ตรงกับ roomId -> opacity = 0.3 (ถ้าต้องการจางลง)
-  //             if (Array.isArray(child.material)) {
-  //               child.material.forEach((m: { transparent: boolean; opacity: number }) => {
-  //                 m.transparent = true;
-  //                 m.opacity = 0.3;
-  //               });
-  //             } else {
-  //               child.material.transparent = true;
-  //               child.material.opacity = 0.3;
-  //             }
-  //           }
-  //         }
-  //       });
-  //     };
-  //     focusRoom();
-  //   }
-  // }, [isRoomPage, roomId]);
+  useEffect(() => {
+    if (isRoomPage && !isManage && groupRef.current) {
+      groupRef.current.traverse((child: any) => {
+        if (child.isMesh && child.parent?.name) {
+          const isMatchingRoom = child.parent.name.startsWith(roomId)
+          if (Array.isArray(child.material)) {
+            child.material.forEach((m: any) => {
+              m.transparent = true;
+              m.opacity = isMatchingRoom ? 1 : 0.3;
+              m.needsUpdate = true; // Force material update
+            });
+          } else if (child.material) {
+            child.material.transparent = true;
+            child.material.opacity = isMatchingRoom ? 1 : 0.3;
+            child.material.needsUpdate = true; // Force material update
+          }
+        }
+      });
+    }
+  }, [isRoomPage, roomId]);
 
   const activeAirLampColor = () => {
     if (!groupRef.current || (!activeAirId && !activeLampId && !isManage)) return;
@@ -1289,59 +1275,126 @@ export default function EN12408Floor(props: Props) {
   };
 
   const createAirMaterial =  (materialName: keyof typeof materials, room: string, airNumber: number) => {
-    if (!activeAirId && !activeLampId) {
-      if (!isManage) {
-      const material = materials[materialName].clone();
-
-      const airStatus = roomData?.[room.toUpperCase() as any]?.Airconditioner?.[`AIR0${airNumber.toString()}`]?.Status
-
-      if (airStatus == "On") {
-        material.color.set(THREE.Color.NAMES.blue);
-      } else if (airStatus == "Off") {
-        material.color.set(THREE.Color.NAMES.gray);
-      }
-      
-      return material;
-      } else {
-        const material = materials[materialName].clone();
-        return material
+    if (isRoomPage) {
+      if (room.startsWith(roomId)) {
+        if (!activeAirId && !activeLampId) {
+          if (!isManage) {
+          const material = materials[materialName].clone();
+    
+          const airStatus = airNumber > 9 
+            ? roomData?.[room.toUpperCase() as any]?.Airconditioner?.[`AIR${airNumber.toString()}`]?.Status 
+            : roomData?.[room.toUpperCase() as any]?.Airconditioner?.[`AIR0${airNumber.toString()}`]?.Status
+    
+          if (airStatus == "On") {
+            material.color.set(THREE.Color.NAMES.blue);
+          } else if (airStatus == "Off") {
+            material.color.set(THREE.Color.NAMES.gray);
+          }
+          
+          return material;
+          } else {
+            const material = materials[materialName].clone();
+            return material
+          }
+        } else {
+          activeAirLampColor();
+        }
       }
     } else {
-      activeAirLampColor();
+      if (!activeAirId && !activeLampId) {
+        if (!isManage) {
+        const material = materials[materialName].clone();
+  
+        const airStatus = airNumber > 9 
+          ? roomData?.[room.toUpperCase() as any]?.Airconditioner?.[`AIR${airNumber.toString()}`]?.Status 
+          : roomData?.[room.toUpperCase() as any]?.Airconditioner?.[`AIR0${airNumber.toString()}`]?.Status
+  
+        if (airStatus == "On") {
+          material.color.set(THREE.Color.NAMES.blue);
+        } else if (airStatus == "Off") {
+          material.color.set(THREE.Color.NAMES.gray);
+        }
+        
+        return material;
+        } else {
+          const material = materials[materialName].clone();
+          return material
+        }
+      } else {
+        activeAirLampColor();
+      }
     }
   };
 
   const createLightMaterial =  (materialName: keyof typeof materials, room: string, lightNumber: number) => {
-    if (!activeAirId && !activeLampId) {
-      if (!isManage) {
-        const material = materials[materialName].clone();
+    if (isRoomPage) {
+      if (room.startsWith(roomId)) {
+        if (!activeAirId && !activeLampId) {
+          if (!isManage) {
+            const material = materials[materialName].clone();
 
-        if (room.toUpperCase() == "EN1240818") {
-          const switchStatus1 = roomData?.[room.toUpperCase() as any]?.Lighting_Switch.LSW01.Status
-          const switchStatus2 = roomData?.[room.toUpperCase() as any]?.Lighting_Switch.LSW02.Status
-      
-          if (lightNumber <= 3) {
-            if (switchStatus1 == "Open") {
-              material.color.set(THREE.Color.NAMES.yellow);
-            } else if (switchStatus1 == "Close") {
-              material.color.set(THREE.Color.NAMES.gray);
+            // use only EN1240818 room
+            if (room.toUpperCase() == "EN1240818") {
+              const switchStatus1 = roomData?.[room.toUpperCase() as any]?.Lighting_Switch.LSW01.Status
+              const switchStatus2 = roomData?.[room.toUpperCase() as any]?.Lighting_Switch.LSW02.Status
+          
+              if (lightNumber <= 3) {
+                if (switchStatus1 == "Open") {
+                  material.color.set(THREE.Color.NAMES.yellow);
+                } else if (switchStatus1 == "Close") {
+                  material.color.set(THREE.Color.NAMES.gray);
+                }
+              } else {
+                if (switchStatus2 == "Open") {
+                  material.color.set(THREE.Color.NAMES.yellow);
+                } else if (switchStatus2 == "Close") {
+                  material.color.set(THREE.Color.NAMES.gray);
+                }
+              }
             }
+            
+            return material;
           } else {
-            if (switchStatus2 == "Open") {
-              material.color.set(THREE.Color.NAMES.yellow);
-            } else if (switchStatus2 == "Close") {
-              material.color.set(THREE.Color.NAMES.gray);
-            }
+            const material = materials[materialName].clone();
+            return material
           }
+        } else {
+          activeAirLampColor();
         }
-        
-        return material;
-      } else {
-        const material = materials[materialName].clone();
-        return material
       }
     } else {
-      activeAirLampColor();
+      if (!activeAirId && !activeLampId) {
+        if (!isManage) {
+          const material = materials[materialName].clone();
+
+          // use only EN1240818 room
+          if (room.toUpperCase() == "EN1240818") {
+            const switchStatus1 = roomData?.[room.toUpperCase() as any]?.Lighting_Switch.LSW01.Status
+            const switchStatus2 = roomData?.[room.toUpperCase() as any]?.Lighting_Switch.LSW02.Status
+        
+            if (lightNumber <= 3) {
+              if (switchStatus1 == "Open") {
+                material.color.set(THREE.Color.NAMES.yellow);
+              } else if (switchStatus1 == "Close") {
+                material.color.set(THREE.Color.NAMES.gray);
+              }
+            } else {
+              if (switchStatus2 == "Open") {
+                material.color.set(THREE.Color.NAMES.yellow);
+              } else if (switchStatus2 == "Close") {
+                material.color.set(THREE.Color.NAMES.gray);
+              }
+            }
+          }
+          
+          return material;
+        } else {
+          const material = materials[materialName].clone();
+          return material
+        }
+      } else {
+        activeAirLampColor();
+      }
     }
   };
 
@@ -1535,7 +1588,7 @@ export default function EN12408Floor(props: Props) {
   const renderModalLampDetail = (lampId: string) => {
     if (select === lampId && !isManage) {
       return (
-        <Html distanceFactor={12}>
+        <Html distanceFactor={modalDistance as number / 1.25}>
           <div className="pt-[10px] transform z-0 translate-x-[30%] bg-secondary text-left p-[10px_15px] rounded-md w-[320px] relative before:content-[''] before:absolute before:top-[25px] before:-left-10 before:h-[2px] before:w-[40px] before:bg-secondary">
             <div className="flex justify-between items-center">
               <label className="font-bold text-xl">
@@ -1603,7 +1656,7 @@ export default function EN12408Floor(props: Props) {
   const renderModalAirDetail = (airId: string) => {
     if (select === airId && !isManage) {
       return (
-        <Html distanceFactor={12}>
+        <Html distanceFactor={modalDistance as number / 1.25}>
           <div className="pt-[10px] transform z-0 translate-x-[30%] bg-secondary text-left p-[10px_15px] rounded-md w-[320px] relative before:content-[''] before:absolute before:top-[25px] before:-left-10 before:h-[2px] before:w-[40px] before:bg-secondary">
             <div className="flex justify-between items-center">
               <label className="font-bold text-xl">
