@@ -90,7 +90,7 @@ export default async function Building({
 
   return (
     <Navigation
-      leftDashbaord={
+      leftDashboard={
         <>
           <CardInfo
             title="General Information"
@@ -102,7 +102,7 @@ export default async function Building({
           <EnvironmentInfoChart data={pmTempHmdData} />
         </>
       }
-      rightDashbaord={
+      rightDashboard={
         <div className="flex flex-col gap-2">
           <div className="hidden xl:block">
             <CardSelectFloor building={params.slug.toUpperCase()} />

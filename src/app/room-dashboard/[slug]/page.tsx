@@ -97,7 +97,7 @@ export default async function RoomDashboard({
   });
 
   return (
-    <Navigation isHideToolbar={true} isHideDashbaord={true}>
+    <Navigation isHideToolbar={true} isHideDashboard={true}>
       <div className="pt-20 mx-6 md:mx-10 md:pt-24">
         <TitleHeader title={`Dashboard`} className="mb-4" type="static" />
         <div className="space-y-2 md:space-y-4">

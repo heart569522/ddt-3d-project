@@ -28,10 +28,10 @@ import CardSelectInRoom from "./dashboard/card-select-in-room";
 
 type Props = {
   children: React.ReactNode;
-  leftDashbaord?: React.ReactNode;
-  rightDashbaord?: React.ReactNode;
+  leftDashboard?: React.ReactNode;
+  rightDashboard?: React.ReactNode;
   toolbar?: React.ReactNode;
-  isHideDashbaord?: boolean;
+  isHideDashboard?: boolean;
   isHideToolbar?: boolean;
   buildingData?: IBuilding[];
   electricUsageData?: IElectricTodayUsage[];
@@ -43,10 +43,10 @@ type Props = {
 
 export default function Navigation({
   children,
-  leftDashbaord,
-  rightDashbaord,
+  leftDashboard,
+  rightDashboard,
   toolbar,
-  isHideDashbaord = false,
+  isHideDashboard = false,
   isHideToolbar = false,
   buildingData,
   electricUsageData,
@@ -60,7 +60,7 @@ export default function Navigation({
   const [isNavOpen, setIsNavOpen] = useState(false);
   const [isShowDashboard, setIsShowDashboard] = useState(true);
 
-  const { select: click } = useFacultyStore((state) => state);
+  const { select } = useFacultyStore((state) => state);
   const { menuState } = useContourMenuStore();
 
   const toggleShowHideDashboard = () => {
@@ -69,7 +69,7 @@ export default function Navigation({
 
   return (
     <div className="grid w-full relative">
-      {!isHideDashbaord && (
+      {!isHideDashboard && (
         <div className="hidden md:block z-50 shadow-lg">
           <motion.div
             initial={{ x: -350 }}
@@ -80,10 +80,10 @@ export default function Navigation({
             <ScrollArea className="pr-1">
               <div className="flex-1">
                 <div className="grid items-start py-2 px-2 gap-2">
-                  {leftDashbaord}
+                  {leftDashboard}
                 </div>
                 <div className="grid xl:hidden items-start pb-2 px-2 gap-2">
-                  {rightDashbaord}
+                  {rightDashboard}
                 </div>
               </div>
             </ScrollArea>
@@ -97,7 +97,7 @@ export default function Navigation({
             <ScrollArea className="pr-1">
               <div className="flex-1">
                 <div className="grid items-start py-2 px-2 gap-2">
-                  {rightDashbaord}
+                  {rightDashboard}
                 </div>
               </div>
             </ScrollArea>
@@ -119,7 +119,7 @@ export default function Navigation({
         contourMenu={menuState}
       />
 
-      {useCardBuildingDetail && click && (
+      {useCardBuildingDetail && select && (
         <div className="-right-6 md:right-3 hidden max-xl:block xl:right-[350px] gap-2 items-center absolute top-8 md:top-[4.25rem] z-50 scale-[0.8] md:scale-100">
           <CardDetail
             electricUsageData={electricUsageData}
@@ -148,7 +148,7 @@ export default function Navigation({
 
       <div className="flex flex-col">
         <header className="flex h-14 bg-card justify-between items-center gap-2 px-2 sm:px-4 md:h-[60px] w-full fixed md:px-6 z-50 shadow-sm">
-          {!isHideDashbaord && (
+          {!isHideDashboard && (
             <Sheet open={isNavOpen} onOpenChange={setIsNavOpen}>
               <SheetTrigger asChild>
                 <Button
@@ -169,14 +169,14 @@ export default function Navigation({
                     <AvatarCircles className="flex md:hidden" avatar={avatar} />
                   </div>
                   <hr className="my-2" />
-                  {leftDashbaord}
-                  <div className="md:hidden">{rightDashbaord}</div>
+                  {leftDashboard}
+                  <div className="md:hidden">{rightDashboard}</div>
                 </div>
               </SheetContent>
             </Sheet>
           )}
           <AvatarCircles className={cn("hidden md:flex")} avatar={avatar} />
-          {isHideDashbaord && (
+          {isHideDashboard && (
             <Button
               variant="ghost"
               size="icon"

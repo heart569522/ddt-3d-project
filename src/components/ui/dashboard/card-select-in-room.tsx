@@ -52,18 +52,18 @@ export default function CardSelectInRoom({ room }: Props) {
   useEffect(() => {
     const formatItems = () => {
       const filteredAirs = airs
-        .filter((air) => air.startsWith(room))
-        .map((air) => ({
+        ?.filter((air) => air.startsWith(room))
+        ?.map((air) => ({
           title: `Air ${air.split("-A")[1]}`,
           value: air,
-        }));
+        })) || [];
 
       const filteredLights = lights
-        .filter((light) => light.startsWith(room))
-        .map((light) => ({
+        ?.filter((light) => light.startsWith(room))
+        ?.map((light) => ({
           title: `Light ${light.split("-L")[1]}`,
           value: light,
-        }));
+        })) || [];
 
       const baseRoom = {
         title: "Room",

@@ -24,18 +24,16 @@ export default async function RootLayout({
     <html lang="en" suppressHydrationWarning>
       <body className={`${anuphan.className}`}>
         <SessionProvider session={session}>
-          {/* <FacultyStoreProvider> */}
-            <ThemeProvider
-              attribute="class"
-              defaultTheme="system"
-              enableSystem
-              disableTransitionOnChange
-            >
-              <main className="bg-foreground/5 dark:bg-foreground/10 w-full h-screen overflow-x-hidden">
-                {children}
-              </main>
-            </ThemeProvider>
-          {/* </FacultyStoreProvider> */}
+          <ThemeProvider
+            attribute="class"
+            defaultTheme="system"
+            enableSystem
+            disableTransitionOnChange
+          >
+            <main className="bg-foreground/5 dark:bg-foreground/10 w-full h-screen overflow-x-hidden">
+              {children}
+            </main>
+          </ThemeProvider>
         </SessionProvider>
       </body>
     </html>

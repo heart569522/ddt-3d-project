@@ -114,7 +114,7 @@ export default async function Room({ params }: { params: { slug: string } }) {
 
   return (
     <Navigation
-      leftDashbaord={
+      leftDashboard={
         <>
           <CardInfo
             title="General Information"
@@ -130,7 +130,7 @@ export default async function Room({ params }: { params: { slug: string } }) {
           <EnvironmentInfoChart data={pmTempHmdData} />
         </>
       }
-      rightDashbaord={
+      rightDashboard={
         <div className="flex flex-col gap-2">
           <div className="hidden xl:block">
             <CardSelectInRoom room={params.slug.toUpperCase()} />

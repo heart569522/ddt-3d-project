@@ -31,7 +31,7 @@ export default async function Faculty () {
 
   return (
     <Navigation
-      leftDashbaord={
+      leftDashboard={
         <>
           <CardInfo
             title="General Information"
@@ -50,7 +50,7 @@ export default async function Faculty () {
           <EnvironmentInfoChart data={pmTempHmdData} isFaculty={true}/>
         </>
       }
-      rightDashbaord={
+      rightDashboard={
         <div className="flex flex-col gap-2">
           <div className="hidden xl:block">
             <CardDetail

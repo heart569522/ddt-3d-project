@@ -99,9 +99,103 @@ export const configs: Configs = {
       floor: {
         en10401: {
           active: true,
+          room: {
+            en1040101: {
+              active: true,
+              cameraPosition: [-16, 0, -4],
+              minDistance: 9,
+              maxDistance: 12,
+              modalDistance: 12,
+              airCount: 0,
+              lampCount: 0
+            },
+            en1040102: {
+              active: true,
+              cameraPosition: [-7, 0, 0],
+              minDistance: 12,
+              maxDistance: 15,
+              modalDistance: 15,
+              airCount: 0,
+              lampCount: 0
+            },
+            en1040103: {
+              active: true,
+              cameraPosition: [10, 5, 0],
+              minDistance: 7,
+              maxDistance: 10,
+              modalDistance: 15,
+              airCount: 0,
+              lampCount: 0
+            },
+            en1040104: {
+              active: true,
+              cameraPosition: [16, 0, 0],
+              minDistance: 10,
+              maxDistance: 13,
+              modalDistance: 15,
+              airCount: 0,
+              lampCount: 0
+            },
+            en1040199: {
+              active: true,
+              cameraPosition: [0, 5, 0],
+              minDistance: 20,
+              maxDistance: 23,
+              modalDistance: 20,
+              airCount: 0,
+              lampCount: 0
+            }
+          }
         },
         en10402: {
           active: true,
+          room: {
+            en1040201: {
+              active: true,
+              cameraPosition: [-15, 0, 0],
+              minDistance: 12,
+              maxDistance: 15,
+              modalDistance: 15,
+              airCount: 0,
+              lampCount: 0
+            },
+            en1040202: {
+              active: true,
+              cameraPosition: [-8.5, 0, 0],
+              minDistance: 12,
+              maxDistance: 15,
+              modalDistance: 15,
+              airCount: 0,
+              lampCount: 0
+            },
+            en1040203: {
+              active: true,
+              cameraPosition: [8.5, 0, 0],
+              minDistance: 12,
+              maxDistance: 15,
+              modalDistance: 15,
+              airCount: 0,
+              lampCount: 0
+            },
+            en1040204: {
+              active: true,
+              cameraPosition: [15, 0, 0],
+              minDistance: 12,
+              maxDistance: 15,
+              modalDistance: 15,
+              airCount: 0,
+              lampCount: 0
+            },
+            en1040299: {
+              active: true,
+              cameraPosition: [0, 5, 0],
+              minDistance: 20,
+              maxDistance: 23,
+              modalDistance: 25,
+              airCount: 0,
+              lampCount: 0
+            }
+          }
         }
       },
     },
@@ -561,9 +655,76 @@ export const configs: Configs = {
       floor: {
         en202b1: {
           active: true,
+          room: {
+            en202b101: {
+              active: true,
+              cameraPosition: [-8, 0, -16],
+              minDistance: 9,
+              maxDistance: 12,
+              modalDistance: 12,
+              airCount: 0,
+              lampCount: 0
+            },
+            en202b102: {
+              active: true,
+              cameraPosition: [0, 0, -16.5],
+              minDistance: 9,
+              maxDistance: 12,
+              modalDistance: 15,
+              airCount: 0,
+              lampCount: 0
+            },
+            en202b103: {
+              active: true,
+              cameraPosition: [15, 5, 0],
+              minDistance: 24,
+              maxDistance: 28,
+              modalDistance: 40,
+              airCount: 0,
+              lampCount: 0
+            },
+            en202b199: {
+              active: true,
+              cameraPosition: [-10, 5, 0],
+              minDistance: 24,
+              maxDistance: 28,
+              modalDistance: 40,
+              airCount: 0,
+              lampCount: 0
+            }
+          }
         },
         en20201: {
           active: true,
+          room: {
+            en2020101: {
+              active: true,
+              cameraPosition: [-16, 5, 0],
+              minDistance: 24,
+              maxDistance: 28,
+              modalDistance: 40,
+              airCount: 0,
+              lampCount: 0
+            },
+            en2020102: {
+              active: true,
+              cameraPosition: [16, 5, 0],
+              minDistance: 24,
+              maxDistance: 28,
+              modalDistance: 40,
+              airCount: 0,
+              lampCount: 0
+            },
+            en2020199: {
+              active: true,
+              cameraPosition: [0, 5, 0],
+              minDistance: 24,
+              maxDistance: 28,
+              modalDistance: 40,
+              airCount: 0,
+              lampCount: 0
+            }
+          }
         },
       },
     },

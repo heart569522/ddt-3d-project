@@ -19,6 +19,7 @@ import { Button } from '@/components/shadcn-ui/button'
 import { ExternalLink } from 'lucide-react'
 import { Table, TableBody, TableCell, TableRow } from '@/components/shadcn-ui/table'
 import { Select } from '@react-three/postprocessing'
+import { getColorFromScale } from '@/lib/utils'
 
 type GLTFResult = GLTF & {
   nodes: {
@@ -122,7 +123,7 @@ type GLTFResult = GLTF & {
 }
 
 export const en104Floors01 = [
-  "EN1040101", "EN1040102", "EN1040103", "EN1040104"
+  "EN1040101", "EN1040102", "EN1040103", "EN1040104", "EN1040199"
 ] as const;
 
 export type EN104Floor1 = typeof en104Floors01[number];
@@ -338,55 +339,28 @@ export default function EN10401Floor(props: Props) {
       });
     };
     changeFloorColor();
-  }, [isFloorColorChange]);
+  }, [isFloorColorChange, isManage]);
 
-  // useEffect(() => {
-  //   const focusRoom = () => {
-  //     if (!groupRef.current || !roomId) return;
-  //     groupRef.current.traverse((child: any) => {
-  //       if (child.isMesh) {
-  //         if (child.parent.name !== roomId) {
-  //           child.material.transparent = true;
-  //           child.material.opacity = 0.3;
-  //         } else {
-  //           child.material.opacity = 1;
-  //         }
-  //       }
-  //     });
-  //   };
-  //   focusRoom();
-  // }, [isRoomPage, roomId]);
-
-  const getColorFromScale = (value: number, scale: Array<[number, string]>) => {
-    for (let i = 0; i < scale.length - 1; i++) {
-      const [start, startColor] = scale[i];
-      const [end, endColor] = scale[i + 1];
-  
-      if (value >= start && value <= end) {
-        const ratio = (value - start) / (end - start);
-        return interpolateColor(startColor, endColor, ratio);
-      }
+  useEffect(() => {
+    if (isRoomPage && !isManage && groupRef.current) {
+      groupRef.current.traverse((child: any) => {
+        if (child.isMesh && child.parent?.name) {
+          const isMatchingRoom = child.parent.name.startsWith(roomId)
+          if (Array.isArray(child.material)) {
+            child.material.forEach((m: any) => {
+              m.transparent = true;
+              m.opacity = isMatchingRoom ? 1 : 0.3;
+              m.needsUpdate = true; // Force material update
+            });
+          } else if (child.material) {
+            child.material.transparent = true;
+            child.material.opacity = isMatchingRoom ? 1 : 0.3;
+            child.material.needsUpdate = true; // Force material update
+          }
+        }
+      });
     }
-    return scale[scale.length - 1][1];
-  };
-
-  const interpolateColor = (color1: string, color2: string, ratio: number) => {
-    const hexToRgb = (hex: string) =>
-      hex
-        .replace(/^#/, "")
-        .match(/.{2}/g)
-        ?.map((x) => parseInt(x, 16)) || [0, 0, 0];
-  
-    const rgbToHex = (rgb: number[]) =>
-      `#${rgb.map((x) => x.toString(16).padStart(2, "0")).join("")}`;
-  
-    const rgb1 = hexToRgb(color1);
-    const rgb2 = hexToRgb(color2);
-  
-    const interpolatedRgb = rgb1.map((c, i) => Math.round(c + (rgb2[i] - c) * ratio));
-  
-    return rgbToHex(interpolatedRgb);
-  };
+  }, [isRoomPage, roomId]);
 
   useEffect(() => {
     const fetchFloorRoomDetail = async () => {
@@ -633,7 +607,9 @@ export default function EN10401Floor(props: Props) {
         <mesh name="1500mm_5" geometry={nodes['1500mm_5'].geometry} material={materials['Aluminium-silver.002']} />
         <mesh name="1500mm_6" geometry={nodes['1500mm_6'].geometry} material={materials['Aluminium silver.003']} />
       </Select>
-      <group name="EN1040199" position={[-0.913, 1.254, 0.369]} rotation={[-Math.PI / 2, 0, 0]} scale={0.305}>
+      <Select name="EN1040199" enabled={hover === "EN1040199" || select === "EN1040199"} position={[-0.913, 1.254, 0.369]} rotation={[-Math.PI / 2, 0, 0]} scale={0.305}>
+        {!isManage && !isRoomPage && renderModalDetail("EN1040199")}
+        {!isManage && isRoomPage && renderModalRoomDetail("EN1040199")}
         <mesh name="50x25x25RHS" geometry={nodes['50x25x25RHS'].geometry} material={materials['Steel, 45-345']} />
         <mesh name="50x25x25RHS_1" geometry={nodes['50x25x25RHS_1'].geometry} material={materials['Concrete, Cast-in-Place gray.004']} />
         <mesh name="50x25x25RHS_2" geometry={nodes['50x25x25RHS_2'].geometry} material={materials['Plastic, Opaque White.003']} />
@@ -651,7 +627,7 @@ export default function EN10401Floor(props: Props) {
         <mesh name="50x25x25RHS_14" geometry={nodes['50x25x25RHS_14'].geometry} material={materials['Color RGB 040-040-040.001']} />
         <mesh name="50x25x25RHS_15" geometry={nodes['50x25x25RHS_15'].geometry} material={materials['Clear Toughened Glass']} />
         <mesh name="50x25x25RHS_16" geometry={nodes['50x25x25RHS_16'].geometry} material={materials['Die-cast aluminium - Powder Coated in Black']} />
-      </group>
+      </Select>
     </group>
   )
 }

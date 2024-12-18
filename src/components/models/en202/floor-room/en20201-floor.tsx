@@ -273,56 +273,62 @@ export default function EN20201Floor(props: Props) {
   }, [roomData, menuState]);
 
   useEffect(() => {
-    const changeFloorColor = () => {
-      if (!groupRef.current || !isFloorColorChange) return;
-  
-      groupRef.current.traverse((groupChild: any) => {
-        groupChild.traverse((meshChild: any) => {
-          if (meshChild.isMesh || meshChild.isInstancedMesh) {
-            if (
-              meshChild.material &&
-              (meshChild.material.name?.includes('สีเทา 128 (White 128)') || meshChild.material.name?.includes('สีทราย'))
-            ) {
-              // Save original color if not saved yet
-              if (!meshChild.material.userData.originalColor) {
-                meshChild.material.userData.originalColor = meshChild.material.color.getHex();
-              }
-  
-              // Change to gray color
-              const grayColor = 0x959595; // Hex for gray
-              if (Array.isArray(meshChild.material)) {
-                meshChild.material.forEach((mat: any) => {
-                  mat.color.set(grayColor);
-                  mat.needsUpdate = true;
-                });
-              } else {
-                meshChild.material.color.set(grayColor);
-                meshChild.material.needsUpdate = true;
+    if (isManage) {
+      const changeFloorColor = () => {
+        if (!groupRef.current || !isFloorColorChange) return;
+    
+        groupRef.current.traverse((groupChild: any) => {
+          groupChild.traverse((meshChild: any) => {
+            if (meshChild.isMesh || meshChild.isInstancedMesh) {
+              if (
+                meshChild.material &&
+                (meshChild.material.name?.includes('สีเทา 128 (White 128)') || meshChild.material.name?.includes('สีทราย'))
+              ) {
+                // Save original color if not saved yet
+                if (!meshChild.material.userData.originalColor) {
+                  meshChild.material.userData.originalColor = meshChild.material.color.getHex();
+                }
+    
+                // Change to gray color
+                const grayColor = 0x959595; // Hex for gray
+                if (Array.isArray(meshChild.material)) {
+                  meshChild.material.forEach((mat: any) => {
+                    mat.color.set(grayColor);
+                    mat.needsUpdate = true;
+                  });
+                } else {
+                  meshChild.material.color.set(grayColor);
+                  meshChild.material.needsUpdate = true;
+                }
               }
             }
-          }
+          });
         });
-      });
-    };
-    changeFloorColor();
-  }, [isFloorColorChange]);
+      };
+      changeFloorColor();
+    }
+  }, [isFloorColorChange, isManage]);
 
-  // useEffect(() => {
-  //   const focusRoom = () => {
-  //     if (!groupRef.current || !roomId) return;
-  //     groupRef.current.traverse((child: any) => {
-  //       if (child.isMesh) {
-  //         if (child.parent.name !== roomId) {
-  //           child.material.transparent = true;
-  //           child.material.opacity = 0.3;
-  //         } else {
-  //           child.material.opacity = 1;
-  //         }
-  //       }
-  //     });
-  //   };
-  //   focusRoom();
-  // }, [isRoomPage, roomId]);
+  useEffect(() => {
+    if (isRoomPage && !isManage && groupRef.current) {
+      groupRef.current.traverse((child: any) => {
+        if (child.isMesh && child.parent?.name) {
+          const isMatchingRoom = child.parent.name.startsWith(roomId)
+          if (Array.isArray(child.material)) {
+            child.material.forEach((m: any) => {
+              m.transparent = true;
+              m.opacity = isMatchingRoom ? 1 : 0.3;
+              m.needsUpdate = true; // Force material update
+            });
+          } else if (child.material) {
+            child.material.transparent = true;
+            child.material.opacity = isMatchingRoom ? 1 : 0.3;
+            child.material.needsUpdate = true; // Force material update
+          }
+        }
+      });
+    }
+  }, [isRoomPage, roomId]);
 
   useEffect(() => {
     const fetchFloorRoomDetail = async () => {
