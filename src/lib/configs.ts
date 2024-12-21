@@ -206,6 +206,14 @@ export const configs: Configs = {
         minDistance: 30,
         maxDistance: 70,
       },
+      floor: {
+        en10501: {
+          active: true,
+        },
+        en10502: {
+          active: true,
+        },
+      },
     },
     en106: {
       active: true,
@@ -213,6 +221,14 @@ export const configs: Configs = {
       camera: {
         minDistance: 30,
         maxDistance: 70,
+      },
+      floor: {
+        en10601: {
+          active: true,
+        },
+        en10602: {
+          active: true,
+        },
       },
     },
     en107: {
@@ -238,6 +254,14 @@ export const configs: Configs = {
         minDistance: 20,
         maxDistance: 50,
       },
+      floor: {
+        en11001: {
+          active: true,
+        },
+        en11002: {
+          active: true,
+        },
+      },
     },
     en113: {
       active: true,
@@ -262,6 +286,20 @@ export const configs: Configs = {
         minDistance: 30,
         maxDistance: 70,
       },
+      floor: {
+        en116m1: {
+          active: true,
+        },
+        en11601: {
+          active: true,
+        },
+        en11602: {
+          active: true,
+        },
+        en11603: {
+          active: true,
+        },
+      },
     },
     en117: {
       active: true,
@@ -277,6 +315,20 @@ export const configs: Configs = {
       camera: {
         minDistance: 30,
         maxDistance: 70,
+      },
+      floor: {
+        en120m1: {
+          active: true,
+        },
+        en12001: {
+          active: true,
+        },
+        en12002: {
+          active: true,
+        },
+        en12003: {
+          active: true,
+        },
       },
     },
     en124: {
