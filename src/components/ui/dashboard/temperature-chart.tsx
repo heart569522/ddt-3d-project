@@ -43,7 +43,7 @@ export default function TemperatureChart({ data, isDashboardRoom }: TempProps) {
     <Card className="transition bg-secondary/80">
       <CardHeader>
         <CardTitle className="text-sm md:text-base text-left">
-          Temperature (C)
+          Temperature (°C)
         </CardTitle>
       </CardHeader>
       <CardContent>

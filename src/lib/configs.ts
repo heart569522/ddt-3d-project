@@ -547,7 +547,7 @@ export const configs: Configs = {
           room: {
             en1100101: {
               active: true,
-              cameraPosition: [-17.5, 0, 0],
+              cameraPosition: [18.5, 0, 0],
               minDistance: 12,
               maxDistance: 15,
               modalDistance: 15,
@@ -556,7 +556,7 @@ export const configs: Configs = {
             },
             en1100102: {
               active: true,
-              cameraPosition: [-12.5, 0, 0],
+              cameraPosition: [12.5, 0, 0],
               minDistance: 12,
               maxDistance: 15,
               modalDistance: 15,
@@ -565,7 +565,7 @@ export const configs: Configs = {
             },
             en1100103: {
               active: true,
-              cameraPosition: [-6.5, 0, 0],
+              cameraPosition: [6.5, 0, 0],
               minDistance: 12,
               maxDistance: 15,
               modalDistance: 15,
@@ -574,7 +574,7 @@ export const configs: Configs = {
             },
             en1100104: {
               active: true,
-              cameraPosition: [5, 0, 0],
+              cameraPosition: [-5, 0, 0],
               minDistance: 18,
               maxDistance: 22,
               modalDistance: 20,
@@ -583,7 +583,7 @@ export const configs: Configs = {
             },
             en1100105: {
               active: true,
-              cameraPosition: [12.5, 0, 0],
+              cameraPosition: [-12.5, 0, 0],
               minDistance: 12,
               maxDistance: 15,
               modalDistance: 15,
@@ -592,7 +592,7 @@ export const configs: Configs = {
             },
             en1100106: {
               active: true,
-              cameraPosition: [15, 0, 0],
+              cameraPosition: [-15, 0, 0],
               minDistance: 12,
               maxDistance: 15,
               modalDistance: 15,
@@ -601,7 +601,7 @@ export const configs: Configs = {
             },
             en1100107: {
               active: true,
-              cameraPosition: [18.5, 0, 0],
+              cameraPosition: [-17.5, 0, 0],
               minDistance: 12,
               maxDistance: 15,
               modalDistance: 15,
@@ -610,7 +610,7 @@ export const configs: Configs = {
             },
             en1100108: {
               active: true,
-              cameraPosition: [-6.5, 0, 0],
+              cameraPosition: [6.5, 0, 0],
               minDistance: 12,
               maxDistance: 15,
               modalDistance: 15,
@@ -619,7 +619,7 @@ export const configs: Configs = {
             },
             en1100109: {
               active: true,
-              cameraPosition: [16.5, 0, 1.75],
+              cameraPosition: [-16.5, 0, -3.75],
               minDistance: 10,
               maxDistance: 13,
               modalDistance: 15,
@@ -642,25 +642,25 @@ export const configs: Configs = {
           room: {
             en1100201: {
               active: true,
-              cameraPosition: [0, 5, 0],
-              minDistance: 12,
-              maxDistance: 15,
+              cameraPosition: [2.5, 0, 0],
+              minDistance: 15,
+              maxDistance: 18,
               modalDistance: 20,
               airCount: 0,
               lampCount: 0
             },
             en1100202: {
               active: true,
-              cameraPosition: [10, 0, 0],
-              minDistance: 12,
-              maxDistance: 15,
+              cameraPosition: [-7.5, 0, 2.5],
+              minDistance: 10,
+              maxDistance: 13,
               modalDistance: 15,
               airCount: 0,
               lampCount: 0
             },
             en1100203: {
               active: true,
-              cameraPosition: [15.5, 0, 0],
+              cameraPosition: [-13.5, 0, 1.5],
               minDistance: 12,
               maxDistance: 15,
               modalDistance: 15,
@@ -669,16 +669,16 @@ export const configs: Configs = {
             },
             en1100204: {
               active: true,
-              cameraPosition: [-12.5, 0, 3.5],
-              minDistance: 12,
-              maxDistance: 15,
+              cameraPosition: [15, 0, -2.5],
+              minDistance: 10,
+              maxDistance: 13,
               modalDistance: 15,
               airCount: 0,
               lampCount: 0
             },
             en1100205: {
               active: true,
-              cameraPosition: [10, 0, 0],
+              cameraPosition: [-7.5, 0, 0],
               minDistance: 12,
               maxDistance: 15,
               modalDistance: 15,
@@ -687,7 +687,7 @@ export const configs: Configs = {
             },
             en1100206: {
               active: true,
-              cameraPosition: [15.5, 0, 0],
+              cameraPosition: [-13.5, 0, 0],
               minDistance: 12,
               maxDistance: 15,
               modalDistance: 15,
@@ -697,9 +697,9 @@ export const configs: Configs = {
             en1100299: {
               active: true,
               cameraPosition: [0, 5, 0],
-              minDistance: 25,
-              maxDistance: 28,
-              modalDistance: 20,
+              minDistance: 23,
+              maxDistance: 27,
+              modalDistance: 30,
               airCount: 0,
               lampCount: 0
             }

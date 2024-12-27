@@ -9,22 +9,69 @@ interface Props {
   contourMenu: "temperature" | "humidity" | "pm25" | null;
 }
 
+const temperatureScale: [number, string][] = [
+  [20, "#0096e6"],
+  [25, "#0ae282"],
+  [30, "#ffff00"],
+  [40, "#ffa500"],
+  [50, "#ff0000"],
+];
+
+const pm25Scale: [number, string][] = [
+  [50, "#0000FF"],
+  [100, "#00FF00"],
+  [150, "#FFFF00"],
+  [200, "#ffa500"],
+  [250, "#FF0000"],
+  [300, "#9002a8"],
+  [350, "#7002a8"],
+  [400, "#600170"],
+  [450, "#500072"],
+  [500, "#440061"],
+  [550, "#390051"],
+  [600, "#220030"],
+];
+
 export default function ContourLegend({
   isShowDashboard,
   contourMenu = null,
 }: Props) {
   const renderLegendItems = (scale: [number, string][]) => {
-    return scale.map(([value, color], index) => (
-      <div key={index} className="flex items-center gap-2">
-        <div
-          className="w-4 h-4 rounded"
-          style={{ backgroundColor: color }}
-        ></div>
-        <span className="text-sm font-medium">
-          {`= ${(value * 100).toFixed(0)}%`}
-        </span>
-      </div>
-    ));
+    if (contourMenu === "temperature") {
+      return scale.map(([value, color], index) => (
+        <div key={index} className="flex items-center gap-2">
+          <div
+            className="w-4 h-4 rounded"
+            style={{ backgroundColor: color }}
+          ></div>
+          <span className="text-sm font-medium">
+            {value >= 50 ? `= ${value} °C` : `= ${value} °C`}
+          </span>
+        </div>
+      ));
+    } else if (contourMenu === "pm25") {
+      return scale.map(([value, color], index) => (
+        <div key={index} className="flex items-center gap-2">
+          <div
+            className="w-4 h-4 rounded"
+            style={{ backgroundColor: color }}
+          ></div>
+          <span className="text-sm font-medium">{`= ${value} µg/m³`}</span>
+        </div>
+      ));
+    } else {
+      return scale.map(([value, color], index) => (
+        <div key={index} className="flex items-center gap-2">
+          <div
+            className="w-4 h-4 rounded"
+            style={{ backgroundColor: color }}
+          ></div>
+          <span className="text-sm font-medium">
+            {`= ${(value * 100).toFixed(0)}%`}
+          </span>
+        </div>
+      ));
+    }
   };
 
   const renderLegend = () => {
@@ -33,10 +80,23 @@ export default function ContourLegend({
     const scale = configs.colorScale[contourMenu];
     if (!scale) return null;
 
+    const title =
+      contourMenu === "pm25"
+        ? "PM 2.5"
+        : contourMenu === "temperature"
+        ? "Temperature"
+        : "Humidity";
+
     return (
       <div className="flex flex-col gap-2">
-        <h3 className="font-semibold capitalize">{`${contourMenu} Legend`}</h3>
-        {renderLegendItems(scale)}
+        <h3 className="font-semibold capitalize">{`${title} Legend`}</h3>
+        {renderLegendItems(
+          contourMenu === "temperature"
+            ? temperatureScale
+            : contourMenu === "pm25"
+            ? pm25Scale
+            : scale
+        )}
       </div>
     );
   };

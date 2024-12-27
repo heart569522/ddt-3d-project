@@ -184,7 +184,7 @@ export default async function RoomDashboard({
                       <p className="text-2xl md:text-3xl font-semibold text-center">
                         {gaugeRoom?.[roomId].averagePM25 || "-"}&nbsp;
                         <span className="font-semibold text-sm md:text-base">
-                          ug/m3
+                          µg/m³
                         </span>
                       </p>
                     </div>

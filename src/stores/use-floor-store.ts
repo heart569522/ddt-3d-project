@@ -4,21 +4,20 @@ import { EN105Floor1 } from "@/components/models/en105/floor-room/en10501-floor"
 import { EN105Floor2 } from "@/components/models/en105/floor-room/en10502-floor";
 import { EN106Floor1 } from "@/components/models/en106/floor-room/en10601-floor";
 import { EN106Floor2 } from "@/components/models/en106/floor-room/en10602-floor";
-import { EN110Floor1 } from "@/components/models/en110/floor-room/en11001-floor";
-import { EN110Floor2 } from "@/components/models/en110/floor-room/en11002-floor";
+import { EN11001Air, EN11001Light, EN110Floor1 } from "@/components/models/en110/floor-room/en11001-floor";
+import { EN110Floor2, EN11002Air, EN11002Light } from "@/components/models/en110/floor-room/en11002-floor";
 import { EN116Floor1 } from "@/components/models/en116/floor-room/en11601-floor";
 import { EN116Floor2 } from "@/components/models/en116/floor-room/en11602-floor";
 import { EN116Floor3 } from "@/components/models/en116/floor-room/en11603-floor";
 import { EN116FloorM1 } from "@/components/models/en116/floor-room/en116m1-floor";
 import { EN120Floor1 } from "@/components/models/en120/floor-room/en12001-floor";
+import { EN120Floor2 } from "@/components/models/en120/floor-room/en12002-floor";
+import { EN120Floor3 } from "@/components/models/en120/floor-room/en12003-floor";
 import { EN120FloorM1 } from "@/components/models/en120/floor-room/en120m1-floor";
 import { EN202Floor1 } from "@/components/models/en202/floor-room/en20201-floor";
 import { EN202FloorB1 } from "@/components/models/en202/floor-room/en202b1-floor";
 import { EN12408Air, EN12408Light, EN124Floor8 } from "@/components/models/en124/floor-room/en12408-floor";
-
 import { create } from "zustand";
-import { EN120Floor2 } from "@/components/models/en120/floor-room/en12002-floor";
-import { EN120Floor3 } from "@/components/models/en120/floor-room/en12003-floor";
 
 export interface EN10401State {
   select: EN104Floor1 | null;
@@ -45,12 +44,12 @@ export interface EN10602State {
   setSelect: (room: EN106Floor2 | string | null) => void;
 }
 export interface EN11001State {
-  select: EN110Floor1 | null;
-  setSelect: (room: EN110Floor1 | string | null) => void;
+  select: EN110Floor1 | EN11001Air | EN11001Light | null;
+  setSelect: (room: EN110Floor1 | EN11001Air | EN11001Light | string | null) => void;
 }
 export interface EN11002State {
-  select: EN110Floor2 | null;
-  setSelect: (room: EN110Floor2 | string | null) => void;
+  select: EN110Floor2 | EN11002Air | EN11002Light | null;
+  setSelect: (room: EN110Floor2 | EN11002Air | EN11002Light | string | null) => void;
 }
 export interface EN116M1State {
   select: EN116FloorM1 | null;
@@ -153,7 +152,7 @@ export const useEN10602Store = create<EN10602State>((set) => ({
 
 export const useEN11001Store = create<EN11001State>((set) => ({
   select: null,
-  setSelect: (room: EN110Floor1 | string | null) => {
+  setSelect: (room: EN110Floor1 | EN11001Air | EN11001Light | string | null) => {
     set((state) => ({
       select: state.select === room ? null : room as any,
     }));
@@ -162,7 +161,7 @@ export const useEN11001Store = create<EN11001State>((set) => ({
 
 export const useEN11002Store = create<EN11002State>((set) => ({
   select: null,
-  setSelect: (room: EN110Floor2 | string | null) => {
+  setSelect: (room: EN110Floor2 | EN11002Air | EN11002Light | string | null) => {
     set((state) => ({
       select: state.select === room ? null : room as any,
     }));

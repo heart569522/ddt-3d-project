@@ -95,7 +95,10 @@ export function EnvironmentAverage({ data, isFaculty = false }: AverageProps) {
             <div className="flex gap-2 items-end justify-start ">
               <h4 className="text-sm sm:text-base opacity-90">PM 2.5 :</h4>
               <p className="text-xl sm:text-2xl font-semibold">
-                {averagePM25?.toFixed(configs.numberOfDecimal)}
+                {averagePM25?.toFixed(configs.numberOfDecimal)}&nbsp;
+                {averagePM25 && (
+                  <span className="text-base sm:text-lg">µg/m³</span>
+                )}
               </p>
             </div>
             {averagePM25 ? (
@@ -225,7 +228,7 @@ export function EnvironmentPMChart({ data, isDashboardRoom }: PMProps) {
   return (
     <Card className="transition bg-secondary/80">
       <CardHeader>
-        <CardTitle className="text-sm md:text-base text-left">PM 2.5</CardTitle>
+        <CardTitle className="text-sm md:text-base text-left">PM 2.5 (µg/m³)</CardTitle>
       </CardHeader>
       <CardContent>
         {data.length !== 0 ? (

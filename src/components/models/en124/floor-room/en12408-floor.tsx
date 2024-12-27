@@ -1022,6 +1022,7 @@ export default function EN12408Floor(props: Props) {
 
   const groupRef = useRef<any>();
   const floorId = pathname;
+  
   const path = usePathname();
   const roomId = path.split('/room/')[1];
   // console.log("🚀 ~ EN12408Floor ~ roomId:", roomId)
