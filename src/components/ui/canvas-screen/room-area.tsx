@@ -92,7 +92,7 @@ export default function RoomArea({ buildingId, floorId }: Props) {
   const handleClickManageRoom = async () => {
     const roomlist = await getData(`getRoomById/${selectRoom}`, true);
 
-    if (roomlist[0].rm_id === null) {
+    if (!roomlist || roomlist[0].rm_id === null) {
       window.open(`/admin/management/rooms/add?roomid=${selectRoom}`, "_blank");
     } else if (roomlist[0].rm_id == selectRoom?.toUpperCase()) {
       window.open(
@@ -212,7 +212,7 @@ export default function RoomArea({ buildingId, floorId }: Props) {
                   </DropdownMenuTrigger>
                   <DropdownMenuContent
                     side="right"
-                    className="bg-background/50 outline-none min-w-20"
+                    className="bg-background/50 outline-none min-w-20 max-h-60 overflow-y-auto"
                   >
                     {Array.from({ length: airCount }, (_, index) => (
                       <DropdownMenuItem
@@ -257,7 +257,7 @@ export default function RoomArea({ buildingId, floorId }: Props) {
                   </DropdownMenuTrigger>
                   <DropdownMenuContent
                     side="right"
-                    className="bg-background/50 outline-none min-w-20"
+                    className="bg-background/50 outline-none min-w-20 max-h-60 overflow-y-auto"
                   >
                     {Array.from({ length: lampCount }, (_, index) => (
                       <DropdownMenuItem

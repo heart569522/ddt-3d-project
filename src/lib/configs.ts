@@ -552,7 +552,7 @@ export const configs: Configs = {
               maxDistance: 15,
               modalDistance: 15,
               airCount: 0,
-              lampCount: 0
+              lampCount: 1
             },
             en1100102: {
               active: true,
@@ -560,8 +560,8 @@ export const configs: Configs = {
               minDistance: 12,
               maxDistance: 15,
               modalDistance: 15,
-              airCount: 0,
-              lampCount: 0
+              airCount: 2,
+              lampCount: 16
             },
             en1100103: {
               active: true,
@@ -569,8 +569,8 @@ export const configs: Configs = {
               minDistance: 12,
               maxDistance: 15,
               modalDistance: 15,
-              airCount: 0,
-              lampCount: 0
+              airCount: 1,
+              lampCount: 4
             },
             en1100104: {
               active: true,
@@ -578,8 +578,8 @@ export const configs: Configs = {
               minDistance: 18,
               maxDistance: 22,
               modalDistance: 20,
-              airCount: 0,
-              lampCount: 0
+              airCount: 3,
+              lampCount: 17
             },
             en1100105: {
               active: true,
@@ -588,7 +588,7 @@ export const configs: Configs = {
               maxDistance: 15,
               modalDistance: 15,
               airCount: 0,
-              lampCount: 0
+              lampCount: 2
             },
             en1100106: {
               active: true,
@@ -597,7 +597,7 @@ export const configs: Configs = {
               maxDistance: 15,
               modalDistance: 15,
               airCount: 0,
-              lampCount: 0
+              lampCount: 2
             },
             en1100107: {
               active: true,
@@ -615,7 +615,7 @@ export const configs: Configs = {
               maxDistance: 15,
               modalDistance: 15,
               airCount: 0,
-              lampCount: 0
+              lampCount: 4
             },
             en1100109: {
               active: true,
@@ -624,7 +624,7 @@ export const configs: Configs = {
               maxDistance: 13,
               modalDistance: 15,
               airCount: 0,
-              lampCount: 0
+              lampCount: 1
             },
             en1100199: {
               active: true,
@@ -633,7 +633,7 @@ export const configs: Configs = {
               maxDistance: 35,
               modalDistance: 35,
               airCount: 0,
-              lampCount: 0
+              lampCount: 9
             }
           }
         },
@@ -646,8 +646,8 @@ export const configs: Configs = {
               minDistance: 15,
               maxDistance: 18,
               modalDistance: 20,
-              airCount: 0,
-              lampCount: 0
+              airCount: 3,
+              lampCount: 28
             },
             en1100202: {
               active: true,
@@ -655,8 +655,8 @@ export const configs: Configs = {
               minDistance: 10,
               maxDistance: 13,
               modalDistance: 15,
-              airCount: 0,
-              lampCount: 0
+              airCount: 1,
+              lampCount: 2
             },
             en1100203: {
               active: true,
@@ -665,7 +665,7 @@ export const configs: Configs = {
               maxDistance: 15,
               modalDistance: 15,
               airCount: 0,
-              lampCount: 0
+              lampCount: 4
             },
             en1100204: {
               active: true,
@@ -674,7 +674,7 @@ export const configs: Configs = {
               maxDistance: 13,
               modalDistance: 15,
               airCount: 0,
-              lampCount: 0
+              lampCount: 7
             },
             en1100205: {
               active: true,
@@ -682,8 +682,8 @@ export const configs: Configs = {
               minDistance: 12,
               maxDistance: 15,
               modalDistance: 15,
-              airCount: 0,
-              lampCount: 0
+              airCount: 1,
+              lampCount: 2
             },
             en1100206: {
               active: true,
@@ -692,7 +692,7 @@ export const configs: Configs = {
               maxDistance: 15,
               modalDistance: 15,
               airCount: 0,
-              lampCount: 0
+              lampCount: 7
             },
             en1100299: {
               active: true,
@@ -701,7 +701,7 @@ export const configs: Configs = {
               maxDistance: 27,
               modalDistance: 30,
               airCount: 0,
-              lampCount: 0
+              lampCount: 40
             }
           }
         },
