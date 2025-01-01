@@ -36,6 +36,7 @@
     "copy-webpack-plugin": "^12.0.2",
     "date-fns": "^3.6.0",
     "framer-motion": "^11.3.24",
+    "idb": "^8.0.1",
     "lucide-react": "^0.435.0",
     "next": "^14.2.16",
     "next-auth": "^4.24.7",
