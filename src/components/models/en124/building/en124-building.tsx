@@ -23,6 +23,7 @@ import {
 import { Select } from "@react-three/postprocessing";
 import { configs } from "@/lib/configs";
 import { getFloorActiveStatus } from "@/lib/utils";
+import { useGLTFFromIndexedDB } from "@/hooks/useGLTFIndexedDB";
 
 type GLTFResult = GLTF & {
   nodes: {
@@ -582,6 +583,16 @@ type Props = JSX.IntrinsicElements["group"] & {
 };
 
 export default function EN124Building(props: Props) {
+  // const { gltf, loading, error } = useGLTFFromIndexedDB("/models/building/en124/en124-building.glb");
+  
+  // if (loading) return null;
+  // if (error) return null;
+  // if (!gltf) return null;
+
+  // const { nodes, materials } = gltf as unknown as {
+  //   nodes: { [key: string]: THREE.Mesh };
+  //   materials: { [key: string]: THREE.Material };
+  // };
   const { nodes, materials } = useGLTF(
     "/models/building/en124/en124-building.glb"
   ) as GLTFResult;
