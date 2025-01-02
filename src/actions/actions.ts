@@ -93,13 +93,9 @@ export async function updateData(
 
   try {
     const headers = key ? { "x-api-key": key } : {};
-    const res = await axios.put(
-      `${apiUrl}/${apiPath}/${id}`,
-      data,
-      {
-        headers,
-      }
-    );
+    const res = await axios.put(`${apiUrl}/${apiPath}/${id}`, data, {
+      headers,
+    });
 
     return res;
   } catch (error) {
@@ -134,6 +130,22 @@ export async function deleteData(
 export async function login(data: ILoginSchema) {
   try {
     const res = await axios.post(`${process.env.API_URL}/auth/login`, data);
+
+    if (!res.data) {
+      return null;
+    }
+
+    return res;
+  } catch (error) {
+    // console.log("🚀 ~ getData ~ error:", error);
+  }
+}
+
+export async function register(data: any) {
+  const api = process.env.API_URL || process.env.NEXT_PUBLIC_API_URL;
+
+  try {
+    const res = await axios.post(`${api}/auth/register`, data);
 
     if (!res.data) {
       return null;
