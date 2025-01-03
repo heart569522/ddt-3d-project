@@ -970,7 +970,10 @@ export default function EN11001Floor(props: Props) {
                 <TableRow>
                   <TableCell className="p-2">Number of Air Conditioners</TableCell>
                   <TableCell className="p-2">
-                    {modalRoomDetail?.airStatus?.length as number || "-"}
+                    {
+                      configs.building[roomId.substring(0, 5).toLowerCase()]?.floor?.[roomId.substring(0, 7).toLowerCase()]?.room?.[roomId.toLowerCase()]
+                      ?.airCount || "-"
+                    }
                   </TableCell>
                 </TableRow>
                 <TableRow>
