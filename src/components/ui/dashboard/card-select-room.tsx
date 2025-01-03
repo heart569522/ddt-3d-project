@@ -82,7 +82,7 @@ export default function CardSelectRoom({ room }: Props) {
       </CardHeader>
       <CardContent className="max-h-48 overflow-y-scroll custom-scrollbar">
         <div className="grid grid-cols-3 items-center gap-1">
-          {rooms?.map((room) => (
+          {rooms?.sort((a, b) => a.localeCompare(b)).map((room) => (
             <Button
               key={room}
               variant={select === room ? "default" : "outline"}
