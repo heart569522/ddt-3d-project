@@ -200,7 +200,7 @@ export default function RoomArea({ buildingId, floorId }: Props) {
               >
                 จัดการห้อง
               </Button>
-              {airCount > 0 ? (
+              {airCount > 0 && (
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
                     <Button
@@ -236,16 +236,8 @@ export default function RoomArea({ buildingId, floorId }: Props) {
                     ))}
                   </DropdownMenuContent>
                 </DropdownMenu>
-              ) : (
-                <Button
-                  size={"sm"}
-                  onClick={() => handleClickManageAir(0)}
-                  className="rounded-sm bg-background/50 ring-0 outline-none w-40"
-                >
-                  จัดการเครื่องปรับอากาศ
-                </Button>
               )}
-              {lampCount > 0 ? (
+              {lampCount > 0 && (
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
                     <Button
@@ -281,14 +273,6 @@ export default function RoomArea({ buildingId, floorId }: Props) {
                     ))}
                   </DropdownMenuContent>
                 </DropdownMenu>
-              ) : (
-                <Button
-                  size={"sm"}
-                  onClick={() => handleClickManageLamp(0)}
-                  className="rounded-sm bg-background/50 ring-0 outline-none w-40"
-                >
-                  จัดการโคมไฟ
-                </Button>
               )}
             </div>
           </div>
