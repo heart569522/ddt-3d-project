@@ -536,7 +536,7 @@ export const configs: Configs = {
     },
     en110: {
       active: true,
-      bgMap: false,
+      bgMap: true,
       camera: {
         minDistance: 20,
         maxDistance: 50,
